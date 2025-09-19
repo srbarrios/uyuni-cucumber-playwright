@@ -1,3 +1,7 @@
+## New Uyuni Test Framework
+
+This PoC aims to replace our current stack for web interactions, migrating from Capybara+Selenium to Playwright. It also implies a change of programming language from Ruby to Typescript, and so our test runner will be CucumberJS.
+
 ### Project Setup for Playwright with Cucumber
 
 This guide outlines a baseline project structure for integrating **Playwright** and **Cucumber**. It covers the initial setup, provides steps for creating and running tests, and offers guidance for a more maintainable project.
