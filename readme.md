@@ -33,7 +33,7 @@ Follow these steps to set up the project from scratch:
       * Delete the default files and folders created by Playwright, such as `playwright.config.ts`, `tests`, and `tests-examples`.
       * Create a dedicated structure for your feature files and step definitions:
           * `testsuite/features`
-          * `testsuite/step-definitions`
+          * `testsuite/step_definitions`
 
 5.  **Create Your First Feature File**:
 
@@ -76,7 +76,7 @@ Follow these steps to set up the project from scratch:
           "colorsEnabled": true,
           "snippetInterface": "async-await"
         },
-        "require": ["testsuite/step-definitions/*.ts"],
+        "require": ["testsuite/step_definitions/*.ts"],
         "requireModule": ["ts-node/register"]
       }
     }
@@ -84,7 +84,7 @@ Follow these steps to set up the project from scratch:
 
 8.  **Define a Step Definition**:
 
-      * Create a file named `login.ts` inside `testsuite/step-definitions`.
+      * Create a file named `login.ts` inside `testsuite/step_definitions`.
       * Import the necessary `Given` function from `@cucumber/cucumber` and define the step from your feature file.
 
     <!-- end list -->
@@ -138,7 +138,7 @@ module.exports = {
       colorsEnabled: true,
       snippetInterface: "async-await"
     },
-    require: ["testsuite/step-definitions/*.ts"],
+    require: ["testsuite/step_definitions/*.ts"],
     requireModule: ["ts-node/register"]
   }
 };

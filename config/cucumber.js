@@ -2,7 +2,7 @@ module.exports ={
     default: {
         paths: [
             "testsuite/features"
-        ], 
+        ],
         dryRun: false,
         format: [
             "progress-bar",
@@ -15,7 +15,7 @@ module.exports ={
             snippetInterface: "async-await"
         },
         require: [
-            "testsuite/step-definitions/*.ts"
+            "testsuite/step_definitions/*.ts"
         ],
         requireModule: [
             "ts-node/register"
