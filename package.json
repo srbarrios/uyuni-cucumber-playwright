@@ -1,0 +1,16 @@
+{
+  "name": "playwright-cucumber-skeleton",
+  "version": "1.0.0",
+  "description": "This project's goal is to establish a baseline project for using Playwright with Cucumber.",
+  "main": "index.js",
+  "scripts": {
+    "cucumber": "cucumber-js --config config/cucumber.js"
+  },
+  "keywords": [],
+  "devDependencies": {
+    "@playwright/test": "^1.55.0",
+    "@types/node": "^24.5.1",
+    "@cucumber/cucumber": "^12.2.0",
+    "ts-node": "^10.9.2"
+  }
+}
