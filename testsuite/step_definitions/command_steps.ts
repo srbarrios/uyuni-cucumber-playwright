@@ -25,7 +25,6 @@ import {
     CHANNEL_TO_SYNC_BY_OS_PRODUCT_VERSION,
     ENV_VAR_BY_HOST
 } from '../helpers/core/constants';
-import { beta_enabled } from '../helpers/env';
 import {ExecException} from "node:child_process";
 
 Then(/^"([^"]*)" should have a FQDN$/, async function (host) {
@@ -226,18 +225,18 @@ When(
     /^I use spacewalk-common-channel to add all "([^"]*)" channels with arch "([^"]*)"$/,
     async function (channel: string, architecture: string) {
         let channels_to_synchronize =
-            CHANNEL_TO_SYNC_BY_OS_PRODUCT_VERSION[product]?.[channel]?.slice() ||
-            CHANNEL_TO_SYNC_BY_OS_PRODUCT_VERSION[product]?.[
+            CHANNEL_TO_SYNC_BY_OS_PRODUCT_VERSION[globalVars.globalProduct]?.[channel]?.slice() ||
+            CHANNEL_TO_SYNC_BY_OS_PRODUCT_VERSION[globalVars.globalProduct]?.[
                 `${channel}-${architecture}`
                 ]?.slice();
-        if (!beta_enabled) {
+        if (!envConfig.betaEnabled) {
             channels_to_synchronize = filterChannels(channels_to_synchronize, [
                 'beta'
             ]);
         }
         if (!channels_to_synchronize || channels_to_synchronize.length === 0) {
             throw new Error(
-                `Synchronization error, channel ${channel} or ${channel}-${architecture} in ${product} product not found`
+                `Synchronization error, channel ${channel} or ${channel}-${architecture} in ${globalVars.globalProduct} product not found`
             );
         }
 
@@ -501,16 +500,16 @@ When(
     /^I kill running spacewalk-repo-sync for "([^"]*)"$/,
     async function (os_product_version: string) {
         if (
-            !CHANNEL_TO_SYNC_BY_OS_PRODUCT_VERSION[product]?.[os_product_version]
+            !CHANNEL_TO_SYNC_BY_OS_PRODUCT_VERSION[globalVars.globalProduct]?.[os_product_version]
         ) {
             return;
         }
 
         let channels_to_kill =
-            CHANNEL_TO_SYNC_BY_OS_PRODUCT_VERSION[product][
+            CHANNEL_TO_SYNC_BY_OS_PRODUCT_VERSION[globalVars.globalProduct][
                 os_product_version
                 ].slice();
-        if (!beta_enabled) {
+        if (!envConfig.betaEnabled) {
             channels_to_kill = filterChannels(channels_to_kill, ['beta']);
         }
         console.log(`Killing channels:\n${channels_to_kill}`);
@@ -539,7 +538,7 @@ When(
                     console.log(`Repo-sync process for channel '${channel}' running.`);
                 }
                 if (
-                    !CHANNEL_TO_SYNC_BY_OS_PRODUCT_VERSION[product][
+                    !CHANNEL_TO_SYNC_BY_OS_PRODUCT_VERSION[globalVars.globalProduct][
                         os_product_version
                         ].includes(channel)
                 ) {
@@ -717,15 +716,15 @@ When(
     /^I wait until all synchronized channels for "([^"]*)" have finished$/,
     async function (os_product_version: string) {
         let channels_to_wait =
-            CHANNEL_TO_SYNC_BY_OS_PRODUCT_VERSION[product]?.[
+            CHANNEL_TO_SYNC_BY_OS_PRODUCT_VERSION[globalVars.globalProduct]?.[
                 os_product_version
                 ]?.slice();
-        if (!beta_enabled) {
+        if (!envConfig.betaEnabled) {
             channels_to_wait = filterChannels(channels_to_wait, ['beta']);
         }
         if (!channels_to_wait) {
             throw new Error(
-                `Synchronization error, channels for ${os_product_version} in ${product} not found`
+                `Synchronization error, channels for ${os_product_version} in ${globalVars.globalProduct} not found`
             );
         }
 

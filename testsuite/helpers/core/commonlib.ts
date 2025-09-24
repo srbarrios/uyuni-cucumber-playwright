@@ -1,11 +1,11 @@
-// Copyright (c) 2013-2025 SUSE LLC.
+// Copyright (c) 2025 SUSE LLC.
 // Licensed under the terms of the MIT license.
 
 import { Page } from '@playwright/test';
 import { RemoteNode } from '../system/remote_node';
 import { ENV_VAR_BY_HOST } from './constants';
 import { getTarget } from '../system/remote_nodes_env';
-import {getFeatureScope, GLOBAL_VARS} from './env';
+import {getFeatureScope, globalVars} from './env';
 import { ENV_CONFIG } from './env';
 import * as yaml from 'js-yaml';
 import crypto from 'crypto';
@@ -30,11 +30,6 @@ export interface CommandResult {
   stdout: string;
   exitCode: number;
 }
-
-// Global variables (equivalent to Ruby's $variables)
-let globalProduct: string | undefined;
-let globalApiTest: any;
-let globalContext: Record<string, any> = {};
 
 /**
  * Returns the current URL of the page.
@@ -69,20 +64,20 @@ export async function countTableItems(page: Page): Promise<string> {
  * @returns The product name
  */
 export async function getProduct(serverNode: RemoteNode): Promise<string> {
-  if (globalProduct) {
-    return globalProduct;
+  if (globalVars.globalProduct) {
+    return globalVars.globalProduct;
   }
 
   try {
     const { returnCode: uyuniCode } = await serverNode.run('rpm -q patterns-uyuni_server', { checkErrors: false });
     if (uyuniCode === 0) {
-      globalProduct = 'Uyuni';
+      globalVars.globalProduct = 'Uyuni';
       return 'Uyuni';
     }
 
     const { returnCode: sumaCode } = await serverNode.run('rpm -q patterns-suma_server', { checkErrors: false });
     if (sumaCode === 0) {
-      globalProduct = 'SUSE Manager';
+      globalVars.globalProduct = 'SUSE Manager';
       return 'SUSE Manager';
     }
   } catch (error) {
@@ -169,7 +164,7 @@ export async function repeatUntilTimeout<T>(
     fn: () => Promise<T | boolean>, options: {
         timeout?: number;
         retries?: number;
-        message: string; // Now required
+        message?: string;
         reportResult?: boolean;
         dontRaise?: boolean;
     }): Promise<T | boolean> {
@@ -205,7 +200,7 @@ export async function repeatUntilTimeout<T>(
         if (retries && attempts >= retries) {
             error = new Error(`Giving up after ${attempts} attempts${detail}`);
         } else {
-            error = new Error(`Timeout after ${timeout}ms (repeat_until_timeout)${detail}`);
+            error = new Error(`Timeout after ${timeout}ms (repeatUntilTimeout)${detail}`);
         }
 
         if (dontRaise) {
@@ -460,15 +455,15 @@ export async function repositoryExist(repo: string): Promise<boolean> {
 
 // Export global context and setters
 export function getGlobalContext(): Record<string, any> {
-  return globalContext;
+  return globalVars.globalContext;
 }
 
 export function setGlobalContext(key: string, value: any): void {
-  globalContext[key] = value;
+  globalVars.globalContext[key] = value;
 }
 
 export function setGlobalApiTest(apiTest: any): void {
-  globalApiTest = apiTest;
+  globalVars.globalApiTest = apiTest;
 }
 
 /**
@@ -539,8 +534,8 @@ export async function findAndWaitClick(page: Page, selector: string): Promise<im
 /** Compute and cache net prefix */
 let netPrefixCache: string | null = null;
 export function netPrefix(): string | null {
-  if (!netPrefixCache && GLOBAL_VARS.privateNet) {
-    netPrefixCache = GLOBAL_VARS.privateNet.replace(/\.0+\/24$/, '.');
+  if (!netPrefixCache && globalVars.privateNet) {
+    netPrefixCache = globalVars.privateNet.replace(/\.0+\/24$/, '.');
   }
   return netPrefixCache;
 }
@@ -689,7 +684,7 @@ export async function extractLogsFromNode(node: RemoteNode, host: string): Promi
     }
     // Write useful logs
     await node.run('journalctl > /var/log/messages', { checkErrors: false });
-    if ((globalThis as any).hostByNode && (globalThis as any).hostByNode[node] !== 'server') {
+    if ((globalThis as any).hostByNode && (globalThis as any).hostByNode.get(node) !== 'server') {
       await node.run('venv-salt-call --local grains.items | tee -a /var/log/salt_grains', { checkErrors: false });
     }
     // Create archive
@@ -790,8 +785,8 @@ export function getContext<T = any>(key: string): T | undefined {
 export function addContext(key: string, value: any): void {
   const scope = getFeatureScope();
   if (!scope) return;
-  if (!globalContext[scope]) globalContext[scope] = {};
-  globalContext[scope][key] = value;
+  if (!globalVars.globalContext[scope]) globalVars.globalContext[scope] = {};
+    globalVars.globalContext[scope][key] = value;
 }
 
 /** Read server secret and issue HS256 JWT */
@@ -866,7 +861,7 @@ export function filterChannels(channels: string[] | null | undefined, filters: s
   return filtered;
 }
 
-/** Get highest event (latest) for a host */
+/** Get the highest event (latest) for a host */
 export async function getLastEvent(host: string): Promise<any> {
   const node = await getTarget(host) as RemoteNode;
   const systemId = await getSystemId(node);
@@ -882,5 +877,5 @@ export async function triggerUpgrade(hostname: string, packageName: string): Pro
 }
 
 export function getGlobalApiTest(): any {
-  return globalApiTest;
+  return globalVars.globalApiTest;
 }

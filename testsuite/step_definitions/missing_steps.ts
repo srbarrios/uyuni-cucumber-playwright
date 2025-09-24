@@ -4,7 +4,7 @@ import { page } from '../helpers/core/commonlib';
 import { apiTest } from '../helpers/core/commonlib';
 import { getSystemName } from '../helpers/core/commonlib';
 import { save_screenshot } from '../helpers/core/commonlib';
-import { attach } from '../helpers/core/commonlib';
+import { attachFile } from '../helpers/core/commonlib';
 import { repeatUntilTimeout } from '../helpers/core/commonlib';
 import { refreshPage } from '../helpers/core/commonlib';
 import * as fs from 'fs';

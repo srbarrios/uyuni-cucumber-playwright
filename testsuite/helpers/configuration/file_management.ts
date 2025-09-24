@@ -1,4 +1,4 @@
-// Copyright (c) 2023-2025 SUSE LLC
+// Copyright (c) 2025 SUSE LLC
 // Licensed under the terms of the MIT license.
 
 import * as fs from 'fs/promises';
@@ -83,7 +83,7 @@ export async function getChecksumPath(dir: string, originalFileName: string, fil
   ];
 
   const server = getTarget('server');
-  if (GLOBAL_VARS.mirror) {
+  if (globalVars.mirror) {
     const { stdout } = await server.run(`ls -1 ${dir}`, { runsInContainer: false });
     const files = stdout.split('\n');
     const found = files.find((f) => checksumFileNames.includes(f));

@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2023 SUSE LLC.
+// Copyright (c) 2025 SUSE LLC.
 // Licensed under the terms of the MIT license.
 
 import * as fs from 'fs';

@@ -1,10 +1,10 @@
-// Copyright (c) 2022-2024 SUSE LLC.
+// Copyright (c) 2025 SUSE LLC.
 // Licensed under the terms of the MIT license.
 
 import { XmlrpcClient } from './xmlrpc_client';
 import { HttpClient } from './http_client';
 import { repeatUntilTimeout } from '../core/commonlib';
-import { TIMEOUTS, GLOBAL_VARS } from '../core/env';
+import {TIMEOUTS, GLOBAL_VARS, globalVars} from '../core/env';
 import { NamespaceApi } from '../namespaces/api';
 import { NamespaceChannel } from '../namespaces/channel';
 import { NamespaceActionchain } from '../namespaces/actionchain';
@@ -188,8 +188,8 @@ export abstract class ApiTest {
       });
     } else {
       this.token = await this.connection.call('auth.login', {
-        login: GLOBAL_VARS.currentUser,
-        password: GLOBAL_VARS.currentPassword
+        login: globalVars.currentUser,
+        password: globalVars.currentPassword
       });
     }
   }

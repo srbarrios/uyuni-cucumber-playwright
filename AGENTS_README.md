@@ -72,7 +72,7 @@ High-level architecture
   - Aggregated exports: testsuite/helpers/index.ts re-exports the helper modules to provide stable import paths.
   - Core utilities: testsuite/helpers/core/*
     - env.ts: environment and browser lifecycle (see above).
-    - constants.ts (+ constants_extended.ts): domain constants (hosts, channels, labels, etc.) used by Uyuni/SUMA test logic.
+    - constants.ts: domain constants (hosts, channels, labels, etc.) used by Uyuni/SUMA test logic.
     - commonlib.ts, keyvalue_store.ts: shared utilities and types used across helpers and steps.
     - navigation_helper.ts: higher-level UI operations (e.g., toggling checkboxes, filtering lists) on Playwright Page objects.
   - API helpers: testsuite/helpers/api/* (http_client, xmlrpc_client, api_test) and corresponding namespaces.

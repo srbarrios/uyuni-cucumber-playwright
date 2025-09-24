@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2023 SUSE LLC.
+// Copyright (c) 2025 SUSE LLC.
 // Licensed under the terms of the MIT license.
 
 import axios, { AxiosInstance, AxiosResponse } from 'axios';

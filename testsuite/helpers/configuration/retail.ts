@@ -1,4 +1,4 @@
-// Copyright (c) 2023-2025 SUSE LLC
+// Copyright (c) 2025 SUSE LLC
 // Licensed under the terms of the MIT license.
 
 import * as fs from 'fs/promises';
@@ -35,7 +35,7 @@ export async function readBranchPrefixFromYaml(): Promise<string | undefined> {
 export function computeImage(host: string): string {
   switch (host) {
     case 'pxeboot_minion':
-      return GLOBAL_VARS.pxebootImage;
+      return globalVars.pxebootImage;
     case 'sle12sp5_terminal':
       return 'sles12sp5o';
     case 'sle15sp4_terminal':

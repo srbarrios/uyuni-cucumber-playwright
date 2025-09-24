@@ -1,11 +1,10 @@
-// Copyright (c) 2024 SUSE LLC.
+// Copyright (c) 2025 SUSE LLC.
 // Licensed under the terms of the MIT license.
 
 import * as fs from 'fs/promises';
 import { parseString } from 'xml2js';
 import { KeyValueStore } from '../core/keyvalue_store';
 import { getTarget } from '../system/remote_nodes_env';
-import { ENV_CONFIG } from '../core/env';
 
 /**
  * CodeCoverage handler to produce, parse and report Code Coverage from the Java Server to our GitHub PRs
@@ -17,12 +16,12 @@ export class CodeCoverage {
    * Initialize the CodeCoverage handler
    */
   constructor() {
-    this.keyValueStore = new KeyValueStore({
-      host: process.env.REDIS_HOST || ENV_CONFIG.redisHost || 'localhost',
-      port: parseInt(process.env.REDIS_PORT || ENV_CONFIG.redisPort?.toString() || '6379'),
-      username: process.env.REDIS_USERNAME || ENV_CONFIG.redisUsername,
-      password: process.env.REDIS_PASSWORD || ENV_CONFIG.redisPassword
-    });
+    this.keyValueStore = new KeyValueStore(
+      process.env.REDIS_HOST || 'localhost',
+      parseInt(process.env.REDIS_PORT || '6379'),
+      process.env.REDIS_USERNAME || 'admin',
+      process.env.REDIS_PASSWORD || 'admin'
+    );
   }
 
   /**
@@ -39,7 +38,7 @@ export class CodeCoverage {
       
       // Parse XML using xml2js
       await new Promise<void>((resolve, reject) => {
-        parseString(xmlContent, { explicitArray: false }, async (err, result) => {
+        parseString(xmlContent, { explicitArray: false }, async (err: any, result: { report: { package: any; }; }) => {
           if (err) {
             reject(err);
             return;
@@ -110,7 +109,7 @@ export class CodeCoverage {
     const classFiles = '--classfiles /srv/tomcat/webapps/rhn/WEB-INF/lib/rhn.jar';
     const dumpPath = `/var/cache/jacoco-${featureName}.exec`;
 
-    const server = getTarget('server');
+    const server = await getTarget('server');
     
     // Dump coverage data
     await server.run(`${cli} dump --address localhost --destfile ${dumpPath} --port 6300 --reset`, { verbose: true });

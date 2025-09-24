@@ -3,7 +3,6 @@
 
 // Export core utilities
 export * from './core/constants';
-export * from './core/constants_extended';
 export * from './core/commonlib';
 export * from './core/env';
 export * from './core/keyvalue_store';
@@ -75,7 +74,7 @@ export type {
   ChannelSyncMapping,
   TimeoutByChannel,
   PkgArchByClient
-} from './core/constants_extended';
+} from './core/constants';
 
 export type {
   UptimeInfo,

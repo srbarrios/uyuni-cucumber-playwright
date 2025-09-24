@@ -1,34 +1,13 @@
 import { Given, When, Then } from '@cucumber/cucumber';
 import { expect } from 'chai';
 import {
-    ApiTest,
     getSystemName,
     getSystemId,
-    getClientId,
-    setClientId,
-    getChainLabel,
-    setChainLabel,
-    getPowerMgmtResult,
-    setPowerMgmtResult,
-    setUsers,
-    getUsers,
-    setRoles,
-    getRoles,
-    setGetFileRevisionResult,
-    getGetFileRevisionResult,
-    setOutput,
-    getOutput,
-    setResultList,
-    getResultList,
-    setResult,
-    getResult,
     repeatUntilTimeout,
-    dateNow,
-    getSleId,
-    setSleId,
-    product,
-    isTransactionalServer
+    getContext,
+    addContext
 } from '../helpers';
+import { getGlobalApiTest } from "../helpers";
 import { getTarget } from '../helpers';
 import {
     BASE_CHANNEL_BY_CLIENT,
@@ -37,12 +16,12 @@ import {
 
 Given(/^I want to operate on this "([^"]*)"$/, async function (host) {
     const systemName = getSystemName(host);
-    const systems = await ApiTest.system.searchByName(systemName);
+    const systems = await getGlobalApiTest.system.searchByName(systemName);
     const firstMatch = systems[0];
     if (firstMatch) {
-        setClientId(firstMatch['id']);
+        addContext('clientId', firstMatch['id']);
     }
-    expect(getClientId()).to.not.be.null;
+    expect(getContext('clientId')).to.not.be.null;
 });
 
 When(
@@ -473,8 +452,8 @@ When(
         if (client === 'proxy' && !isTransactionalServer) {
             clientName = 'proxy_nontransactional';
         }
-        const baseChannel = BASE_CHANNEL_BY_CLIENT[product][clientName];
-        const baseChannelLabel = LABEL_BY_BASE_CHANNEL[product][baseChannel];
+        const baseChannel = BASE_CHANNEL_BY_CLIENT[globalVars.globalProduct][clientName];
+        const baseChannelLabel = LABEL_BY_BASE_CHANNEL[globalVars.globalProduct][baseChannel];
         const key = await apiTest.activationkey.create(
             id,
             description,

@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2025 SUSE LLC.
+// Copyright (c) 2025 SUSE LLC.
 // Licensed under the terms of the MIT license.
 
 import { ApiTest, ApiCallParams } from '../api/api_test';

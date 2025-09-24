@@ -2,24 +2,25 @@ import { Given, When, Then } from '@cucumber/cucumber';
 // Central helpers (browser, page, utilities)
 import * as Helpers from '../helpers';
 import { getBrowserInstances } from '../helpers/core/env';
+import {envConfig, getProductVersionFull, globalVars, isBuildValidation} from "../helpers";
 
 When(/^I (enable|disable) repositories (before|after) installing branch server$/, async function (action, _when) {
     const proxy = await Helpers.getTarget('proxy');
     const osVersion = proxy.osVersion;
     const osFamily = proxy.osFamily;
     let repos = 'os_pool_repo os_update_repo ';
-    if (!Helpers.buildValidation || !Helpers.isContainerizedServer || !Helpers.productVersionFull?.includes('-released')) {
+    if (!isBuildValidation || !envConfig.isContainerizedServer || !getProductVersionFull(proxy).includes('-released')) {
         repos += 'testing_overlay_devel_repo ';
     }
     if (osFamily?.match(/^sles/) && osVersion?.match(/^15/)) {
         repos += 'proxy_module_pool_repo proxy_module_update_repo ' +
             'proxy_product_pool_repo proxy_product_update_repo ' +
             'module_server_applications_pool_repo module_server_applications_update_repo ';
-        if (!Helpers.buildValidation || !Helpers.productVersionFull?.includes('-released')) {
+        if (!isBuildValidation || !getProductVersionFull(proxy).includes('-released')) {
             repos += 'proxy_devel_releasenotes_repo proxy_devel_repo ';
         }
     } else if (osFamily?.match(/^opensuse/)) {
-        if (!Helpers.isContainerizedServer) {
+        if (!envConfig.isContainerizedServer) {
             repos += 'proxy_pool_repo ';
         }
     }
@@ -28,7 +29,7 @@ When(/^I (enable|disable) repositories (before|after) installing branch server$/
 
 When(/^I start tftp on the proxy$/, async function () {
     const proxy = await Helpers.getTarget('proxy');
-    if (Helpers.product === 'Uyuni') {
+    if (globalVars.globalProduct === 'Uyuni') {
         await (this as any).runStep('I enable repositories before installing branch server');
         const cmd = 'zypper --non-interactive --ignore-unknown remove atftp && ' +
             'zypper --non-interactive install tftp && ' +
@@ -124,7 +125,7 @@ When(/^I bootstrap pxeboot minion via bootstrap script on the proxy$/, async fun
 });
 
 When(/^I accept key of pxeboot minion in the Salt master$/, async function () {
-    await Helpers.getTarget('server').run('salt-key -y --accept=pxeboot.example.org');
+    await (await Helpers.getTarget('server')).run('salt-key -y --accept=pxeboot.example.org');
 });
 
 When(/^I install the GPG key of the test packages repository on the PXE boot minion$/, async function () {
@@ -143,7 +144,7 @@ When(/^I prepare the retail configuration file on server$/, async function () {
 });
 
 When(/^I import the retail configuration using retail_yaml command$/, async function () {
-    await Helpers.getTarget('server').run('retail_yaml --api-user admin --api-pass admin --from-yaml /tmp/massive-import-terminals.yml');
+    await (await Helpers.getTarget('server')).run('retail_yaml --api-user admin --api-pass admin --from-yaml /tmp/massive-import-terminals.yml');
 });
 
 When(/^I follow "([^"]*)" terminal$/, async function (host) {

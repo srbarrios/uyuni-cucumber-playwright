@@ -1,6 +1,7 @@
 import { Given, When, Then } from '@cucumber/cucumber';
 // Central helpers (browser, page, utilities)
 import * as Helpers from '../helpers';
+import {globalVars} from "../helpers";
 
 Given(/^the Salt master can reach "(.*?)"$/, async function (minion) {
     const systemName = Helpers.getSystemName(minion);
@@ -8,18 +9,18 @@ Given(/^the Salt master can reach "(.*?)"$/, async function (minion) {
     const start = Date.now();
     await Helpers.repeatUntilTimeout(async () => {
         const { stdout, returnCode } = await server.run(`salt ${systemName} test.ping`, { checkErrors: false });
-        if (returnCode === 0 && stdout.includes(systemName) && stdout.includes('True')) {
+        if (returnCode === 0 && stdout.includes(await systemName) && stdout.includes('True')) {
             const finished = Date.now();
             console.log(`It took ${(finished - start) / 1000} seconds to contact the minion`);
             return true;
         }
         await new Promise(r => setTimeout(r, 1000));
         return false;
-    }, `Master cannot communicate with ${minion}`, { timeout: 700, reportResult: true });
+    },  { timeout: 700, reportResult: true });
 });
 
 When(/^I get the contents of the remote file "(.*?)"$/, async function (filename) {
-    const { stdout } = await Helpers.getTarget('server').run(`cat ${filename}`);
+    const { stdout } = await (await Helpers.getTarget('server')).run(`cat ${filename}`);
     Helpers.setOutput(stdout);
 });
 
@@ -70,12 +71,12 @@ When(/^I setup a git_pillar environment on the Salt master$/, async function (..
     const source = `${__dirname}/../upload_files/${file}`;
     const dest = `/tmp/${file}`;
     await Helpers.fileInject(await Helpers.getTarget('server'), source, dest);
-    await Helpers.getTarget('server').run(`sh /tmp/${file} setup`, { checkErrors: true, verbose: true });
+    await (await Helpers.getTarget('server')).run(`sh /tmp/${file} setup`, { checkErrors: true, verbose: true });
 });
 
 When(/^I clean up the git_pillar environment on the Salt master$/, async function () {
     const file = 'salt_git_pillar_setup.sh';
-    await Helpers.getTarget('server').run(`sh /tmp/${file} clean`, { checkErrors: true, verbose: true });
+    await (await Helpers.getTarget('server')).run(`sh /tmp/${file} clean`, { checkErrors: true, verbose: true });
 });
 
 When(/^I wait at most (\d+) seconds until Salt master sees "([^"]*)" as "([^"]*)"$/, async function (keyTimeout, minion, keyType) {
@@ -83,12 +84,12 @@ When(/^I wait at most (\d+) seconds until Salt master sees "([^"]*)" as "([^"]*)
     await Helpers.repeatUntilTimeout(async () => {
         const systemName = Helpers.getSystemName(minion);
         if (systemName) {
-            const { stdout, returnCode } = await Helpers.getTarget('server').run(cmd, { checkErrors: false });
-            return returnCode === 0 && stdout.includes(systemName);
+            const { stdout, returnCode } = await (await Helpers.getTarget('server')).run(cmd, { checkErrors: false });
+            return returnCode === 0 && stdout.includes(await systemName);
         }
         await new Promise(r => setTimeout(r, 1000));
         return false;
-    }, `Minion '${minion}' is not listed among ${keyType} keys on Salt master`, { timeout: Number(keyTimeout) });
+    },  { timeout: Number(keyTimeout) });
 });
 
 When(/^I wait until Salt client is inactive on "([^"]*)"$/, async function (minion) {
@@ -98,7 +99,7 @@ When(/^I wait until Salt client is inactive on "([^"]*)"$/, async function (mini
 
 When(/^I wait until Salt master can reach "([^"]*)"$/, async function (minion) {
     const systemName = Helpers.getSystemName(minion);
-    await Helpers.getTarget('server').runUntilOk(`bash -c 'until timeout 5s salt ${systemName} test.ping; do :; done'`);
+    await (await Helpers.getTarget('server')).runUntilOk(`bash -c 'until timeout 5s salt ${systemName} test.ping; do :; done'`);
 });
 
 When(/^I wait until no Salt job is running on "([^"]*)"$/, async function (minion) {
@@ -107,27 +108,27 @@ When(/^I wait until no Salt job is running on "([^"]*)"$/, async function (minio
     await Helpers.repeatUntilTimeout(async () => {
         const { stdout } = await target.run(`${saltCall} -lquiet saltutil.running`, { verbose: true });
         return stdout === "local:\n";
-    }, `A Salt job is still running on ${minion}`, { timeout: 600 });
+    },  { timeout: 600 });
 });
 
 When(/^I delete "([^"]*)" key in the Salt master$/, async function (host) {
     const systemName = Helpers.getSystemName(host);
-    const { stdout } = await Helpers.getTarget('server').run(`salt-key -y -d ${systemName}`, { checkErrors: false });
+    const { stdout } = await (await Helpers.getTarget('server')).run(`salt-key -y -d ${systemName}`, { checkErrors: false });
     Helpers.setOutput(stdout);
 });
 
 When(/^I accept "([^"]*)" key in the Salt master$/, async function (host) {
     const systemName = Helpers.getSystemName(host);
-    await Helpers.getTarget('server').run(`salt-key -y --accept=${systemName}*`);
+    await (await Helpers.getTarget('server')).run(`salt-key -y --accept=${systemName}*`);
 });
 
 When(/^I list all Salt keys shown on the Salt master$/, async function () {
-    await Helpers.getTarget('server').run('salt-key --list-all', { checkErrors: false, verbose: true });
+    await (await Helpers.getTarget('server')).run('salt-key --list-all', { checkErrors: false, verbose: true });
 });
 
 When(/^I get OS information of "([^"]*)" from the Master$/, async function (host) {
     const systemName = Helpers.getSystemName(host);
-    const { stdout } = await Helpers.getTarget('server').run(`salt ${systemName} grains.get osfullname`);
+    const { stdout } = await (await Helpers.getTarget('server')).run(`salt ${systemName} grains.get osfullname`);
     Helpers.setOutput(stdout);
 });
 
@@ -150,18 +151,18 @@ Then(/^it should contain the OS of "([^"]*)"$/, async function (host) {
 
 When(/^I apply state "([^"]*)" to "([^"]*)"$/, async function (state, host) {
     const systemName = Helpers.getSystemName(host);
-    await Helpers.getTarget('server').run(`salt ${systemName} state.apply ${state}`, { verbose: true });
+    await (await Helpers.getTarget('server')).run(`salt ${systemName} state.apply ${state}`, { verbose: true });
 });
 
 Then(/^salt-api should be listening on local port (\d+)$/, async function (port) {
-    const { stdout } = await Helpers.getTarget('server').run(`ss -ntl | grep ${port}`);
+    const { stdout } = await (await Helpers.getTarget('server')).run(`ss -ntl | grep ${port}`);
     if (!stdout.includes(`127.0.0.1:${port}`)) {
         throw new Error(`Salt-api not listening on 127.0.0.1:${port}`);
     }
 });
 
 Then(/^salt-master should be listening on public port (\d+)$/, async function (port) {
-    const { stdout } = await Helpers.getTarget('server').run(`ss -ntl | grep ${port}`);
+    const { stdout } = await (await Helpers.getTarget('server')).run(`ss -ntl | grep ${port}`);
     if (!stdout.match(/(0.0.0.0|\*|\[::\]):#{port}/)) {
         throw new Error(`Salt-master not listening on public port ${port}`);
     }
@@ -173,7 +174,7 @@ Then(/^the system should have a base channel set$/, async function () {
 
 Then(/^"(.*?)" should not be registered$/, async function (host) {
     const systemName = Helpers.getSystemName(host);
-    const systems = await Helpers.apiTest.system.listSystems();
+    const systems = await apiTest.system.listSystems();
     const systemNames = systems.map((s: any) => s.name);
     if (systemNames.includes(systemName)) {
         throw new Error(`System ${systemName} is registered but should not be`);
@@ -182,7 +183,7 @@ Then(/^"(.*?)" should not be registered$/, async function (host) {
 
 Then(/^"(.*?)" should be registered$/, async function (host) {
     const systemName = Helpers.getSystemName(host);
-    const systems = await Helpers.apiTest.system.listSystems();
+    const systems = await apiTest.system.listSystems();
     const systemNames = systems.map((s: any) => s.name);
     if (!systemNames.includes(systemName)) {
         throw new Error(`System ${systemName} is not registered but should be`);
@@ -191,7 +192,7 @@ Then(/^"(.*?)" should be registered$/, async function (host) {
 
 Then(/^"(.*?)" should have been reformatted$/, async function (host) {
     const systemName = Helpers.getSystemName(host);
-    const { stdout } = await Helpers.getTarget('server').run(`salt ${systemName} file.file_exists /intact`);
+    const { stdout } = await (await Helpers.getTarget('server')).run(`salt ${systemName} file.file_exists /intact`);
     if (!stdout.includes('False')) {
         throw new Error(`Minion ${host} is intact`);
     }
@@ -241,7 +242,7 @@ When(/^I enter command "([^"]*)"$/, async function (cmd) {
 
 When(/^I enter target "([^"]*)"$/, async function (host) {
     const { page } = Helpers.getBrowserInstances();
-    const value = Helpers.getSystemName(host);
+    const value = await Helpers.getSystemName(host);
     await page.locator('input#target').fill(value);
 });
 
@@ -267,7 +268,7 @@ When(/^I manually uninstall the "([^"]*)" formula from the server$/, async funct
 
 When(/^I synchronize all Salt dynamic modules on "([^"]*)"$/, async function (host) {
     const systemName = Helpers.getSystemName(host);
-    await Helpers.getTarget('server').run(`salt ${systemName} saltutil.sync_all`);
+    await (await Helpers.getTarget('server')).run(`salt ${systemName} saltutil.sync_all`);
 });
 
 When(/^I remove "([^"]*)" from salt cache on "([^"]*)"$/, async function (filename, host) {
@@ -348,20 +349,20 @@ Then(/^the language on "([^"]*)" should be "([^"]*)"$/, async function (minion, 
 });
 
 When(/^I refresh the pillar data$/, async function () {
-    await Helpers.getTarget('server').run(`salt '${Helpers.getTarget('sle_minion').fullHostname}' saltutil.refresh_pillar wait=True`);
+    await (await Helpers.getTarget('server')).run(`salt '${(await Helpers.getTarget('sle_minion')).fullHostname}' saltutil.refresh_pillar wait=True`);
 });
 
 When(/^I wait until there is no pillar refresh salt job active$/, async function () {
     await Helpers.repeatUntilTimeout(async () => {
-        const { stdout } = await Helpers.getTarget('server').run('salt-run jobs.active');
+        const { stdout } = await (await Helpers.getTarget('server')).run('salt-run jobs.active');
         return !stdout.includes('saltutil.refresh_pillar');
-    }, 'pillar refresh job still active');
+    }, { timeout: 600, reportResult: true });
 });
 
 When(/^I wait until there is no Salt job calling the module "([^"]*)" on "([^"]*)"$/, async function (saltModule, minion) {
     const target = await Helpers.getTarget(minion);
     const saltCall = Helpers.useSaltBundle ? 'venv-salt-call' : 'salt-call';
-    await target.runUntilFail(`${saltCall} -lquiet saltutil.running | grep ${saltModule}`, { timeout: 600 });
+    await target.runUntilFail(`${saltCall} -lquiet saltutil.running | grep ${saltModule}`, 600 );
 });
 
 Then(/^the pillar data for "([^"]*)" should be "([^"]*)" on "([^"]*)"$/, async function (key, value, minion) {
@@ -398,7 +399,7 @@ Then(/^the pillar data for "([^"]*)" should be empty on "([^"]*)"$/, async funct
     await Helpers.repeatUntilTimeout(async () => {
         const { stdout } = await Helpers.pillarGet(key, minion);
         return stdout.split('\n').length === 1;
-    }, 'Output has more than one line', { reportResult: true });
+    },  { reportResult: true });
 });
 
 Then(/^the pillar data for "([^"]*)" should be empty on the Salt master$/, async function (key) {
@@ -517,7 +518,7 @@ When(/^I install Salt packages from "(.*?)"$/, async function (host) {
     } else if (osFamily?.match(/^centos|rocky/)) {
         await target.run(`test -e /usr/bin/yum && yum -y install ${pkgs}`, { checkErrors: false });
     } else if (osFamily?.match(/^debian/)) {
-        const debPkgs = Helpers.product !== 'Uyuni' ? 'salt-common salt-minion' : pkgs;
+        const debPkgs = globalVars.globalProduct !== 'Uyuni' ? 'salt-common salt-minion' : pkgs;
         await target.run(`test -e /usr/bin/apt && apt -y install ${debPkgs}`, { checkErrors: false });
     }
 });
@@ -573,7 +574,7 @@ When(/^I install a salt pillar top file for "([^"]*)" with target "([^"]*)" on t
 When(/^I install the package download endpoint pillar file on the server$/, async function () {
     const filepath = '/srv/pillar/pkg_endpoint.sls';
     const server = await Helpers.getTarget('server');
-    const uri = new URL(Helpers.globalVars.customDownloadEndpoint);
+    const uri = new URL(globalVars.customDownloadEndpoint);
     const content = `pkg_download_point_protocol: ${uri.protocol.replace(':', '')}\npkg_download_point_host: ${uri.hostname}\npkg_download_point_port: ${uri.port}`;
     await server.run(`echo -e "${content}" > ${filepath}`);
 });
@@ -614,5 +615,5 @@ When(/^I apply highstate on "([^"]*)"$/, async function (host) {
         cmd = 'salt';
     }
     console.log(`Salt command: ${cmd} ${systemName} state.highstate`);
-    await Helpers.getTarget('server').runUntilOk(`${cmd} ${systemName} state.highstate`);
+    await (await Helpers.getTarget('server')).runUntilOk(`${cmd} ${systemName} state.highstate`);
 });

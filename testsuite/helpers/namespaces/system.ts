@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2025 SUSE LLC.
+// Copyright (c) 2025 SUSE LLC.
 // Licensed under the terms of the MIT license.
 
 import { ApiTest } from '../api/api_test';
@@ -18,83 +18,83 @@ export class NamespaceSystem {
     this.search = new NamespaceSystemSearch(test);
   }
 
-  async retrieve_server_id(server: string): Promise<number | null> {
-    const systems = await this.list_systems();
+  async retrieveServerId(server: string): Promise<number | null> {
+    const systems = await this.listSystems();
     if (!Array.isArray(systems)) throw new Error('Cannot list systems');
     const match = systems.find((s: any) => s.name === server);
     if (!match) throw new Error(`Cannot find ${server}`);
     return match.id ?? null;
   }
 
-  list_systems(): Promise<any[]> {
+  listSystems(): Promise<any[]> {
     return this.test.call('system.listSystems', { sessionKey: this.test.currentToken || '' });
   }
 
-  search_by_name(name: string): Promise<any[]> {
+  searchByName(name: string): Promise<any[]> {
     return this.test.call('system.searchByName', { sessionKey: this.test.currentToken || '', regexp: name });
   }
 
-  list_all_installable_packages(serverId: number): Promise<any[]> {
+  listAllInstallablePackages(serverId: number): Promise<any[]> {
     return this.test.call('system.listAllInstallablePackages', { sessionKey: this.test.currentToken || '', sid: serverId });
   }
 
-  list_latest_upgradable_packages(serverId: number): Promise<any[]> {
+  listLatestUpgradablePackages(serverId: number): Promise<any[]> {
     return this.test.call('system.listLatestUpgradablePackages', { sessionKey: this.test.currentToken || '', sid: serverId });
   }
 
-  schedule_apply_highstate(serverId: number, date: string, testMode: boolean): Promise<any> {
+  scheduleApplyHighstate(serverId: number, date: string, testMode: boolean): Promise<any> {
     return this.test.call('system.scheduleApplyHighstate', { sessionKey: this.test.currentToken || '', sid: serverId, earliestOccurrence: date, test: testMode });
   }
 
-  schedule_package_refresh(serverId: number, date: string): Promise<any> {
+  schedulePackageRefresh(serverId: number, date: string): Promise<any> {
     return this.test.call('system.schedulePackageRefresh', { sessionKey: this.test.currentToken || '', sid: serverId, earliestOccurrence: date });
   }
 
-  schedule_reboot(serverId: number, date: string): Promise<any> {
+  scheduleReboot(serverId: number, date: string): Promise<any> {
     return this.test.call('system.scheduleReboot', { sessionKey: this.test.currentToken || '', sid: serverId, earliestOccurrence: date });
   }
 
-  schedule_script_run(serverId: number, uid: string, gid: string, timeout: number, script: string, date: string): Promise<any> {
+  scheduleScriptRun(serverId: number, uid: string, gid: string, timeout: number, script: string, date: string): Promise<any> {
     return this.test.call('system.scheduleScriptRun', { sessionKey: this.test.currentToken || '', sid: serverId, username: uid, groupname: gid, timeout, script, earliestOccurrence: date });
   }
 
-  create_system_record(name: string, ksLabel: string, kOptions: string, comment: string, netDevices: Record<string, any>): Promise<any> {
+  createSystemRecord(name: string, ksLabel: string, kOptions: string, comment: string, netDevices: Record<string, any>): Promise<any> {
     return this.test.call('system.createSystemRecord', { sessionKey: this.test.currentToken || '', systemName: name, ksLabel, kOptions, comment, netDevices });
   }
 
-  create_system_record_with_sid(sid: number, ksLabel: string): Promise<any> {
+  createSystemRecordWithSid(sid: number, ksLabel: string): Promise<any> {
     return this.test.call('system.createSystemRecord', { sessionKey: this.test.currentToken || '', sid, ksLabel });
   }
 
-  create_system_profile(name: string, data: string): Promise<any> {
+  createSystemProfile(name: string, data: string): Promise<any> {
     return this.test.call('system.createSystemProfile', { sessionKey: this.test.currentToken || '', systemName: name, data });
   }
 
-  list_empty_system_profiles(): Promise<any[]> {
+  listEmptySystemProfiles(): Promise<any[]> {
     return this.test.call('system.listEmptySystemProfiles', { sessionKey: this.test.currentToken || '' });
   }
 
-  obtain_reactivation_key(serverId: number): Promise<string> {
+  obtainReactivationKey(serverId: number): Promise<string> {
     return this.test.call('system.obtainReactivationKey', { sessionKey: this.test.currentToken || '', sid: serverId });
   }
 
-  set_variables(serverId: number, variables: any[]): Promise<any> {
+  setVariables(serverId: number, variables: any[]): Promise<any> {
     return this.test.call('system.setVariables', { sessionKey: this.test.currentToken || '', sid: serverId, netboot: true, variables });
   }
 
-  get_system_errata(systemId: number): Promise<any[]> {
+  getSystemErrata(systemId: number): Promise<any[]> {
     return this.test.call('system.getRelevantErrata', { sessionKey: this.test.currentToken || '', sid: systemId });
   }
 
-  get_systems_errata(systemIds: number[]): Promise<any[]> {
+  getSystemsErrata(systemIds: number[]): Promise<any[]> {
     return this.test.call('system.getRelevantErrata', { sessionKey: this.test.currentToken || '', sids: systemIds });
   }
 
-  get_event_history(systemId: number, offset: number, limit: number): Promise<any[]> {
+  getEventHistory(systemId: number, offset: number, limit: number): Promise<any[]> {
     return this.test.call('system.getEventHistory', { sessionKey: this.test.currentToken || '', sid: systemId, offset, limit });
   }
 
-  get_event_details(systemId: number, eventId: number | string): Promise<any> {
+  getEventDetails(systemId: number, eventId: number | string): Promise<any> {
     return this.test.call('system.getEventDetails', { sessionKey: this.test.currentToken || '', sid: systemId, eid: eventId });
   }
 }

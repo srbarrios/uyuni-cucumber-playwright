@@ -1,4 +1,4 @@
-// Copyright (c) 2024-2025 SUSE LLC.
+// Copyright (c) 2025 SUSE LLC.
 // Licensed under the terms of the MIT license.
 
 import { sshCommand, scpUploadCommand, scpDownloadCommand, createSshOptions, SshResult, SshOptions } from '../network/network_utils';
@@ -287,11 +287,11 @@ export class RemoteNode {
    */
   async runUntilOk(cmd: string, timeout: number = TIMEOUTS.default, runsInContainer: boolean = true): Promise<CommandResult> {
     return repeatUntilTimeout(async () => {
-      const result = await this.run(cmd, { 
-        checkErrors: false, 
+      const result = await this.run(cmd, {
+        checkErrors: false,
         runsInContainer
       });
-      
+
       if (result.returnCode === 0) {
         return result;
       }

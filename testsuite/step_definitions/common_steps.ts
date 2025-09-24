@@ -1,21 +1,9 @@
 import { Given, When, Then } from '@cucumber/cucumber';
 import { expect } from 'chai';
-import { 
-    apiTest, 
+import {
     getSystemName, 
     getUptimeFromHost, 
-    getTarget,
-    save_screenshot,
-    attach_file as attach,
-    repeat_until_timeout as repeatUntilTimeout,
-    refresh_page as refreshPage,
-    click_button_and_wait as clickButtonAndWait,
-    click_link_and_wait as clickLinkAndWait,
-    check_text_and_catch_request_timeout_popup as checkTextAndCatchRequestTimeoutPopup,
-    page,
-    mirror,
-    is_containerized_server,
-    validate_checksum_with_file
+    getTarget
 } from '../helpers/core/commonlib';
 import { BASE_CHANNEL_BY_CLIENT } from '../helpers/core/constants';
 import { ENV_CONFIG, GLOBAL_VARS, DEFAULT_TIMEOUT } from '../helpers/core/env';
@@ -263,7 +251,7 @@ Then(
 When(
     /^I check default base channel radio button of this "([^"]*)"$/,
     async function (host: string) {
-        const default_base_channel = BASE_CHANNEL_BY_CLIENT[product][host];
+        const default_base_channel = BASE_CHANNEL_BY_CLIENT[globalVars.globalProduct][host];
         if (!default_base_channel) {
             throw new Error(`${default_base_channel} can't be checked`);
         }

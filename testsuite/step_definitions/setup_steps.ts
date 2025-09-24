@@ -111,7 +111,7 @@ When(/^I view the subscription list for "([^"]*)"$/, async function (user) {
 
 When(/^I (deselect|select) "([^"]*)" as a product$/, async function (action, product) {
     const { page } = getBrowserInstances();
-    const xpath = `//span[contains(text(), '${product}')]/ancestor::div[contains(@class, 'product-details-wrapper')]/div/input[@type='checkbox']`;
+    const xpath = `//span[contains(text(), '${globalVars.globalProduct}')]/ancestor::div[contains(@class, 'product-details-wrapper')]/div/input[@type='checkbox']`;
     const checkbox = page.locator(`xpath=${xpath}`).first();
     if (action === 'select') {
         await checkbox.check();
@@ -161,7 +161,7 @@ When(/^I wait at most (\d+) seconds until the tree item "([^"]+)" contains "([^"
 
 When(/^I open the sub-list of the product "(.*?)"((?: if present)?)$/, async function (product, ifPresent) {
     const { page } = getBrowserInstances();
-    const xpath = `//span[contains(text(), '${product}')]/ancestor::div[contains(@class, 'product-details-wrapper')]/div/i[contains(@class, 'fa-angle-right')]`;
+    const xpath = `//span[contains(text(), '${globalVars.globalProduct}')]/ancestor::div[contains(@class, 'product-details-wrapper')]/div/i[contains(@class, 'fa-angle-right')]`;
     const sublistIcon = page.locator(`xpath=${xpath}`).first();
     if (await sublistIcon.count() > 0) {
         await sublistIcon.click();
@@ -179,14 +179,14 @@ When(/^I select the addon "(.*?)"$/, async function (addon) {
 
 Then(/^I should see that the "(.*?)" product is "(.*?)"$/, async function (product, recommended) {
     const { page } = getBrowserInstances();
-    const xpath = `//span[text()[normalize-space(.) = '${product}'] and ./span/text() = '${recommended}']`;
+    const xpath = `//span[text()[normalize-space(.) = '${globalVars.globalProduct}'] and ./span/text() = '${recommended}']`;
     const element = page.locator(`xpath=${xpath}`);
     await element.waitFor({ state: 'visible' });
 });
 
 Then(/^I should see the "(.*?)" selected$/, async function (product) {
     const { page } = getBrowserInstances();
-    const xpath = `//span[contains(text(), '${product}')]/ancestor::div[contains(@class, 'product-details-wrapper')]`;
+    const xpath = `//span[contains(text(), '${globalVars.globalProduct}')]/ancestor::div[contains(@class, 'product-details-wrapper')]`;
     const checkbox = page.locator(`xpath=${xpath}//input[@type='checkbox']`).first();
     if (!await checkbox.isChecked()) {
         throw new Error(`${await page.locator(`xpath=${xpath}`).getAttribute('data-identifier')} is not checked`);
@@ -196,11 +196,11 @@ Then(/^I should see the "(.*?)" selected$/, async function (product) {
 When(/^I wait until I see "(.*?)" product has been added$/, async function (product) {
     const { page } = getBrowserInstances();
     await Helpers.repeatUntilTimeout(async () => {
-        const xpath = `//span[contains(text(), '${product}')]/ancestor::div[contains(@class, 'product-details-wrapper')]`;
+        const xpath = `//span[contains(text(), '${globalVars.globalProduct}')]/ancestor::div[contains(@class, 'product-details-wrapper')]`;
         const productElement = page.locator(`xpath=${xpath}`).first();
         const productClass = await productElement.getAttribute('class');
         return productClass?.includes('product-installed') === true;
-    }, `Couldn't find the installed product ${product} in the list`);
+    }, `Couldn't find the installed product ${globalVars.globalProduct} in the list`);
 });
 
 When(/^I click the Add Product button$/, async function () {
@@ -227,7 +227,7 @@ Then(/^the SLE15 (SP3|SP4|SP5) product should be added$/, async function (spVers
 
 When(/^I click the channel list of product "(.*?)"$/, async function (product) {
     const { page } = getBrowserInstances();
-    const xpath = `//span[contains(text(), '${product}')]/ancestor::div[contains(@class, 'product-details-wrapper')]/div/button[contains(@class, 'showChannels')]`;
+    const xpath = `//span[contains(text(), '${globalVars.globalProduct}')]/ancestor::div[contains(@class, 'product-details-wrapper')]/div/button[contains(@class, 'showChannels')]`;
     const button = page.locator(`xpath=${xpath}`).first();
     await button.click();
 });

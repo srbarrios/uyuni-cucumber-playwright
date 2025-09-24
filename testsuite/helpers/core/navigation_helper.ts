@@ -38,8 +38,9 @@ export async function toggleCheckboxInPackageList(
       await checkbox.check();
     }
   } catch (error) {
-    console.warn(`[toggle_checkbox] fallback to text match: ${error.message}`);
-    await toggleCheckboxInList(page, action, text);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.warn(`[toggle_checkbox] fallback to text match: ${errorMessage}`);
+      await toggleCheckboxInList(page, action, text);
   }
 }
 
@@ -191,7 +192,6 @@ function getLatestPackage(packages: string[]): string {
       if (rCmp > 0) {
         latest = current;
         latestParsed = curParsed;
-        continue;
       }
     }
   }

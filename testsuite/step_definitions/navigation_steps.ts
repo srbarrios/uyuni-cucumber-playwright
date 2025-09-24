@@ -207,7 +207,7 @@ When(/^I select "([^"]*)" from "([^"]*)"$/, async function (option, field) {
 
 When(/^I select the parent channel for the "([^"]*)" from "([^"]*)"$/, async function (client, from) {
     const clientName = client === 'proxy' && !Helpers.isTransactionalServer ? 'proxy_nontransactional' : client;
-    const channel = Helpers.BASE_CHANNEL_BY_CLIENT[Helpers.product][clientName];
+    const channel = Helpers.BASE_CHANNEL_BY_CLIENT[globalVars.globalProduct][clientName];
     await (this as any).runStep(`I select "${channel}" from "${from}"`);
 });
 
@@ -421,9 +421,9 @@ When(/^I go to the home page$/, async function () {
 Given(/^I access the host the first time$/, async function () {
     const { page } = getBrowserInstances();
     await page.goto(getAppHost());
-    const textLocator = page.getByText(`Create ${Helpers.product} Administrator`);
+    const textLocator = page.getByText(`Create ${globalVars.globalProduct} Administrator`);
     if (!await textLocator.isVisible()) {
-        throw new Error(`Text 'Create ${Helpers.product} Administrator' not found`);
+        throw new Error(`Text 'Create ${globalVars.globalProduct} Administrator' not found`);
     }
 });
 

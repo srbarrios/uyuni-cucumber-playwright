@@ -1,4 +1,4 @@
-// Copyright (c) 2010-2025 SUSE LLC
+// Copyright (c) 2025 SUSE LLC
 // Licensed under the terms of the MIT license.
 
 import * as dotenv from 'dotenv';
@@ -48,6 +48,9 @@ export interface GlobalVariables {
   chromiumDevTools: boolean;
   chromiumDevPort: number;
   useSaltBundle: boolean;
+  globalProduct: string;
+  globalApiTest: any;
+  globalContext: Record<string, any>;
 }
 
 // Initialize environment configuration
@@ -86,7 +89,10 @@ export const GLOBAL_VARS: GlobalVariables = {
   currentPassword: 'admin',
   chromiumDevTools: process.env.REMOTE_DEBUG === 'true',
   chromiumDevPort: 9222 + parseInt(process.env.TEST_ENV_NUMBER || '0', 10),
-  useSaltBundle: process.env.USE_SALT_BUNDLE !== 'false'
+  useSaltBundle: process.env.USE_SALT_BUNDLE !== 'false',
+  globalProduct: 'Uyuni',
+  globalApiTest: undefined,
+  globalContext: {}
 };
 
 // Global variables
