@@ -18,7 +18,7 @@ module.exports ={
             "testsuite/step_definitions/*.ts"
         ],
         requireModule: [
-            "ts-node/register"
+            "ts-node/register/transpile-only"
         ]
     }
 }

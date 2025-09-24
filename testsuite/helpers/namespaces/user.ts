@@ -1,0 +1,36 @@
+// Copyright (c) 2022-2025 SUSE LLC.
+// Licensed under the terms of the MIT license.
+
+import { ApiTest } from '../api/api_test';
+
+export class NamespaceUser {
+  constructor(private test: ApiTest) {}
+
+  list_users(): Promise<any[]> {
+    return this.test.call('user.listUsers', { sessionKey: this.test.currentToken || '' });
+  }
+
+  list_roles(user: string): Promise<any[]> {
+    return this.test.call('user.listRoles', { sessionKey: this.test.currentToken || '', login: user });
+  }
+
+  create(user: string, password: string, first: string, last: string, email: string): Promise<any> {
+    return this.test.call('user.create', { sessionKey: this.test.currentToken || '', login: user, password, firstName: first, lastName: last, email });
+  }
+
+  delete(user: string): Promise<any> {
+    return this.test.call('user.delete', { sessionKey: this.test.currentToken || '', login: user });
+  }
+
+  add_role(user: string, role: string): Promise<any> {
+    return this.test.call('user.addRole', { sessionKey: this.test.currentToken || '', login: user, role });
+  }
+
+  remove_role(user: string, role: string): Promise<any> {
+    return this.test.call('user.removeRole', { sessionKey: this.test.currentToken || '', login: user, role });
+  }
+
+  get_details(user: string): Promise<any> {
+    return this.test.call('user.getDetails', { sessionKey: this.test.currentToken || '', login: user });
+  }
+}

@@ -4,12 +4,20 @@
         "module": "CommonJS",
         "strict": true,
         "esModuleInterop": true,
-        "outDir": "dist"
+        "allowSyntheticDefaultImports": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
+        "moduleResolution": "node",
+        "resolveJsonModule": true,
+        "outDir": "dist",
+        "declaration": true,
+        "types": ["node"]
     },
     "include": [
-        "src/**/*"
+        "testsuite/**/*"
     ],
     "exclude": [
-        "node_modules"
+        "node_modules",
+        "dist"
     ]
 }
