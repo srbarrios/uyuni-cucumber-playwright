@@ -27,7 +27,7 @@ Feature: Prepare server for using Docker
     And I check "role_image_admin"
     And I click on "Update"
 
-@no_auth_registry
+  @no_auth_registry
   Scenario: Create an image store without credentials
     When I follow the left menu "Images > Stores"
     And I follow "Create"

@@ -1,15 +1,15 @@
 // Copyright (c) 2025 SUSE LLC.
 // Licensed under the terms of the MIT license.
 
-import {ApiTest} from '../api/api_test';
+import {ApiTest} from '../api/api_test.js';
 
 /**
  * Channel namespace wrapper
  */
 export class NamespaceChannel {
-    private test: ApiTest;
     public software: NamespaceChannelSoftware;
     public appstreams: NamespaceChannelAppstreams;
+    private test: ApiTest;
 
     constructor(apiTest: ApiTest) {
         this.test = apiTest;
@@ -95,7 +95,7 @@ export class NamespaceChannelSoftware {
         return this.test.call('channel.software.removeRepo', {sessionKey: this.test.currentToken || '', label});
     }
 
-    async parent_channel(child: string, parent: string): Promise<boolean> {
+    async parentChannel(child: string, parent: string): Promise<boolean> {
         const channel = await this.test.call('channel.software.getDetails', {
             sessionKey: this.test.currentToken || '',
             channelLabel: child
@@ -115,7 +115,7 @@ export class NamespaceChannelSoftware {
         const labels = Array.isArray(channels) ? channels.map((c: any) => c.label || c['label']) : [];
         const filtered: string[] = [];
         for (const l of labels) {
-            if (await this.parent_channel(l, parentLabel)) filtered.push(l);
+            if (await this.parentChannel(l, parentLabel)) filtered.push(l);
         }
         return filtered;
     }
@@ -138,7 +138,7 @@ export class NamespaceChannelAppstreams {
     constructor(private test: ApiTest) {
     }
 
-    modular(label: string): Promise<boolean> {
+    isModular(label: string): Promise<boolean> {
         return this.test.call('channel.appstreams.isModular', {
             sessionKey: this.test.currentToken || '',
             channelLabel: label

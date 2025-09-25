@@ -22,7 +22,7 @@ Feature: Very first settings
   Scenario: Cleanup Salt files
     When I run "rm -Rf /srv/salt/*" on "server"
 
-@skip_if_containerized_server
+  @skip_if_containerized_server
   Scenario: Create admin user and first organization
     Given I access the host the first time
     When I go to the home page
@@ -69,7 +69,7 @@ Feature: Very first settings
     Then I should see a "User information updated" text
     And I should see a "testing" text
 
-@server_http_proxy
+  @server_http_proxy
   Scenario: Setup HTTP proxy
     When I follow the left menu "Admin > Setup Wizard > HTTP Proxy"
     Then I should see a "HTTP Proxy Hostname" text
