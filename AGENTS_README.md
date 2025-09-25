@@ -67,7 +67,7 @@ High-level architecture
         - getBrowserConfig() maps env flags (e.g., DEBUG) to Playwright launch options.
         - initializeBrowser()/getBrowserInstances()/closeBrowser() manage a shared Browser/Context/Page.
         - TIMEOUTS/default taken from environment; applied as Playwright default timeouts.
-        - Optional utilities: takeScreenshot(), logScenarioTiming().
+        - Optional utilities: takeScreenshot(), isWebSessionActive(), logScenarioTiming().
 
 - Test helpers (TypeScript)
     - Aggregated exports: testsuite/helpers/index.ts re-exports the helper modules to provide stable import paths.
