@@ -5,8 +5,8 @@
 
 Feature: Organization credentials in the Setup Wizard
 
-@scc_credentials
-@no_mirror
+  @scc_credentials
+  @no_mirror
   Scenario: Enter valid SCC credentials
     Given I am authorized for the "Admin" section
     When I follow the left menu "Admin > Setup Wizard > Organization Credentials"

@@ -22,7 +22,7 @@ Feature: Very first settings
   Scenario: Cleanup Salt files
     When I run "rm -Rf /srv/salt/*" on "server"
 
-@skip_if_containerized_server
+  @skip_if_containerized_server
   Scenario: Create admin user and first organization
     Given I access the host the first time
     When I go to the home page
@@ -46,13 +46,13 @@ Feature: Very first settings
   Scenario: Create testing username
     When I follow the left menu "Users > User List > Active"
     And I follow "Create User"
-    And I enter "testing" as "login"
-    And I enter "testing" as "desiredpassword"
-    And I enter "testing" as "desiredpasswordConfirm"
+    And I fill the field with ID "loginname" with "testing"
+    And I fill the field with name "desiredpassword" with "testing"
+    And I fill the field with name "desiredpasswordConfirm" with "testing"
     And I select "Mr." from "prefix"
-    And I enter "Test" as "firstNames"
-    And I enter "User" as "lastName"
-    And I enter "galaxy-noise@localhost" as "email"
+    And I fill the field with ID "firstNames" with "Test"
+    And I fill the field with name "lastName" with "User"
+    And I fill the field with ID "email" with "galaxy-noise@localhost"
     And I click on "Create Login"
     Then I should see a "Account testing created, login information sent to galaxy-noise@localhost" text
     And I should see a "testing" link
@@ -69,12 +69,13 @@ Feature: Very first settings
     Then I should see a "User information updated" text
     And I should see a "testing" text
 
-@server_http_proxy
+  @server_http_proxy
   Scenario: Setup HTTP proxy
     When I follow the left menu "Admin > Setup Wizard > HTTP Proxy"
     Then I should see a "HTTP Proxy Hostname" text
     And I should see a "HTTP Proxy Username" text
     And I should see a "HTTP Proxy Password" text
+    When I click on "Edit"
     When I enter the address of the HTTP proxy as "HTTP Proxy Hostname"
     And I enter "suma3" as "HTTP Proxy Username"
     And I enter "P4$$w/ord With%and&" as "HTTP Proxy Password"

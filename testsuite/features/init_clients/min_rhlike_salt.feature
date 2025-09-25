@@ -25,14 +25,14 @@ Feature: Bootstrap a Red Hat-like minion and do some basic operations on it
     And I wait until I see the name of "rhlike_minion", refreshing the page
     And I wait until onboarding is completed for "rhlike_minion"
 
-@proxy
+  @proxy
   Scenario: Check connection from Red Hat-like minion to proxy
     Given I am on the Systems overview page of this "rhlike_minion"
     When I follow "Details" in the content area
     And I follow "Connection" in the content area
     Then I should see "proxy" short hostname
 
-@proxy
+  @proxy
   Scenario: Check registration on proxy of Red Hat-like minion
     Given I am on the Systems overview page of this "proxy"
     When I follow "Details" in the content area

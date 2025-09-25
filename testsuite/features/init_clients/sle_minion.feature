@@ -33,23 +33,23 @@ Feature: Bootstrap a Salt minion via the GUI
     Then the Salt master can reach "sle_minion"
     And I report the onboarding duration for "sle_minion"
 
-@susemanager
+  @susemanager
   Scenario: Use correct kernel image on the SLES minion
     When I remove package "kernel-default-base" from this "sle_minion"
     And I install package "kernel-default" on this "sle_minion"
 
-@susemanager
+  @susemanager
   Scenario: Reboot the SLES minion to use the new kernel
     When I reboot the "sle_minion" host through SSH, waiting until it comes back
 
-@proxy
+  @proxy
   Scenario: Check connection from minion to proxy
     Given I am on the Systems overview page of this "sle_minion"
     When I follow "Details" in the content area
     And I follow "Connection" in the content area
     Then I should see "proxy" short hostname
 
-@proxy
+  @proxy
   Scenario: Check registration on proxy of minion
     Given I am on the Systems overview page of this "proxy"
     When I follow "Details" in the content area

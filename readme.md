@@ -1,223 +1,105 @@
-## New Uyuni Test Framework
+# Uyuni Test Framework with Playwright and CucumberJS
 
-This PoC aims to replace our current stack for web interactions, migrating from Capybara+Selenium to Playwright. It also implies a change of programming language from Ruby to Typescript, and so our test runner will be CucumberJS.
-
-### Project Setup for Playwright with Cucumber
-
-This guide outlines a baseline project structure for integrating **Playwright** and **Cucumber**. It covers the initial setup, provides steps for creating and running tests, and offers guidance for a more maintainable project.
-
------
+This project serves as a new test framework for Uyuni, migrating web interaction tests from Capybara+Selenium (Ruby) to Playwright (TypeScript) with CucumberJS as the test runner.
 
 ### Prerequisites
 
-  * **Node.js**: Ensure Node.js is installed on your system.
+*   **Node.js**: Ensure Node.js is installed on your system.
 
------
+### Project Setup
 
-### Project Initialization
-
-Follow these steps to set up the project from scratch:
-
-1.  **Create a Project Directory**: Make a new folder for your project.
-
-2.  **Initialize Node.js**: In your terminal, navigate to the new directory and run `npm init -y` to create a `package.json` file.
-
-3.  **Install Dependencies**: Install the necessary libraries using npm:
-
-      * `npm install playwright@latest`
-      * `npm install @cucumber/cucumber --save-dev`
-      * `npm install ts-node --save-dev`
-
-4.  **Configure Project Structure**:
-
-      * Delete the default files and folders created by Playwright, such as `playwright.config.ts`, `tests`, and `tests-examples`.
-      * Create a dedicated structure for your feature files and step definitions:
-          * `testsuite/features`
-          * `testsuite/step_definitions`
-
-5.  **Create Your First Feature File**:
-
-      * Inside the `testsuite/features` folder, create a file named `login.feature`.
-      * Add the following Gherkin syntax to define a test scenario:
-        ```gherkin
-        Feature: User Login
-          As a registered user
-          I want to log in to my account
-          So that I can access my dashboard
-
-        Scenario: Successful login with valid credentials
-          Given I am on the login page
-        ```
-
-6.  **Configure TypeScript**: Create a `tsconfig.json` file in your project's root directory with the following configuration:
-
-    ```json
-    {
-      "compilerOptions": {
-        "target": "ESNext",
-        "module": "CommonJS",
-        "strict": true,
-        "esModuleInterop": true,
-        "outDir": "dist"
-      },
-      "include": ["testsuite/**/*"],
-      "exclude": ["node_modules"]
-    }
+1.  **Install Dependencies**:
+    Install the necessary libraries using npm:
+    ```bash
+    npm install
     ```
 
-7.  **Configure Cucumber**: Create a `cucumber.json` file in the project root to set up Cucumber's behavior.
+2.  **Configure Environment Variables**:
+    Before running any tests, you **must** edit the `.env` file to configure your environment variables.
 
-    ```json
-    {
-      "default": {
-        "paths": ["testsuite/features"],
-        "dry-run": false,
-        "formatOptions": {
-          "colorsEnabled": true,
-          "snippetInterface": "async-await"
-        },
-        "require": ["testsuite/step_definitions/*.ts"],
-        "requireModule": ["ts-node/register"]
-      }
-    }
-    ```
+### Project Structure
 
-8.  **Define a Step Definition**:
-
-      * Create a file named `login.ts` inside `testsuite/step_definitions`.
-      * Import the necessary `Given` function from `@cucumber/cucumber` and define the step from your feature file.
-
-    <!-- end list -->
-
-    ```typescript
-    import { Given } from "@cucumber/cucumber";
-
-    Given('A web browser is at the Oubiti login page', async function () {
-      console.log('pass')
-    });
-    ```
-
-9.  **Add a Run Script**: In your `package.json`, add a script to easily run your tests.
-
-    ```json
-    "scripts": {
-      "cucumber": "cucumber-js"
-    }
-    ```
-
------
+*   `testsuite/features/`: Contains the Gherkin feature files, which define the high-level test scenarios.
+*   `testsuite/step_definitions/`: Implements the actual test steps in TypeScript, linking them to the feature files.
+*   `testsuite/helpers/`: Provides various utility functions and modules used across the tests, including API clients, configuration, and common actions.
+*   `config/`: Holds configuration files, such as `cucumber.cjs` for Cucumber settings.
 
 ### Running Your Tests
 
-To execute the tests, use the following command in your terminal:
+To execute the tests, use the following commands in your terminal:
 
-  * `npm run cucumber`
+*   `npm run cucumber:core`
+*   `npm run cucumber:init_clients`
+*   `npm run cucumber:proxy`
 
-This command will run Cucumber, and you should see the `console.log` output:
-`Test`
+These scripts are defined in the `scripts` section of `package.json` and provide a convenient way to execute tests for specific profiles:
 
------
+*   `npm run cucumber:core`: Runs tests defined in the `core` profile.
+*   `npm run cucumber:reposync`: Runs tests defined in the `reposync` profile.
+*   `npm run cucumber:init_clients`: Runs tests defined in the `init_clients` profile.
+*   `npm run cucumber:proxy`: Runs tests defined in the `proxy` profile.
 
-### Advanced Configuration
+Each of these commands internally calls `npm run cucumber` with the `--profile` flag, specifying which Cucumber profile to use.
 
-To make the project more robust, consider these improvements:
+### Running a Subset of Tests with Profiles
 
-#### Centralize Cucumber Configuration
+The `config/cucumber.cjs` file defines various profiles that allow you to run specific subsets of feature files. Each profile specifies a `paths` array, which lists the feature files to be executed. The order in which these feature files are listed in the `paths` array determines their execution order.
 
-  * Move the `cucumber.json` file to a `config` folder (e.g., `config/cucumber.js`).
-  * Convert the JSON file to a JavaScript module for more flexibility.
+For example, to run the `core` features, you would use:
 
-<!-- end list -->
-
-```javascript
-module.exports = {
-  default: {
-    paths: ["testsuite/features"],
-    dryRun: false,
-    formatOptions: {
-      colorsEnabled: true,
-      snippetInterface: "async-await"
-    },
-    require: ["testsuite/step_definitions/*.ts"],
-    requireModule: ["ts-node/register"]
-  }
-};
+```bash
+npm run cucumber:core
 ```
 
-  * Update your `package.json` script to point to the new configuration file:
-    `"cucumber": "cucumber-js --config config/cucumber.js"`
+This command executes the feature files defined in the `core` profile within `config/cucumber.cjs` in the order they are listed.
 
-#### Create a Full-Fledged Test Scenario
+**To customize the test execution order or run a different subset of tests:**
 
-Let's expand the login feature to perform a real action.
+1.  **Modify an existing profile**: Edit the `paths` array within a profile in `config/cucumber.cjs` to change the included feature files or their execution order.
+2.  **Create a new profile**: Add a new entry to `module.exports` in `config/cucumber.cjs` with a unique name and a `paths` array specifying your desired feature files and their order.
 
-  * **Update `login.feature`**:
+    Example of a new profile:
 
-    ```gherkin
-    Feature: User Login
-      As a registered user,
-      I want to log in to my account,
-      So that I can access my dashboard.
-
-      Scenario: Successful login with valid credentials
-        Given I am on the login page
-        When I enter valid credentials
-        And I click the login button
-        Then I should be redirected to a login success page
+    ```javascript
+    // A profile for specific sanity checks
+    sanity_checks: {
+        paths: [
+            "testsuite/features/sanity/a.feature",
+            "testsuite/features/sanity/b.feature",
+        ]
+        // ... other configurations (can inherit from default or other profiles)
+    }
     ```
 
-  * **Update `login.ts`**:
+    After creating a new profile, you would need to add a corresponding script to `package.json` to easily run it:
 
-    ```typescript
-    import { Given, When, Then } from "@cucumber/cucumber";
-    import { Page, Browser, chromium, expect } from "@playwright/test";
+```json
+"scripts": {
+    "cucumber:sanity_checks": "cucumber-js --profile sanity_checks"
+}
+```
 
-    let browser: Browser;
-    let page: Page;
+    Then you can run it with:
 
-    Given('I am on the login page', async function () {
-      // Enable headless if you dont want to see the browser while running the tests.
-      browser = await chromium.launch({ headless: false });
-      page = await browser.newPage();
-      await page.goto('https://www.oubiti.com/');
-    });
-
-    When('I enter valid credentials', async function () {
-      await page.get_by_label("Username").fill("testuser");
-      await page.get_by_label("Password").fill("testpass");
-      await page.get_by_role("button", name="Login").click();
-    });
-
-    When('I click the login button', async function () {
-      await page.get_by_role("button", name="Login").click();
-    });
-
-    Then('I should be redirected to a login success page', async function () {
-      // Use modern Playwright expect assertions for auto-waiting and clarity
-      expect(page).to_have_url("https://oubiti.com/login-success.html");
-      expect(page.get_by_text( "You have successfully logged in.")).to_be_visible();
-      await browser.close();
-    });
+    ```bash
+    npm run cucumber:sanity_checks
     ```
 
-  * Run the tests again to see the scenario pass. The output will show the test summary.
+This approach provides flexibility to define various test stages, which can be integrated into CI/CD pipelines like Jenkins stages.
 
 #### Generate Reports
 
-To add reporting, update the `cucumber.js` configuration file with the `format` option.
+To add reporting, update the `cucumber.cjs` configuration file with the `format` option.
 
 ```javascript
 module.exports = {
-  default: {
-    paths: ["testsuite/features"],
-    // ... other configurations
-    format: [
-      "progress-bar",
-      "summary",
-      "json:reports/cucumber-report.json",
-      "html:reports/cucumber-report.html"
-    ]
-  }
+    default: {
+        // ... other configurations
+        format: [
+            "json:reports/cucumber-report.json",
+            "html:reports/cucumber-report.html"
+        ]
+    }
 };
 ```
 
