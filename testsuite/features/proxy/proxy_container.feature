@@ -29,8 +29,8 @@ Feature: Setup containerized proxy
     And I click on "Bootstrap"
     And I wait until I see "Bootstrap process initiated." text
 
-@skip_if_cloud
-@transactional_server
+  @skip_if_cloud
+  @transactional_server
   Scenario: Reboot the proxy host
     When I reboot the "proxy" host through SSH, waiting until it comes back
 

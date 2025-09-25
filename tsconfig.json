@@ -1,23 +1,31 @@
 {
-    "compilerOptions": {
-        "target": "ESNext",
-        "module": "CommonJS",
-        "strict": true,
-        "esModuleInterop": true,
-        "allowSyntheticDefaultImports": true,
-        "skipLibCheck": true,
-        "forceConsistentCasingInFileNames": true,
-        "moduleResolution": "node",
-        "resolveJsonModule": true,
-        "outDir": "dist",
-        "declaration": true,
-        "types": ["node"]
-    },
-    "include": [
-        "testsuite/**/*"
-    ],
-    "exclude": [
-        "node_modules",
-        "dist"
+  "compilerOptions": {
+    "incremental": true,
+    "skipLibCheck": true,
+    "target": "es2020",
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "strict": true,
+    "noImplicitOverride": true,
+    "module": "preserve",
+    "forceConsistentCasingInFileNames": true,
+    "sourceMap": true,
+    "declarationMap": true,
+    "outDir": "dist",
+    "lib": ["es2024"],
+    "declaration": true,
+    "types": [
+      "node"
     ]
+  },
+  "include": [
+    "testsuite/step_definitions/*.ts",
+    "testsuite/helpers/**/*.ts",
+    "testsuite/types/*.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }

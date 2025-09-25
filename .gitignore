@@ -6,3 +6,4 @@ node_modules/
 /reports/
 .idea/
 .DS_Store
+dist/

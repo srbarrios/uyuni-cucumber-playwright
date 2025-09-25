@@ -1,42 +1,25 @@
-import { Given, When, Then } from '@cucumber/cucumber';
-// Central helpers (browser, page, utilities)
-import * as Helpers from '../helpers';
-import { getBrowserInstances } from '../helpers/core/env';
-import {envConfig, getProductVersionFull, globalVars, isBuildValidation} from "../helpers";
+import {Then, When, World} from '@cucumber/cucumber';
 
-When(/^I (enable|disable) repositories (before|after) installing branch server$/, async function (action, _when) {
-    const proxy = await Helpers.getTarget('proxy');
-    const osVersion = proxy.osVersion;
-    const osFamily = proxy.osFamily;
-    let repos = 'os_pool_repo os_update_repo ';
-    if (!isBuildValidation || !envConfig.isContainerizedServer || !getProductVersionFull(proxy).includes('-released')) {
-        repos += 'testing_overlay_devel_repo ';
-    }
-    if (osFamily?.match(/^sles/) && osVersion?.match(/^15/)) {
-        repos += 'proxy_module_pool_repo proxy_module_update_repo ' +
-            'proxy_product_pool_repo proxy_product_update_repo ' +
-            'module_server_applications_pool_repo module_server_applications_update_repo ';
-        if (!isBuildValidation || !getProductVersionFull(proxy).includes('-released')) {
-            repos += 'proxy_devel_releasenotes_repo proxy_devel_repo ';
-        }
-    } else if (osFamily?.match(/^opensuse/)) {
-        if (!envConfig.isContainerizedServer) {
-            repos += 'proxy_pool_repo ';
-        }
-    }
-    await proxy.run(`zypper mr --${action} ${repos}`, { verbose: true });
-});
+import {
+    envConfig,
+    getProductVersionFull,
+    getTarget,
+    globalVars,
+    isBuildValidation,
+    PRIVATE_ADDRESSES
+} from '../helpers/index.js';
+import { manageBranchServerRepositories } from '../helpers/embedded_steps/retail_helper.js';
 
 When(/^I start tftp on the proxy$/, async function () {
-    const proxy = await Helpers.getTarget('proxy');
-    if (globalVars.globalProduct === 'Uyuni') {
-        await (this as any).runStep('I enable repositories before installing branch server');
+    const proxy = await getTarget('proxy');
+    if (globalVars.product === 'Uyuni') {
+        await manageBranchServerRepositories('enable', 'before');
         const cmd = 'zypper --non-interactive --ignore-unknown remove atftp && ' +
             'zypper --non-interactive install tftp && ' +
             'systemctl enable tftp.service && ' +
             'systemctl start tftp.service';
         await proxy.run(cmd);
-        await (this as any).runStep('I disable repositories after installing branch server');
+        await manageBranchServerRepositories('disable', 'after');
     } else {
         const cmd = 'systemctl enable tftp.service && systemctl start tftp.service';
         await proxy.run(cmd);
@@ -49,9 +32,9 @@ When(/^I set up the private network on the terminals$/, async function () {
 });
 
 Then(/^"([^"]*)" should communicate with the server using public interface$/, async function (host) {
-    const node = await Helpers.getTarget(host);
-    const server = await Helpers.getTarget('server');
-    const { returnCode: pingCode } = await node.run(`ping -n -c 1 -I ${node.publicInterface} ${server.publicIp}`, { checkErrors: false });
+    const node = await getTarget(host);
+    const server = await getTarget('server');
+    const {returnCode: pingCode} = await node.run(`ping -n -c 1 -I ${node.publicInterface} ${server.publicIp}`, {checkErrors: false});
     if (pingCode !== 0) {
         await new Promise(resolve => setTimeout(resolve, 2000));
         await node.run(`ping -n -c 1 -I ${node.publicInterface} ${server.publicIp}`);
@@ -60,7 +43,7 @@ Then(/^"([^"]*)" should communicate with the server using public interface$/, as
 });
 
 When(/^I rename the proxy for Retail$/, async function () {
-    const node = await Helpers.getTarget('proxy');
+    const node = await getTarget('proxy');
     await node.run('sed -i "s/^proxy_fqdn:.*$/proxy_fqdn: proxy.example.org/" /etc/uyuni/proxy/config.yaml');
 });
 
@@ -70,7 +53,7 @@ When(/^I connect the second interface of the proxy to the private network$/, asy
 });
 
 When(/^I restart all proxy containers$/, async function () {
-    const node = await Helpers.getTarget('proxy');
+    const node = await getTarget('proxy');
     await node.run('systemctl restart uyuni-proxy-httpd.service');
     await node.run('systemctl restart uyuni-proxy-salt-broker.service');
     await node.run('systemctl restart uyuni-proxy-squid.service');
@@ -79,23 +62,23 @@ When(/^I restart all proxy containers$/, async function () {
 });
 
 Then(/^the "([^"]*)" host should be present on private network$/, async function (host) {
-    const node = await Helpers.getTarget('proxy');
-    const { returnCode, stdout } = await node.run(`ping -n -c 1 -I ${node.privateInterface} ${Helpers.privateAddresses[host]}`);
+    const node = await getTarget('proxy');
+    const {returnCode, stdout} = await node.run(`ping -n -c 1 -I ${node.privateInterface} ${PRIVATE_ADDRESSES[host]}`);
     if (returnCode !== 0) {
         throw new Error(`Terminal ${host} does not answer on eth1: ${stdout}`);
     }
 });
 
 Then(/^name resolution should work on private network$/, async function () {
-    const node = await Helpers.getTarget('proxy');
+    const node = await getTarget('proxy');
     for (const dest of ['proxy.example.org', 'dns.google.com']) {
-        const { returnCode, stdout } = await node.run(`host ${dest}`, { checkErrors: false });
+        const {returnCode, stdout} = await node.run(`host ${dest}`, {checkErrors: false});
         if (returnCode !== 0) {
             throw new Error(`Direct name resolution of ${dest} on proxy doesn't work: ${stdout}`);
         }
     }
     for (const dest of [node.privateIp, '8.8.8.8']) {
-        const { returnCode, stdout } = await node.run(`host ${dest}`, { checkErrors: false });
+        const {returnCode, stdout} = await node.run(`host ${dest}`, {checkErrors: false});
         if (returnCode !== 0) {
             throw new Error(`Reverse name resolution of ${dest} on proxy doesn't work: ${stdout}`);
         }
@@ -108,9 +91,9 @@ When(/^I reboot the (Retail|Cobbler) terminal "([^"]*)"$/, async function (conte
 });
 
 When(/^I create the bootstrap script for "([^"]+)" hostname and "([^"]*)" activation key on "([^"]*)"$/, async function (hostname, key, host) {
-    const node = await Helpers.getTarget(host);
+    const node = await getTarget(host);
     await node.run(`mgr-bootstrap --hostname=${hostname} --activation-keys=${key}`);
-    const { stdout } = await node.run('cat /srv/www/htdocs/pub/bootstrap/bootstrap.sh');
+    const {stdout} = await node.run('cat /srv/www/htdocs/pub/bootstrap/bootstrap.sh');
     if (!stdout.includes(key)) {
         throw new Error(`Key: ${key} not included`);
     }
@@ -125,7 +108,7 @@ When(/^I bootstrap pxeboot minion via bootstrap script on the proxy$/, async fun
 });
 
 When(/^I accept key of pxeboot minion in the Salt master$/, async function () {
-    await (await Helpers.getTarget('server')).run('salt-key -y --accept=pxeboot.example.org');
+    await (await getTarget('server')).run('salt-key -y --accept=pxeboot.example.org');
 });
 
 When(/^I install the GPG key of the test packages repository on the PXE boot minion$/, async function () {
@@ -144,7 +127,7 @@ When(/^I prepare the retail configuration file on server$/, async function () {
 });
 
 When(/^I import the retail configuration using retail_yaml command$/, async function () {
-    await (await Helpers.getTarget('server')).run('retail_yaml --api-user admin --api-pass admin --from-yaml /tmp/massive-import-terminals.yml');
+    await (await getTarget('server')).run('retail_yaml --api-user admin --api-pass admin --from-yaml /tmp/massive-import-terminals.yml');
 });
 
 When(/^I follow "([^"]*)" terminal$/, async function (host) {

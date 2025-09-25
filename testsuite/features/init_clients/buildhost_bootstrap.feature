@@ -31,14 +31,14 @@ Feature: Bootstrap a build host via the GUI
     And I wait at most 500 seconds until onboarding is completed for "build_host"
     Then the Salt master can reach "build_host"
 
-@proxy
+  @proxy
   Scenario: Check connection from build host to proxy
     Given I am on the Systems overview page of this "build_host"
     When I follow "Details" in the content area
     And I follow "Connection" in the content area
     Then I should see "proxy" short hostname
 
-@proxy
+  @proxy
   Scenario: Check registration on build host of minion
     Given I am on the Systems overview page of this "proxy"
     When I follow "Details" in the content area

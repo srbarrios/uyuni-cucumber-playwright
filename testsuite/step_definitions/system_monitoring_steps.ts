@@ -1,22 +1,21 @@
-import { Given, When, Then } from '@cucumber/cucumber';
-// Central helpers (browser, page, utilities)
-import * as Monitoring from '../helpers/system/system_monitoring';
-import {QualityIntelligence} from "../helpers";
+import {When, World} from '@cucumber/cucumber';
+import * as Monitoring from '../helpers/system/system_monitoring.js';
+import {envConfig, globalVars} from "../helpers/index.js";
 
 When(/^I report the bootstrap duration for "([^"]*)"$/, async function (host) {
-    if (!Helpers.qualityIntelligenceMode) return;
+    if (!envConfig.qualityIntelligenceMode) return;
     const duration = await Monitoring.getLastBootstrapDuration(host);
-    await QualityIntelligence.pushBootstrapDuration(host, duration);
+    await globalVars.qualityIntelligence!.pushBootstrapDuration(host, duration);
 });
 
 When(/^I report the onboarding duration for "([^"]*)"$/, async function (host) {
-    if (!Helpers.qualityIntelligenceMode) return;
+    if (!envConfig.qualityIntelligenceMode) return;
     const duration = await Monitoring.getLastOnboardingDuration(host);
-    await QualityIntelligence.pushOnboardingDuration(host, duration);
+    await globalVars.qualityIntelligence!.pushOnboardingDuration(host, duration);
 });
 
 When(/^I report the synchronization duration for "([^"]*)"$/, async function (product) {
-    if (!Helpers.qualityIntelligenceMode) return;
+    if (!envConfig.qualityIntelligenceMode) return;
     const duration = await Monitoring.getProductSynchronizationDuration(product);
-    await QualityIntelligence.pushSynchronizationDuration(product, duration);
+    await globalVars.qualityIntelligence!.pushSynchronizationDuration(product, duration);
 });
