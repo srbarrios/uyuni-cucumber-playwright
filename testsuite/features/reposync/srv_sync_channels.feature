@@ -25,14 +25,14 @@ Feature: List available channels and enable them
     When I execute mgr-sync "list products"
     Then I should get "[ ] SUSE Linux Enterprise Server 15 SP4 x86_64"
 
-@proxy
-@susemanager
+  @proxy
+  @susemanager
   Scenario: List Proxy product
     When I execute mgr-sync "list products"
     Then I should get "[ ] SUSE Manager Proxy 4.3 x86_64"
 
-@proxy
-@susemanager
+  @proxy
+  @susemanager
   Scenario: List all products for SUSE Multi-Linux Manager
     When I execute mgr-sync "list products --expand"
     Then I should get "[ ] SUSE Linux Enterprise Server 15 SP4 x86_64"

@@ -7,7 +7,7 @@ import {
     getSystemName,
     getTarget,
     refreshPage,
-    repeatUntilTimeout, TIMEOUTS
+    repeatUntilTimeout
 } from '../index.js';
 import {expect} from '@playwright/test';
 
@@ -30,12 +30,26 @@ export async function waitUntilDoNotSeeTextRefreshingPage(text: string) {
 }
 
 export async function selectOptionFromField(option: string, field: string) {
-    try {
-        await getCurrentPage().locator(`select#${field}`).selectOption(option);
-    } catch (e) {
-        await getCurrentPage().locator(`div[data-testid="${field}-child__control"]`).click();
-        await getCurrentPage().locator(`div[data-testid="${field}-child__option"]`).filter({hasText: option}).first().click();
+    const locators = [
+        getCurrentPage().getByRole('combobox', { name: field}),
+        getCurrentPage().locator(`select#${field}`),
+        getCurrentPage().getByLabel(field),
+    ];
+
+    let timeout = 1000;
+    for (const locator of locators) {
+        try {
+            await locator.waitFor({state: "visible", timeout: timeout});
+            await locator.selectOption(option);
+            console.debug(`Input field "${field}" located through: ${locator}`)
+            return; // stop at first success
+        } catch {
+            // ignore error and try next locator without timeout.
+            timeout = 0;
+        }
     }
+
+    throw new Error(`Could not find a visible input field for "${field}"`);
 }
 
 export async function waitUntilDoNotSeeLoadingTexts() {
@@ -60,14 +74,17 @@ export async function authorizeUser(user: string, password_str: string) {
     addContext('password', password_str);
 
     try {
-        await getCurrentPage().goto(getAppHost(), { waitUntil: "domcontentloaded"});
+        await getCurrentPage().goto(getAppHost(), {waitUntil: "domcontentloaded"});
     } catch (e: Error | any) {
         console.log(`The browser session could not be cleaned because there is no browser available: ${e.message}`);
     }
 
-    const logoutButton = getCurrentPage().getByRole('button', {name: 'Sign Out'});
-    if (await logoutButton.isVisible()) {
-        await logoutButton.click();
+    try {
+        const logoutButton = getCurrentPage().getByRole('button', {name: 'Sign Out'});
+        if (await logoutButton.isVisible()) {
+            await logoutButton.click();
+        }
+    } catch (e: Error | any) {
     }
 
     await getCurrentPage().locator('#username-field').fill(user);

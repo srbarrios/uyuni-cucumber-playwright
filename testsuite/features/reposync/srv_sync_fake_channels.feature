@@ -18,7 +18,7 @@ Feature: Synchronize fake channels
     Given I am authorized for the "Admin" section
     And I enable source package syncing
 
-@sle_minion
+  @sle_minion
   Scenario: Synchronize Fake-RPM-SUSE-Channel channel
     Given I am authorized for the "Admin" section
     When I follow the left menu "Software > Manage > Channels"
@@ -30,12 +30,12 @@ Feature: Synchronize fake channels
     Then I should see a "Repository sync scheduled for Fake-RPM-SUSE-Channel." text
     And I wait until the channel "fake-rpm-suse-channel" has been synced
 
-@sle_minion
+  @sle_minion
   Scenario: Verify state of Fake-RPM-SUSE-Channel channel
     Then "orion-dummy-1.1-1.1.x86_64.rpm" package should have been stored
     And solver file for "fake-rpm-suse-channel" should reference "orion-dummy-1.1-1.1.x86_64.rpm"
 
-@skip_if_github_validation
+  @skip_if_github_validation
   Scenario: Synchronize Fake-Child-Channel-i586 channel
     Given I am authorized for the "Admin" section
     When I follow the left menu "Software > Manage > Channels"
@@ -58,7 +58,7 @@ Feature: Synchronize fake channels
     Then I should see a "Repository sync scheduled for Test-Child-Channel-x86_64." text
     And I wait until the channel "test-child-channel-x86_64" has been synced
 
-@sle_minion
+  @sle_minion
   Scenario: Synchronize Fake-Child-Channel-SUSE-like channel
     Given I am authorized for the "Admin" section
     When I follow the left menu "Software > Manage > Channels"
@@ -70,7 +70,7 @@ Feature: Synchronize fake channels
     Then I should see a "Repository sync scheduled for Fake-Child-Channel-SUSE-like." text
     And I wait until the channel "fake-child-channel-suse-like" has been synced
 
-@deblike_minion
+  @deblike_minion
   Scenario: Synchronize Fake-Base-Channel-Debian-like channel
     Given I am authorized for the "Admin" section
     When I follow the left menu "Software > Manage > Channels"
@@ -82,7 +82,7 @@ Feature: Synchronize fake channels
     Then I should see a "Repository sync scheduled for Fake-Base-Channel-Debian-like." text
     And I wait until the channel "fake-base-channel-debian-like" has been synced
 
-@rhlike_minion
+  @rhlike_minion
   Scenario: Synchronize Fake-Base-Channel-RH-like channel
     Given I am authorized for the "Admin" section
     When I follow the left menu "Software > Manage > Channels"
@@ -94,7 +94,7 @@ Feature: Synchronize fake channels
     Then I should see a "Repository sync scheduled for Fake-Base-Channel-RH-like." text
     And I wait until the channel "fake-base-channel-rh-like" has been synced
 
-@rhlike_minion
+  @rhlike_minion
   Scenario: Synchronize Fake-Base-Channel-AppStream channel
     Given I am authorized for the "Admin" section
     When I follow the left menu "Software > Manage > Channels"
@@ -106,9 +106,9 @@ Feature: Synchronize fake channels
     Then I should see a "Repository sync scheduled for Fake-Base-Channel-AppStream." text
     And I wait until the channel "fake-base-channel-appstream" has been synced
 
-@pxeboot_minion
-@uyuni
-@scc_credentials
+  @pxeboot_minion
+  @uyuni
+  @scc_credentials
   Scenario: Synchronize the repository in the terminal channel
     Given I am authorized for the "Admin" section
     And I follow the left menu "Software > Manage > Channels"
@@ -120,9 +120,9 @@ Feature: Synchronize fake channels
     Then I should see a "Repository sync scheduled for Fake-RPM-Terminal-Channel." text
     And I wait until the channel "fake-rpm-terminal-channel" has been synced
 
-@pxeboot_minion
-@uyuni
-@scc_credentials
+  @pxeboot_minion
+  @uyuni
+  @scc_credentials
   Scenario: Verify state of Fake-RPM-Terminal-Channel custom channel
     Then "orion-dummy-1.1-1.1.x86_64.rpm" package should have been stored
     And solver file for "fake-rpm-terminal-channel" should reference "orion-dummy-1.1-1.1.x86_64.rpm"

@@ -1,30 +1,48 @@
 import {Given, Then, When} from '@cucumber/cucumber';
 import {
     addContext,
+    BASE_CHANNEL_BY_CLIENT,
+    CHANNEL_LABEL_TO_SYNC_BY_BASE_CHANNEL,
     CHANNEL_TO_SYNC_BY_OS_PRODUCT_VERSION,
     channelSyncCompleted,
+    checkRestart,
+    checkShutdown,
     ENV_VAR_BY_HOST,
     envConfig,
     escapeRegex,
+    fileDelete,
     fileExists,
+    fileExtract,
+    fileInject,
     filterChannels,
+    folderDelete,
+    folderExists,
     generateCertificate,
+    generateTempFile,
     getAllNodes,
     getApiTest,
     getContext,
     getSystemName,
     getTarget,
+    getVariableFromConfFile,
     globalVars,
     isDebHost,
     isRhHost,
     isSuseHost,
     isTransactionalSystem,
+    PARENT_CHANNEL_LABEL_TO_SYNC_BY_BASE_CHANNEL,
+    RemoteNode,
     repeatUntilTimeout,
+    reportdbServerQuery,
+    resetApiTest,
     runningK3s,
     TIMEOUT_BY_CHANNEL_NAME,
     TIMEOUTS,
+    updateControllerCA,
 } from '../helpers/index.js';
 import {expect} from "@playwright/test";
+import {exec} from 'child_process';
+import * as path from 'path';
 import {
     installPackages,
     installSaltPillarTopFile,
@@ -898,7 +916,7 @@ Then(
     async function (host: string) {
         const reboot_timeout = 800;
         const system_name = await getSystemName(host);
-        // check_shutdown and check_restart are not directly translatable without more context.
+        //TODO: check_shutdown and check_restart are not directly translatable without more context.
         // This would require a more detailed implementation of the underlying logic.
     }
 );
@@ -1198,6 +1216,631 @@ When(/I copy "([^"]*)" from "([^"]*)" to "([^"]*)" via scp in the path "([^"]*)"
     if (returnCode !== 0) {
         throw new Error(`File could not be sent from ${origin} to ${dest}`);
     }
+});
+
+When('I copy the distribution inside the container on the server', async function () {
+    const node = await getTarget('server');
+    await node.run('mgradm distro copy /tmp/tftpboot-installation/SLE-15-SP-4-x86_64 SLE-15-SP4-TFTP', {runsInContainer: false});
+});
+
+When('I generate a supportconfig for the server', async function () {
+    const node = await getTarget('server');
+    await node.run('mgradm support config', {timeout: 600, runsInContainer: false});
+    await node.run('mv /root/scc_*.tar.gz /root/server-supportconfig.tar.gz', {runsInContainer: false});
+});
+
+When('I obtain and extract the supportconfig from the server', async function () {
+    const supportconfig_path = '/root/server-supportconfig.tar.gz';
+    const test_runner_file = '/root/server-supportconfig.tar.gz';
+    await (await getTarget('server')).scpDownload(supportconfig_path, test_runner_file);
+    // These are local commands on the test runner, so we can use a local exec
+    exec('rm -rf /root/server-supportconfig');
+    exec('mkdir /root/server-supportconfig && tar xzvf /root/server-supportconfig.tar.gz -C /root/server-supportconfig');
+    exec('mv /root/server-supportconfig/scc_* /root/server-supportconfig/test-server');
+    exec('tar xJvf /root/server-supportconfig/test-server/*supportconfig.txz -C /root/server-supportconfig');
+    exec('mv /root/server-supportconfig/scc_suse_*/ /root/server-supportconfig/uyuni-server-supportconfig/');
+});
+
+When('I remove the autoinstallation files from the server', async function () {
+    const node = await getTarget('server');
+    await node.run('rm -r /tmp/tftpboot-installation', {runsInContainer: false});
+    await node.run('rm -r /srv/www/distributions/SLE-15-SP4-TFTP');
+});
+
+When('I reset tftp defaults on the proxy', async function () {
+    await (await getTarget('proxy')).run("echo 'TFTP_USER=\"tftp\"\nTFTP_OPTIONS=\"\"\nTFTP_DIRECTORY=\"/srv/tftpboot\"\n' > /etc/sysconfig/tftp");
+});
+
+When('I wait until the package "{string}" has been cached on this "{string}"', async function (pkg_name, host) {
+    const node = await getTarget(host);
+    let cmd: string;
+    if ((await node.run('which zypper', { checkErrors: false })).returnCode === 0) {
+        cmd = `ls /var/cache/zypp/packages/susemanager:fake-rpm-suse-channel/getPackage/*/*/${pkg_name}*.rpm`;
+    } else if ((await node.run('which apt-get', { checkErrors: false })).returnCode === 0) {
+        cmd = `ls /var/cache/apt/archives/${pkg_name}*.deb`;
+    } else {
+        throw new Error("Unsupported package manager");
+    }
+    await repeatUntilTimeout(async () => {
+        const {returnCode} = await node.run(cmd, {checkErrors: false});
+        return returnCode === 0;
+    }, {message: `Package ${pkg_name} was not cached`});
+});
+
+When(/^I create the bootstrap repository for "([^"]*)" on the server((?: without flushing)?)$/, async function (host: string, without_flushing: string) {
+    const isTransactional = await (await getTarget('server')).run('test -f /etc/transactional-update.conf').then(r => r.returnCode === 0);
+    if (host === 'proxy' && !isTransactional) {
+        host = 'proxy_nontransactional';
+    }
+    const base_channel = BASE_CHANNEL_BY_CLIENT[globalVars.product][host];
+    const productKey = globalVars.product as keyof typeof CHANNEL_LABEL_TO_SYNC_BY_BASE_CHANNEL;
+    const baseChannels = CHANNEL_LABEL_TO_SYNC_BY_BASE_CHANNEL[productKey];
+    const parentBaseChannels = PARENT_CHANNEL_LABEL_TO_SYNC_BY_BASE_CHANNEL[productKey];
+    const channel = baseChannels && base_channel in baseChannels ? baseChannels[base_channel as keyof typeof baseChannels] : undefined;
+    const parent_channel = parentBaseChannels && base_channel in parentBaseChannels ? parentBaseChannels[base_channel as keyof typeof parentBaseChannels] : undefined;
+    const server = await getTarget('server');
+    await server.waitWhileProcessRunning('mgr-create-bootstrap-repo');
+
+    console.log(`base_channel: ${base_channel}`);
+    console.log(`channel: ${channel}`);
+    console.log(`parent_channel: ${parent_channel}`);
+
+    let cmd: string;
+    if (!parent_channel) {
+        cmd = `mgr-create-bootstrap-repo --create ${channel} --with-custom-channels`;
+    } else {
+        cmd = `mgr-create-bootstrap-repo --create ${channel} --with-parent-channel ${parent_channel} --with-custom-channels`;
+    }
+
+    if (!without_flushing) {
+        cmd += ' --flush';
+    }
+
+    console.log('Creating the bootstrap repository on the server:');
+    console.log(`  ${cmd}`);
+    await server.run(cmd, {execOption: '-it'});
+});
+
+When('I create the bootstrap repositories including custom channels', async function () {
+    await (await getTarget('server')).waitWhileProcessRunning('mgr-create-bootstrap-repo');
+    await (await getTarget('server')).run('mgr-create-bootstrap-repo --auto --force --with-custom-channels', {
+        checkErrors: false,
+        verbose: true
+    });
+});
+
+When('I install "{string}" product on the proxy', async function (product) {
+    const {stdout} = await (await getTarget('proxy')).run(`zypper ref && zypper --non-interactive install --auto-agree-with-licenses --force-resolution -t product ${product}`);
+    console.log(`Installed ${product} product: ${stdout}`);
+});
+
+When('I install proxy pattern on the proxy', async function () {
+    const pattern = globalVars.product === 'Uyuni' ? 'uyuni_proxy' : 'suma_proxy';
+    const cmd = `zypper --non-interactive install -t pattern ${pattern}`;
+    await (await getTarget('proxy')).run(cmd, {timeout: 600, successCodes: [0, 100, 101, 102, 103, 106]});
+});
+
+When('I let squid use avahi on the proxy', async function () {
+    const file = '/usr/share/rhn/proxy-template/squid.conf';
+    let key = 'dns_multicast_local';
+    let val = 'on';
+    await (await getTarget('proxy')).run(`grep '^${key}' ${file} && sed -i -e 's/^${key}.*$/${key} ${val}/' ${file} || echo '${key} ${val}' >> ${file}`);
+    key = 'ignore_unknown_nameservers';
+    val = 'off';
+    await (await getTarget('proxy')).run(`grep '^${key}' ${file} && sed -i -e 's/^${key}.*$/${key} ${val}/' ${file} || echo '${key} ${val}' >> ${file}`);
+});
+
+When('I open avahi port on the proxy', async function () {
+    await (await getTarget('proxy')).run('firewall-offline-cmd --zone=public --add-service=mdns');
+});
+
+When('I copy server\'s keys to the proxy', async function () {
+    if (await runningK3s()) {
+        // Server running in Kubernetes doesn't know anything about SSL CA
+        await generateCertificate('proxy', (await getTarget('proxy')).fullHostname);
+
+        for (const file of ['proxy.crt', 'proxy.key', 'ca.crt']) {
+            let success = await fileExtract(await getTarget('server'), `/tmp/${file}`, `/tmp/${file}`);
+            if (!success) throw new Error('File extraction failed');
+
+            success = await fileInject(await getTarget('proxy'), `/tmp/${file}`, `/tmp/${file}`);
+            if (!success) throw new Error('File injection failed');
+        }
+    } else {
+        for (const file of ['RHN-ORG-PRIVATE-SSL-KEY', 'RHN-ORG-TRUSTED-SSL-CERT', 'rhn-ca-openssl.cnf']) {
+            const success = await fileExtract(await getTarget('server'), `/root/ssl-build/${file}`, `/tmp/${file}`);
+            if (!success) throw new Error('File extraction failed');
+
+            await (await getTarget('proxy')).run('mkdir -p /root/ssl-build');
+            const successInject = await fileInject(await getTarget('proxy'), `/tmp/${file}`, `/root/ssl-build/${file}`);
+            if (!successInject) throw new Error('File injection failed');
+        }
+    }
+});
+
+When('I configure the proxy', async function () {
+    // prepare the settings file
+    let settings = `RHN_PARENT=${(await getTarget('server')).fullHostname}\n` +
+        `HTTP_PROXY=''\n` +
+        `VERSION=''\n` +
+        `TRACEBACK_EMAIL=galaxy-noise@suse.de\n` +
+        `POPULATE_CONFIG_CHANNEL=y\n` +
+        `RHN_USER=admin\n`;
+    if (await runningK3s()) {
+        settings += `USE_EXISTING_CERTS=y\n` +
+            `CA_CERT=/tmp/ca.crt\n` +
+            `SERVER_KEY=/tmp/proxy.key\n` +
+            `SERVER_CERT=/tmp/proxy.crt\n`;
+    } else {
+        settings += `USE_EXISTING_CERTS=n\n` +
+            `INSTALL_MONITORING=n\n` +
+            `SSL_PASSWORD=spacewalk\n` +
+            `SSL_ORG=SUSE\n` +
+            `SSL_ORGUNIT=SUSE\n` +
+            `SSL_COMMON=${(await getTarget('proxy')).fullHostname}\n` +
+            `SSL_CITY=Nuremberg\n` +
+            `SSL_STATE=Bayern\n` +
+            `SSL_COUNTRY=DE\n` +
+            `SSL_EMAIL=galaxy-noise@suse.de\n` +
+            `SSL_CNAME_ASK=proxy.example.org\n`;
+    }
+    const tempFile = await generateTempFile('config-answers.txt', settings);
+    await this.step(`I copy "${tempFile}" to "proxy"`);
+    const filename = path.basename(tempFile);
+
+    // perform the configuration
+    const cmd = `configure-proxy.sh --non-interactive --rhn-user=admin --rhn-password=admin --answer-file=${filename}`;
+    const proxy_timeout = 600;
+    await (await getTarget('proxy')).run(cmd, {timeout: proxy_timeout, verbose: true});
+});
+
+When('I allow all SSL protocols on the proxy\'s apache', async function () {
+    const file = '/etc/apache2/ssl-global.conf';
+    const key = 'SSLProtocol';
+    const val = 'all -SSLv2 -SSLv3';
+    await (await getTarget('proxy')).run(`grep '${key}' ${file} && sed -i -e 's/${key}.*$/${key} ${val}/' ${file}`);
+    await (await getTarget('proxy')).run('systemctl reload apache2.service', {verbose: true});
+});
+
+When('I restart squid service on the proxy', async function () {
+    // We need to restart squid when we add a CNAME to the certificate
+    await (await getTarget('proxy')).run('systemctl restart squid.service');
+});
+
+When('I create channel "{string}" from spacecmd of type "{string}"', async function (name, type) {
+    const command = `spacecmd -u admin -p admin -- configchannel_create -n ${name} -t  ${type}`;
+    await (await getTarget('server')).run(command);
+});
+
+When('I update init.sls from spacecmd with content "{string}" for channel "{string}"', async function (content, label) {
+    const filepath = `/tmp/${label}`;
+    await (await getTarget('server')).run(`echo -e "${content}" > ${filepath}`, {timeout: 600});
+    const command = `spacecmd -u admin -p admin -- configchannel_updateinitsls -c ${label} -f  ${filepath} -y`;
+    await (await getTarget('server')).run(command);
+    await fileDelete(await getTarget('server'), filepath);
+});
+
+When('I update init.sls from spacecmd with content "{string}" for channel "{string}" and revision "{string}"', async function (content, label, revision) {
+    const filepath = `/tmp/${label}`;
+    await (await getTarget('server')).run(`echo -e "${content}" > ${filepath}`, {timeout: 600});
+    const command = `spacecmd -u admin -p admin -- configchannel_updateinitsls -c ${label} -f ${filepath} -r ${revision} -y`;
+    await (await getTarget('server')).run(command);
+    await fileDelete(await getTarget('server'), filepath);
+});
+
+When('I schedule apply configchannels for "{string}"', async function (host) {
+    const system_name = await getSystemName(host);
+    await (await getTarget('server')).run('spacecmd -u admin -p admin clear_caches');
+    const command = `spacecmd -y -u admin -p admin -- system_scheduleapplyconfigchannels  ${system_name}`;
+    await (await getTarget('server')).run(command);
+});
+
+When('I refresh packages list via spacecmd on "{string}"', async function (client) {
+    const node = await getSystemName(client);
+    await (await getTarget('server')).run('spacecmd -u admin -p admin clear_caches');
+    const command = `spacecmd -u admin -p admin system_schedulepackagerefresh ${node}`;
+    await (await getTarget('server')).run(command);
+});
+
+When('I refresh the packages list via package manager on "{string}"', async function (host) {
+    const node = await getTarget(host);
+    if (await node.run('which yum')) {
+        await node.run('yum -y clean all');
+        await node.run('yum -y makecache');
+    }
+});
+
+Then('I wait until refresh package list on "{string}" is finished', async function (client) {
+    const round_minute = 60; // spacecmd uses timestamps with precision to minutes only
+    const long_wait_delay = 600;
+    const current_time = new Date().toISOString().slice(0, 16).replace(/[-T:]/g, '');
+    const timeout_time = new Date(new Date().getTime() + (long_wait_delay + round_minute) * 1000).toISOString().slice(0, 16).replace(/[-T:]/g, '');
+    const node = await getSystemName(client);
+    await (await getTarget('server')).run('spacecmd -u admin -p admin clear_caches');
+    // Gather all the ids of package refreshes existing at SUMA
+    const {stdout: refreshes} = await (await getTarget('server')).run('spacecmd -u admin -p admin schedule_list | grep \'Package List Refresh\' | cut -f1 -d\' \'', {checkErrors: false});
+    let node_refreshes = '';
+    for (const refresh_id of refreshes.split('\n')) {
+        if (refresh_id.match(/\/[0-9]{1,4}\//)) {
+            const {stdout: refresh_result} = await (await getTarget('server')).run(`spacecmd -u admin -p admin schedule_details ${refresh_id}`); // Filter refreshes for specific system
+            if (refresh_result.includes(node)) {
+                node_refreshes += `^${refresh_id}|`;
+            }
+        }
+    }
+    const cmd = `spacecmd -u admin -p admin schedule_list ${current_time} ${timeout_time} | egrep '${node_refreshes.slice(0, -1)}'`;
+    await repeatUntilTimeout(async () => {
+        const {stdout: result} = await (await getTarget('server')).run(cmd, {checkErrors: false});
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        if (result.includes('0    0    1')) return false;
+        if (result.includes('1    0    0')) return true;
+        if (result.includes('0    1    0')) throw new Error('refresh package list failed');
+    }, {timeout: long_wait_delay, message: '\'refresh package list\' did not finish'});
+});
+
+When('spacecmd should show packages "{string}" installed on "{string}"', async function (packages, client) {
+    const node = await getSystemName(client);
+    await (await getTarget('server')).run('spacecmd -u admin -p admin clear_caches');
+    const command = `spacecmd -u admin -p admin system_listinstalledpackages ${node}`;
+    const {stdout: result} = await (await getTarget('server')).run(command, {checkErrors: false});
+    for (const pkg of packages.split(' ')) {
+        if (!result.includes(pkg.trim())) {
+            throw new Error(`package ${pkg.trim()} is not installed`);
+        }
+    }
+});
+
+When('I wait until package "{string}" is installed on "{string}" via spacecmd', async function (pkg, client) {
+    const node = await getSystemName(client);
+    await (await getTarget('server')).run('spacecmd -u admin -p admin clear_caches');
+    const command = `spacecmd -u admin -p admin system_listinstalledpackages ${node}`;
+    await repeatUntilTimeout(async () => {
+        const {stdout: result} = await (await getTarget('server')).run(command, {checkErrors: false});
+        if (result.includes(pkg)) return true;
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        return false;
+    }, {timeout: 600, message: `package ${pkg} is not installed yet`});
+});
+
+When('I wait until package "{string}" is removed from "{string}" via spacecmd', async function (pkg, client) {
+    const node = await getSystemName(client);
+    await (await getTarget('server')).run('spacecmd -u admin -p admin clear_caches');
+    const command = `spacecmd -u admin -p admin system_listinstalledpackages ${node}`;
+    await repeatUntilTimeout(async () => {
+        const {stdout: result} = await (await getTarget('server')).run(command, {checkErrors: false});
+        if (!result.includes(pkg)) return true;
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        return false;
+    }, {timeout: 600, message: `package ${pkg} is still present`});
+});
+
+When('I apply "{string}" local salt state on "{string}"', async function (state, host) {
+    const node = await getTarget(host);
+    const useSaltBundle = (await node.run('test -f /etc/venv-salt-minion/minion && echo true || echo false')).stdout.trim() === 'true';
+    let salt_call = useSaltBundle ? 'venv-salt-call' : 'salt-call';
+    if (host === 'server') {
+        salt_call = 'salt-call';
+    }
+    const source = `../upload_files/salt/${state}.sls`;
+    const remote_file = `/usr/share/susemanager/salt/${state}.sls`;
+    const success = await fileInject(node, source, remote_file);
+    if (!success) throw new Error('File injection failed');
+
+    await node.run(`${salt_call} --local --file-root=/usr/share/susemanager/salt --module-dirs=/usr/share/susemanager/salt/ --log-level=info --retcode-passthrough state.apply ${state}`);
+});
+
+When('I copy unset package file on "{string}"', async function (minion) {
+    const base_dir = "../upload_files/unset_package/";
+    const success = await fileInject(await getTarget(minion), `${base_dir}subscription-tools-1.0-0.noarch.rpm`, '/root/subscription-tools-1.0-0.noarch.rpm');
+    if (!success) throw new Error('File injection failed');
+});
+
+When('I copy vCenter configuration file on server', async function () {
+    const base_dir = "../upload_files/virtualization/";
+    const success = await fileInject(await getTarget('server'), `${base_dir}vCenter.json`, '/var/tmp/vCenter.json');
+    if (!success) throw new Error('File injection failed');
+});
+
+When('I export software channels "{string}" with ISS v2 to "{string}"', async function (channel, path) {
+    await (await getTarget('server')).run(`inter-server-sync export --channels=${channel} --outputDir=${path}`);
+});
+
+When('I export config channels "{string}" with ISS v2 to "{string}"', async function (channel, path) {
+    await (await getTarget('server')).run(`inter-server-sync export --configChannels=${channel} --outputDir=${path}`);
+});
+
+When('I import data with ISS v2 from "{string}"', async function (path) {
+    // WORKAROUND for bsc#1249127
+    // Remove "echo UglyWorkaround |" when the product issue is solved
+    await (await getTarget('server')).run(`echo UglyWorkaround | inter-server-sync import --importDir=${path}`);
+});
+
+Then('"{string}" folder on server is ISS v2 export directory', async function (folder) {
+    if (!await fileExists(await getTarget('server'), `${folder}/sql_statements.sql.gz`)) {
+        throw new Error(`Folder ${folder} not found`);
+    }
+});
+
+When('I ensure folder "{string}" doesn\'t exist on "{string}"', async function (folder, host) {
+    const node = await getTarget(host);
+    if (await folderExists(node, folder)) {
+        const success = await folderDelete(node, folder);
+        if (!success) {
+            throw new Error(`Folder '${folder}' exists and cannot be removed`);
+        }
+    }
+});
+
+// ReportDB
+
+Then('I should be able to connect to the ReportDB on the server', async function () {
+    // connect and quit database
+    const {returnCode} = await (await getTarget('server')).run(reportdbServerQuery('\\q'));
+    if (returnCode !== 0) throw new Error('Couldn\'t connect to the ReportDB on the server');
+});
+
+Then('there should be a user allowed to create roles on the ReportDB', async function () {
+    const {
+        stdout: users_and_permissions,
+        returnCode
+    } = await (await getTarget('server')).run(reportdbServerQuery('\\du'));
+    if (returnCode !== 0) throw new Error('Couldn\'t connect to the ReportDB on the server');
+
+    // extract only the line for the suma user
+    const suma_user_permissions = users_and_permissions.match(/pythia_susemanager(.*)/);
+    if (!suma_user_permissions || !['Create role'].every(permission => suma_user_permissions[0].includes(permission))) {
+        throw new Error('ReportDB admin user pythia_susemanager doesn\'t have the required permissions');
+    }
+});
+
+When(/^I create a read-only user for the ReportDB$/, async function () {
+    const reportdb_ro_user = 'test_user';
+    const file = 'create_user_reportdb.exp';
+    const source = `../upload_files/${file}`;
+    const dest = `/tmp/${file}`;
+    const success = await fileInject(await getTarget('server'), source, dest);
+    if (!success) throw new Error('File injection in server failed');
+
+    const node = await getTarget('server');
+    await node.runLocal(`expect -f /tmp/${file} ${reportdb_ro_user} ${await node.run('test -f /usr/bin/mgrctl && echo true || echo false').then(r => r.stdout.trim() === 'true')}`);
+});
+
+Then('I should see the read-only user listed on the ReportDB user accounts', async function () {
+    const {stdout: users_and_permissions} = await (await getTarget('server')).run(reportdbServerQuery('\\du'));
+    if (!users_and_permissions.includes('test_user')) throw new Error('Couldn\'t find the newly created user on the ReportDB');
+});
+
+When(/^I delete the read-only user for the ReportDB$/, async function () {
+    const file = 'delete_user_reportdb.exp';
+    const source = `../upload_files/${file}`;
+    const dest = `/tmp/${file}`;
+    const success = await fileInject(await getTarget('server'), source, dest);
+    if (!success) throw new Error('File injection in server failed');
+
+    const node = await getTarget('server');
+    await node.runLocal(`expect -f /tmp/${file} test_user ${await node.run('test -f /usr/bin/mgrctl && echo true || echo false').then(r => r.stdout.trim() === 'true')}`);
+});
+
+Then('I shouldn\'t see the read-only user listed on the ReportDB user accounts', async function () {
+    const {stdout: users_and_permissions} = await (await getTarget('server')).run(reportdbServerQuery('\\du'));
+    if (users_and_permissions.includes('test_user')) throw new Error('Created read-only user on the ReportDB remains listed');
+});
+
+Given('I know the ReportDB admin user credentials', async function () {
+    const reportdb_admin_user = await getVariableFromConfFile('server', '/etc/rhn/rhn.conf', 'report_db_user');
+    const reportdb_admin_password = await getVariableFromConfFile('server', '/etc/rhn/rhn.conf', 'report_db_password');
+    // Store these in context for later steps
+    addContext('reportdb_admin_user', reportdb_admin_user);
+    addContext('reportdb_admin_password', reportdb_admin_password);
+});
+
+Given('I block connections from "{string}" on "{string}"', async function (blockhost, target) {
+    const blkhost = await getTarget(blockhost);
+    const node = await getTarget(target);
+    await node.run(`iptables -A INPUT -s ${blkhost.publicIp} -j LOG`);
+    await node.run(`iptables -A INPUT -s ${blkhost.publicIp} -j DROP`);
+});
+
+Then('I flush firewall on "{string}"', async function (target) {
+    const node = await getTarget(target);
+    await node.run('iptables -F INPUT');
+});
+
+When('I remove offending SSH key of "{string}" at port "{string}" for "{string}" on "{string}"', async function (key_host, key_port, known_hosts_path, host) {
+    const system_name = await getSystemName(key_host);
+    const node = await getTarget(host);
+    await node.run(`ssh-keygen -R [${system_name}]:${key_port} -f ${known_hosts_path}`);
+});
+
+Then('port "{string}" should be {string}', async function (port, selection) {
+    const {returnCode} = await (await getTarget('server')).run(`ss --listening --numeric | grep :${port}`, {
+        checkErrors: false,
+        verbose: true
+    });
+    const port_opened = returnCode === 0;
+    if (selection === 'closed') {
+        if (port_opened) throw new Error(`Port '${port}' open although it should not be!`);
+    } else {
+        if (!port_opened) throw new Error(`Port '${port}' not open although it should be!`);
+    }
+});
+
+// rebooting via SSH
+When('I reboot the server through SSH', async function () {
+    const temp_server = new RemoteNode('server');
+    await temp_server.run('reboot > /dev/null 2> /dev/null &');
+    const default_timeout = 300;
+
+    await checkShutdown((await getTarget('server')).fullHostname, default_timeout);
+    await checkRestart((await getTarget('server')).fullHostname, temp_server, default_timeout);
+
+    await repeatUntilTimeout(async () => {
+        const {stdout} = await temp_server.run('spacewalk-service status', {checkErrors: false, timeout: 10});
+        // mgr-check-payg.service will be inactive (dead) for Uyuni, so we cannot check that all services are running
+        // we look for the status displayed by apache2.service, the webserver, when it is ready
+        if (stdout.includes('Processing requests...')) {
+            console.log('Server spacewalk service is up');
+            return true;
+        }
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        return false;
+    }, {timeout: default_timeout, message: 'Spacewalk didn\'t come up'});
+});
+
+//TODO: Refactor this step to don't use embedded steps
+When('I reboot the "{string}" minion through the web UI', async function (host) {
+    // await this.step(`Given I am on the Systems overview page of this "${host}"`);
+    // await this.step('When I follow first "Schedule System Reboot"');
+    // await this.step('Then I should see a "System Reboot Confirmation" text');
+    // await this.step('And I should see a "Reboot system" button');
+    // await this.step('When I click on "Reboot system"');
+    // await this.step('Then I should see a "Reboot scheduled for system" text');
+    // await this.step(`And I wait at most 600 seconds until event "System reboot scheduled by ${this.currentUser}" is completed`);
+    // await this.step('Then I should see a "This action\'s status is: Completed" text');
+});
+
+//TODO: Refactor this step to don't use embedded steps
+When('I reboot the "{string}" if it is a transactional system', async function (host) {
+    if (await isTransactionalSystem(host)) {
+        // await this.step(`I reboot the "${host}" minion through the web UI`);
+        // await this.step('I should not see a "There is a pending transaction for this system, please reboot it to activate the changes." text');
+    }
+});
+
+// changing hostname
+When('I change the server\'s short hostname from hosts and hostname files', async function () {
+    const server_node = await getTarget('server');
+    const old_hostname = server_node.hostname;
+    const new_hostname = `${old_hostname}-renamed`;
+    console.log(`Old hostname: ${old_hostname} - New hostname: ${new_hostname}`);
+    await server_node.run(`sed -i 's/${old_hostname}/${new_hostname}/g' /etc/hostname && hostname ${new_hostname} && echo '${server_node.publicIp} ${server_node.fullHostname} ${old_hostname}' >> /etc/hosts && echo '${server_node.publicIp} ${new_hostname}${server_node.fullHostname.substring(server_node.hostname.length)} ${new_hostname}' >> /etc/hosts`);
+    // This will refresh the attributes of this node
+    await getTarget('server', true);
+    const {stdout: hostname} = await (await getTarget('server')).run('hostname');
+    if (hostname.trim() !== new_hostname) throw new Error(`Wrong hostname after changing it. Is: ${hostname.trim()}, should be: ${new_hostname}`);
+
+    // Add the new hostname on controller's /etc/hosts to resolve in smoke tests
+    exec(`echo '${server_node.publicIp} ${new_hostname}${server_node.fullHostname.substring(server_node.hostname.length)} ${new_hostname}' >> /etc/hosts`);
+});
+
+When('I run spacewalk-hostname-rename command on the server', async function () {
+    const server_node = await getTarget('server');
+    const command = 'spacecmd --nossl -q api api.getVersion -u admin -p admin; ' +
+        `spacewalk-hostname-rename ${server_node.publicIp} ` +
+        '--ssl-country=DE --ssl-state=Bayern --ssl-city=Nuremberg ' +
+        '--ssl-org=SUSE --ssl-orgunit=SUSE --ssl-email=galaxy-noise@suse.de ' +
+        '--ssl-ca-password=spacewalk --overwrite_report_db_host=y';
+    const {stdout: out_spacewalk, returnCode: result_code} = await server_node.run(command, {checkErrors: false});
+    console.log(out_spacewalk);
+
+    await getTarget('server', true); // This will refresh the attributes of this node
+
+    const default_timeout = 300;
+    await repeatUntilTimeout(async () => {
+        const {stdout} = await server_node.run('spacewalk-service status', {checkErrors: false, timeout: 10});
+        // mgr-check-payg.service will be inactive (dead) for Uyuni, so we cannot check that all services are running
+        // we look for the status displayed by apache2.service, the webserver, when it is ready
+        if (stdout.includes('Processing requests...')) {
+            console.log('Server: spacewalk service is up');
+            return true;
+        }
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        return false;
+    }, {timeout: default_timeout, message: 'Spacewalk didn\'t come up'});
+
+    // Update the server CA certificate since it changed, otherwise all API and browser uses will fail
+    console.log('Update controller CA certificates');
+    await updateControllerCA();
+
+    // Reset the API client to take the new CA into account
+    console.log('Resetting the API client');
+    resetApiTest();
+
+    if (result_code !== 0) throw new Error('Error while running spacewalk-hostname-rename command - see logs above');
+    if (out_spacewalk.includes('No such file or directory')) throw new Error('Error in the output logs - see logs above');
+});
+
+When('I check all certificates after renaming the server hostname', async function () {
+    // get server certificate serial to compare it with the other minions
+    const command_server = "openssl x509 -noout -text -in /etc/pki/trust/anchors/LOCAL-RHN-ORG-TRUSTED-SSL-CERT | grep -A1 'Serial' | grep -v 'Serial'";
+    const {stdout: server_cert_serial, returnCode} = await (await getTarget('server')).run(command_server);
+    console.log(`Server certificate serial: ${server_cert_serial.trim()}`);
+
+    if (returnCode !== 0) throw new Error('Error getting server certificate serial!');
+
+    const targets = ['proxy', 'sle_minion', 'ssh_minion', 'rhlike_minion', 'deblike_minion', 'build_host'];
+    for (const target of targets) {
+        const os_family = (await getTarget(target)).osFamily;
+        // get all defined minions from the environment variables and check their certificate serial
+        if (!process.env[target.toUpperCase()]) continue;
+
+        // Red Hat-like and Debian-like minions store their certificates in a different location
+        let certificate: string;
+        switch (os_family) {
+            case 'centos':
+            case 'rocky':
+                certificate = '/etc/pki/ca-trust/source/anchors/RHN-ORG-TRUSTED-SSL-CERT';
+                break;
+            case 'ubuntu':
+            case 'debian':
+                certificate = '/usr/local/share/ca-certificates/susemanager/RHN-ORG-TRUSTED-SSL-CERT.crt';
+                break;
+            default:
+                certificate = '/etc/pki/trust/anchors/RHN-ORG-TRUSTED-SSL-CERT';
+        }
+        await (await getTarget(target)).run(`test -s ${certificate}`, {successCodes: [0], checkErrors: true});
+
+        const command_minion = `openssl x509 -noout -text -in ${certificate} | grep -A1 'Serial' | grep -v 'Serial'`;
+        const {
+            stdout: minion_cert_serial,
+            returnCode: minionReturnCode
+        } = await (await getTarget(target)).run(command_minion);
+
+        if (minionReturnCode !== 0) throw new Error(`${target}: Error getting server certificate serial!`);
+
+        console.log(`${target} certificate serial: ${minion_cert_serial.trim()}`);
+
+        if (minion_cert_serial.trim() !== server_cert_serial.trim()) throw new Error(`${target}: Error, certificate does not match with server one`);
+    }
+});
+
+When('I change back the server\'s hostname', async function () {
+    const server_node = await getTarget('server');
+    const old_hostname = server_node.hostname;
+    const new_hostname = old_hostname.replace('-renamed', '');
+    console.log(`Old hostname: ${old_hostname} - New hostname: ${new_hostname}`);
+    await server_node.run(`sed -i 's/${old_hostname}/${new_hostname}/g' /etc/hostname && hostname ${new_hostname} && sed -i '$d' /etc/hosts && sed -i '$d' /etc/hosts`);
+    await getTarget('server', true);
+    const {stdout: hostname} = await (await getTarget('server')).run('hostname');
+    if (hostname.trim() !== new_hostname) throw new Error(`Wrong hostname after changing it. Is: ${hostname.trim()}, should be: ${new_hostname}`);
+
+    // Cleanup the temporary entry in /etc/hosts on the controller
+    exec('sed -i \'$d\' /etc/hosts');
+});
+
+When('I enable firewall ports for monitoring on this "{string}"', async function (host) {
+    let add_ports = '';
+    for (const port of [9100, 9117, 9187]) {
+        add_ports += `firewall-cmd --add-port=${port}/tcp --permanent && `;
+    }
+    const cmd = `${add_ports.slice(0, -4)} firewall-cmd --reload`;
+    const node = await getTarget(host);
+    await node.run(cmd);
+    const {stdout: output} = await node.run('firewall-cmd --list-ports');
+    if (!output.includes('9100/tcp 9117/tcp 9187/tcp')) {
+        throw new Error(`Couldn't successfully enable all ports needed for monitoring. Opened ports: ${output}`);
+    }
+});
+
+When('I delete the system "{string}" via spacecmd', async function (minion) {
+    const node = await getSystemName(minion);
+    const command = `spacecmd -u admin -p admin -y system_delete ${node}`;
+    await (await getTarget('server')).run(command, {checkErrors: true, verbose: true});
+});
+
+When('I execute "{string}" on the "{string}"', async function (command, host) {
+    const node = await getTarget(host);
+    await node.run(command, {checkErrors: true, verbose: true});
 });
 
 When(/^I check the cloud-init status on "([^"]*)"$/, async function (host: string) {

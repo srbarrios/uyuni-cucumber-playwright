@@ -3,7 +3,7 @@
 
 Feature: Synchronize extra products in the products page of the Setup Wizard
 
-@scc_credentials
+  @scc_credentials
   Scenario: Let the products page appear
     Given I am authorized for the "Admin" section
     When I follow the left menu "Admin > Setup Wizard > Products"
@@ -11,12 +11,12 @@ Feature: Synchronize extra products in the products page of the Setup Wizard
     Then I should see a "Arch" text
     And I should see a "Channels" text
 
-@uyuni
+  @uyuni
   Scenario: Add openSUSE Leap 15.6 product, including Uyuni Client Tools
     When I use spacewalk-common-channel to add all "leap15.6" channels with arch "x86_64"
 
-@scc_credentials
-@susemanager
+  @scc_credentials
+  @susemanager
   Scenario: Add Rocky 8 product with recommended sub-products
     When I follow the left menu "Admin > Setup Wizard > Products"
     And I wait until I do not see "currently running" text
@@ -28,12 +28,12 @@ Feature: Synchronize extra products in the products page of the Setup Wizard
     When I click the Add Product button
     And I wait until I see "Rocky Linux 8 x86_64" product has been added
 
-@uyuni
+  @uyuni
   Scenario: Enable Rocky 8 Uyuni client tools for creating bootstrap repositories
     When I use spacewalk-common-channel to add channel "rockylinux8 rockylinux8-appstream rockylinux8-uyuni-client" with arch "x86_64"
 
-@scc_credentials
-@susemanager
+  @scc_credentials
+  @susemanager
   Scenario: Add Ubuntu 24.04 product with recommended sub-products
     When I follow the left menu "Admin > Setup Wizard > Products"
     And I wait until I do not see "currently running" text
@@ -46,6 +46,6 @@ Feature: Synchronize extra products in the products page of the Setup Wizard
     When I click the Add Product button
     And I wait until I see "Ubuntu 24.04" product has been added
 
-@uyuni
+  @uyuni
   Scenario: Enable Ubuntu 24.04 Uyuni client tools for creating bootstrap repositories
     When I use spacewalk-common-channel to add channel "ubuntu-2404-pool-amd64-uyuni ubuntu-2404-amd64-main-uyuni ubuntu-2404-amd64-main-updates-uyuni ubuntu-2404-amd64-main-security-uyuni ubuntu-2404-amd64-uyuni-client" with arch "amd64-deb"

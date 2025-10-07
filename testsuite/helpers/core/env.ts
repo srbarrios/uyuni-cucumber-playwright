@@ -162,6 +162,7 @@ export function getBrowserConfig() {
     const args = [
         '--disable-dev-shm-usage',
         '--ignore-certificate-errors',
+        '--window-size=2048,2048',
         '--no-sandbox',
         '--disable-notifications'
     ];
@@ -199,7 +200,9 @@ export async function initializeBrowser(): Promise<{ browser: Browser; context: 
             GLOBAL_VARS.browserDisconnected = true;
         });
         browserContext = await globalBrowser.newContext({
-            ignoreHTTPSErrors: config.ignoreHTTPSErrors
+            ignoreHTTPSErrors: config.ignoreHTTPSErrors,
+            viewport: config.viewport,
+            permissions:['storage-access']
         });
 
         // Set download behavior

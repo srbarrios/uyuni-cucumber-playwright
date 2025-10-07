@@ -6,8 +6,8 @@ Feature: Strict Mode for Channel Synchronization
   As an admin user
   I want to be able to decide if deleted packages from upstream repos are dropped or kept
 
-Scenario: Create Test-strict-channel
-  Given I am authorized for the "Admin" section
+  Scenario: Create Test-strict-channel
+    Given I am authorized for the "Admin" section
     And I prepare a channel clone for strict mode testing
     And I follow the left menu "Software > Manage > Channels"
     And I follow "Create Channel"
@@ -17,7 +17,7 @@ Scenario: Create Test-strict-channel
     And I click on "Create Channel"
     Then I should see a "Channel Test-Strict-Channel created." text
 
-Scenario: Prepare repos for strict test
+  Scenario: Prepare repos for strict test
     Given I am authorized for the "Admin" section
     And I follow the left menu "Software > Manage > Repositories"
     And I follow "Create Repository"
@@ -27,7 +27,7 @@ Scenario: Prepare repos for strict test
     And I click on "Create Repository"
     Then I should see a "Repository created successfully" text
 
-Scenario: Testing strict mode
+  Scenario: Testing strict mode
     Given I am authorized for the "Admin" section
     And I follow the left menu "Software > Manage > Channels"
     And I follow "Test-Strict-Channel"
@@ -35,7 +35,7 @@ Scenario: Testing strict mode
     And I check "fake-rpm-repo" in the list
     And I click on "Save Repositories"
     And I follow "Sync" in the "content area"
-    And I click on "Sync Now"	
+    And I click on "Sync Now"
     And I wait at most 60 seconds until I do not see "Repository sync is running." text, refreshing the page
     And I store the amount of packages in channel "test-strict-channel"
     And I follow "Add / Remove"
@@ -44,10 +44,10 @@ Scenario: Testing strict mode
     And I click on "Save Repositories"
     And I follow "Sync" in the "content area"
     And I check "no-strict"
-    And I click on "Sync Now"	
+    And I click on "Sync Now"
     And I wait at most 60 seconds until I do not see "Repository sync is running." text, refreshing the page
     Then The amount of packages in channel "Test-Strict-Channel" should be the same as before
     And I uncheck "no-strict"
-    And I click on "Sync Now"	
+    And I click on "Sync Now"
     And I wait at most 60 seconds until I do not see "Repository sync is running." text, refreshing the page
     Then The amount of packages in channel "Test-Strict-Channel" should be fewer than before

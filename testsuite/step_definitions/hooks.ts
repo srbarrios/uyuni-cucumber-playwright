@@ -42,11 +42,6 @@ AfterAll(async function () {
     await closeBrowser();
 });
 
-async function c(): Promise<boolean> {
-    //TODO: To be implemented
-    return true;
-}
-
 async function clickDetailsIfPresent(): Promise<void> {
     const hasBootstrapMinions = await getCurrentPage().locator('text=Bootstrap Minions').isVisible({timeout: 0});
     let hasDetails = false;
@@ -591,12 +586,12 @@ Before('@no_mirror', async function () {
 
 // do some tests only if the server is using SUSE Manager
 Before('@susemanager', async function () {
-    skipThisScenarioUnless(await getProduct(await getTarget('server')) === 'SUSE Manager'); // Use getProduct
+    skipThisScenarioUnless(globalVars.product == 'SUSE Multi-Linux Manager');
 });
 
 // do some tests only if the server is using Uyuni
 Before('@uyuni', async function () {
-    skipThisScenarioUnless(await getProduct(await getTarget('server')) === 'Uyuni'); // Use getProduct
+    skipThisScenarioUnless(globalVars.product == 'Uyuni');
 });
 
 // do some tests only if we are using salt bundle

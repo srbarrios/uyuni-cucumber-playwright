@@ -1300,6 +1300,150 @@ export const LABEL_BY_BASE_CHANNEL_EXT = {
     }
 } as const;
 
+// Used for creating bootstrap repositories
+// The keys are the values of BASE_CHANNEL_BY_CLIENT
+// The values can be found out on the server by running 'mgr-create-bootstrap-repo'
+// Then select the correct name for the product you want
+export const CHANNEL_LABEL_TO_SYNC_BY_BASE_CHANNEL = {
+    'SUSE Manager': {
+        'SLE-Product-SUSE-Manager-Proxy-4.3-Pool for x86_64': 'SUMA-43-PROXY-x86_64',
+        'SLES12-SP5-Pool for x86_64': 'SLE-12-SP5-x86_64',
+        'SLE-Product-SLES15-SP3-Pool for x86_64': 'SLE-15-SP3-x86_64',
+        'SLE-Product-SLES15-SP4-Pool for x86_64': 'SLE-15-SP4-x86_64',
+        'SLE-Product-SLES15-SP5-Pool for x86_64': 'SLE-15-SP5-x86_64',
+        'SLE-Product-SLES15-SP6-Pool for x86_64': 'SLE-15-SP6-x86_64',
+        'SLE-Product-SLES15-SP7-Pool for x86_64': 'SLE-15-SP7-x86_64',
+        'SLE-Product-SLES15-SP5-Pool for s390x': 'SLE-15-SP5-s390x',
+        'SUSE-MicroOS-5.1-Pool for x86_64': 'SLE-MICRO-5.1-x86_64',
+        'SUSE-MicroOS-5.2-Pool for x86_64': 'SLE-MICRO-5.2-x86_64',
+        'SLE-Micro-5.3-Pool for x86_64': 'SLE-MICRO-5.3-x86_64',
+        'SLE-Micro-5.4-Pool for x86_64': 'SLE-MICRO-5.4-x86_64',
+        'SLE-Micro-5.5-Pool for x86_64': 'SLE-MICRO-5.5-x86_64',
+        'SL-Micro-6.0-Pool for x86_64': 'SL-MICRO-6.0-x86_64',
+        'SL-Micro-6.1-Pool for x86_64': 'SL-MICRO-6.1-x86_64',
+        'almalinux8 for x86_64': 'almalinux-8-x86_64',
+        'almalinux9 for x86_64': 'almalinux-9-x86_64',
+        'amazonlinux2023 for x86_64': 'amazonlinux-2023-x86_64',
+        'Fake-Base-Channel-SUSE-like': 'fake-base-channel-suse-like',
+        'RHEL x86_64 Server 7': 'RES7-x86_64',
+        'EL9-Pool for x86_64': 'SUSE-LibertyLinux9-x86_64',
+        'oraclelinux9 for x86_64': 'oracle-9-x86_64',
+        'RHEL8-Pool for x86_64': 'SLE-ES8-x86_64',
+        'rockylinux-8 for x86_64': 'rockylinux-8-x86_64',
+        'rockylinux-9 for x86_64': 'rockylinux-9-x86_64',
+        'ubuntu-2004-amd64-main for amd64': 'ubuntu-20.04-amd64',
+        'ubuntu-2204-amd64-main for amd64': 'ubuntu-22.04-amd64',
+        'ubuntu-2404-amd64-main for amd64': 'ubuntu-24.04-amd64',
+        'debian-12-pool for amd64': 'debian12-amd64',
+        'openSUSE-Leap-15.6-Pool for aarch64': 'openSUSE-Leap-15.6-aarch64'
+    },
+    'Uyuni': {
+        'openSUSE Leap 15.6 (x86_64)': 'openSUSE-Leap-15.6-x86_64-uyuni',
+        'openSUSE Leap Micro 5.5 (x86_64)': 'openSUSE-Leap-Micro-5.5-x86_64-uyuni',
+        'openSUSE Tumbleweed (x86_64)': 'openSUSE-Tumbleweed-x86_64-uyuni',
+        'SLES12-SP5-Pool for x86_64': 'SLE-12-SP5-x86_64',
+        'SLE-Product-SLES15-SP3-Pool for x86_64': 'SLE-15-SP3-x86_64',
+        'SLE-Product-SLES15-SP4-Pool for x86_64': 'SLE-15-SP4-x86_64',
+        'SLE-Product-SLES15-SP5-Pool for x86_64': 'SLE-15-SP5-x86_64',
+        'SLE-Product-SLES15-SP6-Pool for x86_64': 'SLE-15-SP6-x86_64',
+        'SLE-Product-SLES15-SP7-Pool for x86_64': 'SLE-15-SP7-x86_64',
+        'SLE-Product-SLES15-SP5-Pool for s390x': 'SLE-15-SP5-s390x',
+        'SUSE-MicroOS-5.1-Pool for x86_64': 'SLE-MICRO-5.1-x86_64',
+        'SUSE-MicroOS-5.2-Pool for x86_64': 'SLE-MICRO-5.2-x86_64',
+        'SLE-Micro-5.3-Pool for x86_64': 'SLE-MICRO-5.3-x86_64',
+        'SLE-Micro-5.4-Pool for x86_64': 'SLE-MICRO-5.4-x86_64',
+        'SLE-Micro-5.5-Pool for x86_64': 'SLE-MICRO-5.5-x86_64',
+        'SL-Micro-6.0-Pool for x86_64': 'SL-MICRO-6.0-x86_64',
+        'SL-Micro-6.1-Pool for x86_64': 'SL-MICRO-6.1-x86_64',
+        'AlmaLinux 8 (x86_64)': 'almalinux-8-x86_64-uyuni',
+        'AlmaLinux 9 (x86_64)': 'almalinux-9-x86_64-uyuni',
+        'Amazon Linux 2023 x86_64': 'amazonlinux-2023-x86_64-uyuni',
+        'Fake-Base-Channel-SUSE-like': 'fake-base-channel-suse-like',
+        'CentOS 7 (x86_64)': 'centos-7-x86_64-uyuni',
+        'EL9-Pool for x86_64': 'SUSE-LibertyLinux9-x86_64',
+        'Oracle Linux 9 (x86_64)': 'oracle-9-x86_64-uyuni',
+        'Rocky Linux 8 (x86_64)': 'rockylinux8-x86_64-uyuni',
+        'Rocky Linux 9 (x86_64)': 'rockylinux9-x86_64-uyuni',
+        'Ubuntu 20.04 LTS AMD64 Base for Uyuni': 'ubuntu-2004-amd64-uyuni',
+        'Ubuntu 22.04 LTS AMD64 Base for Uyuni': 'ubuntu-2204-amd64-uyuni',
+        'Ubuntu 24.04 LTS AMD64 Base for Uyuni': 'ubuntu-2404-amd64-uyuni',
+        'Debian 12 (bookworm) pool for amd64 for Uyuni': 'debian12-amd64-uyuni',
+        'openSUSE Leap 15.6 (aarch64)': 'openSUSE-Leap-15.6-aarch64-uyuni'
+    }
+} as const;
+
+// Used for creating bootstrap repositories
+// SUMA: The values can be found under Admin -> Setup Wizard -> Products
+// Select the desired product and have a look at its product channels
+// The required product has to be synced before
+// Uyuni: You have to use `spacewalk-common-channels -l` with the appended architecture
+// e.g. almalinux9 -> almalinux9-x86_64
+export const PARENT_CHANNEL_LABEL_TO_SYNC_BY_BASE_CHANNEL = {
+    'SUSE Manager': {
+        'SLE-Product-SUSE-Manager-Proxy-4.3-Pool for x86_64': 'sle-product-suse-manager-proxy-4.3-pool-x86_64',
+        'SLES12-SP5-Pool for x86_64': null,
+        'SLE-Product-SLES15-SP3-Pool for x86_64': 'sle-product-sles15-sp3-pool-x86_64',
+        'SLE-Product-SLES15-SP4-Pool for x86_64': 'sle-product-sles15-sp4-pool-x86_64',
+        'SLE-Product-SLES15-SP5-Pool for x86_64': 'sle-product-sles15-sp5-pool-x86_64',
+        'SLE-Product-SLES15-SP6-Pool for x86_64': 'sle-product-sles15-sp6-pool-x86_64',
+        'SLE-Product-SLES15-SP7-Pool for x86_64': 'sle-product-sles15-sp7-pool-x86_64',
+        'SUSE-MicroOS-5.1-Pool for x86_64': 'suse-microos-5.1-pool-x86_64',
+        'SUSE-MicroOS-5.2-Pool for x86_64': 'suse-microos-5.2-pool-x86_64',
+        'SLE-Micro-5.3-Pool for x86_64': 'sle-micro-5.3-pool-x86_64',
+        'SLE-Micro-5.4-Pool for x86_64': 'sle-micro-5.4-pool-x86_64',
+        'SLE-Micro-5.5-Pool for x86_64': 'sle-micro-5.5-pool-x86_64',
+        'SL-Micro-6.0-Pool for x86_64': 'sl-micro-6.0-pool-x86_64',
+        'SL-Micro-6.1-Pool for x86_64': 'sl-micro-6.1-pool-x86_64',
+        'almalinux8 for x86_64': null,
+        'almalinux9 for x86_64': null,
+        'amazonlinux2023 for x86_64': null,
+        'Fake-Base-Channel-SUSE-like': null,
+        'RHEL x86_64 Server 7': 'rhel-x86_64-server-7',
+        'EL9-Pool for x86_64': 'el9-pool-x86_64',
+        'oraclelinux9 for x86_64': null,
+        'RHEL8-Pool for x86_64': null,
+        'rockylinux-8 for x86_64': null,
+        'rockylinux-9 for x86_64': null,
+        'ubuntu-2004-amd64-main for amd64': null,
+        'ubuntu-2204-amd64-main for amd64': null,
+        'ubuntu-2404-amd64-main for amd64': null,
+        'debian-12-pool for amd64': 'debian-12-pool-amd64',
+        'openSUSE-Leap-15.6-Pool for aarch64': null
+    },
+    'Uyuni': {
+        'openSUSE Leap 15.6 (x86_64)': null,
+        'openSUSE Leap Micro 5.5 (x86_64)': 'opensuse_micro5_5-x86_64',
+        'openSUSE Tumbleweed (x86_64)': null,
+        'SLES12-SP5-Pool for x86_64': null,
+        'SLE-Product-SLES15-SP3-Pool for x86_64': 'sle-product-sles15-sp3-pool-x86_64',
+        'SLE-Product-SLES15-SP4-Pool for x86_64': 'sle-product-sles15-sp4-pool-x86_64',
+        'SLE-Product-SLES15-SP5-Pool for x86_64': 'sle-product-sles15-sp5-pool-x86_64',
+        'SLE-Product-SLES15-SP6-Pool for x86_64': 'sle-product-sles15-sp6-pool-x86_64',
+        'SLE-Product-SLES15-SP7-Pool for x86_64': 'sle-product-sles15-sp7-pool-x86_64',
+        'SUSE-MicroOS-5.1-Pool for x86_64': 'suse-microos-5.1-pool-x86_64',
+        'SUSE-MicroOS-5.2-Pool for x86_64': 'suse-microos-5.2-pool-x86_64',
+        'SLE-Micro-5.3-Pool for x86_64': 'sle-micro-5.3-pool-x86_64',
+        'SLE-Micro-5.4-Pool for x86_64': 'sle-micro-5.4-pool-x86_64',
+        'SLE-Micro-5.5-Pool for x86_64': 'sle-micro-5.5-pool-x86_64',
+        'SL-Micro-6.0-Pool for x86_64': 'sl-micro-6.0-pool-x86_64',
+        'SL-Micro-6.1-Pool for x86_64': 'sl-micro-6.1-pool-x86_64',
+        'AlmaLinux 8 (x86_64)': null,
+        'AlmaLinux 9 (x86_64)': null,
+        'Amazon Linux 2023 x86_64': null,
+        'Fake-Base-Channel-SUSE-like': null,
+        'CentOS 7 (x86_64)': 'centos-7-x86_64-uyuni',
+        'EL9-Pool for x86_64': 'el9-pool-x86_64',
+        'Oracle Linux 9 (x86_64)': null,
+        'Rocky Linux 8 (x86_64)': null,
+        'Rocky Linux 9 (x86_64)': null,
+        'Ubuntu 20.04 LTS AMD64 Base for Uyuni': null,
+        'Ubuntu 22.04 LTS AMD64 Base for Uyuni': null,
+        'Ubuntu 24.04 LTS AMD64 Base for Uyuni': null,
+        'Debian 12 (bookworm) pool for amd64 for Uyuni': 'debian12-amd64-uyuni',
+        'openSUSE Leap 15.6 (aarch64)': null
+    }
+} as const;
+
 export const PKGARCH_BY_CLIENT: PkgArchByClient = {
     'proxy': 'x86_64',
     'sle_minion': 'x86_64',

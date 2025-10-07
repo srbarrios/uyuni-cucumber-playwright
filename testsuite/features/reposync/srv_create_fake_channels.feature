@@ -52,7 +52,7 @@ Feature: Create fake channels
     And I click on "Create Channel"
     Then I should see a "Channel Fake-Child-Channel-SUSE-like created." text
 
-@sle_minion
+  @sle_minion
   Scenario: Add a SUSE fake child channel to the SUSE Product base channel
     When I follow the left menu "Software > Manage > Channels"
     And I follow "Create Channel"
@@ -113,9 +113,9 @@ Feature: Create fake channels
     And I click on "Create Channel"
     Then I should see a "Channel Test-Child-Channel-x86_64 created." text
 
-@pxeboot_minion
-@uyuni
-@scc_credentials
+  @pxeboot_minion
+  @uyuni
+  @scc_credentials
   Scenario: Add a fake terminal child channel to the SUSE Product base channel
     When I follow the left menu "Software > Manage > Channels"
     And I follow "Create Channel"
@@ -128,7 +128,7 @@ Feature: Create fake channels
     And I click on "Create Channel"
     Then I should see a "Channel Fake-RPM-Terminal-Channel created." text
 
-@deblike_minion
+  @deblike_minion
   Scenario: Add Debian-like AMD64 base channel
     When I follow the left menu "Software > Manage > Channels"
     And I follow "Create Channel"
@@ -146,7 +146,7 @@ Feature: Create fake channels
     And I click on "Create Channel"
     Then I should see a "Channel Fake-Base-Channel-Debian-like created." text
 
-@rhlike_minion
+  @rhlike_minion
   Scenario: Add a RedHat-like base channel
     When I follow the left menu "Software > Manage > Channels"
     And I follow "Create Channel"
@@ -159,7 +159,7 @@ Feature: Create fake channels
     And I click on "Create Channel"
     Then I should see a "Channel Fake-Base-Channel-RH-like created." text
 
-@rhlike_minion
+  @rhlike_minion
   Scenario: Add a fake AppStream base channel
     When I follow the left menu "Software > Manage > Channels"
     And I follow "Create Channel"

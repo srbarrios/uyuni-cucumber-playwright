@@ -9,8 +9,9 @@ Feature: Update activation keys
   Scenario: Log in as admin user
     Given I am authorized for the "Admin" section
 
-@scc_credentials
-@susemanager
+  @scc_credentials
+  @susemanager
+  @sle_minion
   Scenario: Update SLE key with synced base product
     When I follow the left menu "Systems > Activation Keys"
     And I follow "SUSE Test Key x86_64" in the content area
@@ -35,7 +36,8 @@ Feature: Update activation keys
     And I click on "Update Activation Key"
     Then I should see a "Activation key SUSE Test Key x86_64 has been modified" text
 
-@uyuni
+  @uyuni
+  @sle_minion
   Scenario: Update openSUSE Leap key with synced base product
     When I follow the left menu "Systems > Activation Keys"
     And I follow "SUSE Test Key x86_64" in the content area
@@ -48,8 +50,9 @@ Feature: Update activation keys
     And I click on "Update Activation Key"
     Then I should see a "Activation key SUSE Test Key x86_64 has been modified" text
 
-@scc_credentials
-@susemanager
+  @scc_credentials
+  @susemanager
+  @sle_minion
   Scenario: Update SLE SSH key with synced base product
     When I follow the left menu "Systems > Activation Keys"
     And I follow "SUSE SSH Test Key x86_64" in the content area
@@ -68,7 +71,8 @@ Feature: Update activation keys
     And I click on "Update Activation Key"
     Then I should see a "Activation key SUSE SSH Test Key x86_64 has been modified" text
 
-@uyuni
+  @uyuni
+  @sle_minion
   Scenario: Update openSUSE Leap SSH key with synced base product
     When I follow the left menu "Systems > Activation Keys"
     And I follow "SUSE SSH Test Key x86_64" in the content area
@@ -81,8 +85,9 @@ Feature: Update activation keys
     And I click on "Update Activation Key"
     Then I should see a "Activation key SUSE SSH Test Key x86_64 has been modified" text
 
-@scc_credentials
-@susemanager
+  @scc_credentials
+  @susemanager
+  @sle_minion
   Scenario: Update SLE SSH tunnel key with synced base product
     When I follow the left menu "Systems > Activation Keys"
     And I follow "SUSE SSH Tunnel Test Key x86_64" in the content area
@@ -101,7 +106,8 @@ Feature: Update activation keys
     And I click on "Update Activation Key"
     Then I should see a "Activation key SUSE SSH Tunnel Test Key x86_64 has been modified" text
 
-@uyuni
+  @uyuni
+  @sle_minion
   Scenario: Update openSUSE Leap SSH tunnel key with synced base product
     When I follow the left menu "Systems > Activation Keys"
     And I follow "SUSE SSH Tunnel Test Key x86_64" in the content area
@@ -114,11 +120,11 @@ Feature: Update activation keys
     And I click on "Update Activation Key"
     Then I should see a "Activation key SUSE SSH Tunnel Test Key x86_64 has been modified" text
 
-@scc_credentials
-@susemanager
-@proxy
-@containerized_server
-@transactional_server
+  @scc_credentials
+  @susemanager
+  @proxy
+  @containerized_server
+  @transactional_server
   Scenario: Update the SLE Micro proxy key with synced base product
     When I follow the left menu "Systems > Activation Keys"
     And I follow "Proxy Key x86_64" in the content area
@@ -132,11 +138,11 @@ Feature: Update activation keys
     And I click on "Update Activation Key"
     Then I should see a "Activation key Proxy Key x86_64 has been modified" text
 
-@scc_credentials
-@susemanager
-@proxy
-@containerized_server
-@skip_if_transactional_server
+  @scc_credentials
+  @susemanager
+  @proxy
+  @containerized_server
+  @skip_if_transactional_server
   Scenario: Update the SLES proxy key with synced base product
     When I follow the left menu "Systems > Activation Keys"
     And I follow "Proxy Key x86_64" in the content area
@@ -150,21 +156,21 @@ Feature: Update activation keys
     And I click on "Update Activation Key"
     Then I should see a "Activation key Proxy Key x86_64 has been modified" text
 
-@uyuni
-@proxy
-@containerized_server
-@skip_if_cloud
+  @uyuni
+  @proxy
+  @containerized_server
+  @skip_if_cloud
   Scenario: Update the openSUSE Tumbleweed Proxy Host key with synced base product
     When I follow the left menu "Systems > Activation Keys"
     And I follow "Proxy Key x86_64" in the content area
     And I wait for child channels to appear
     And I select the parent channel for the "proxy_container" from "selectedBaseChannel"
     And I wait for child channels to appear
-     And I check "Uyuni Client Tools for openSUSE Tumbleweed (x86_64) (Development)"
+    And I check "Uyuni Client Tools for openSUSE Tumbleweed (x86_64) (Development)"
     And I click on "Update Activation Key"
     Then I should see a "Activation key Proxy Key x86_64 has been modified" text
 
-@scc_credentials
+  @scc_credentials
   Scenario: Update build host key with synced base product
     When I follow the left menu "Systems > Activation Keys"
     And I follow "Build host Key x86_64" in the content area
@@ -187,8 +193,9 @@ Feature: Update activation keys
     And I click on "Update Activation Key"
     Then I should see a "Activation key Build host Key x86_64 has been modified" text
 
-@scc_credentials
-@uyuni
+  @scc_credentials
+  @uyuni
+  @build_host
   Scenario: Update build host key with Uyuni client tools
     When I follow the left menu "Systems > Activation Keys"
     And I follow "Build host Key x86_64" in the content area
@@ -200,9 +207,10 @@ Feature: Update activation keys
     And I click on "Update Activation Key"
     Then I should see a "Activation key Build host Key x86_64 has been modified" text
 
-@skip_if_github_validation
-@scc_credentials
-@uyuni
+  @skip_if_github_validation
+  @scc_credentials
+  @uyuni
+  @build_host
   Scenario: Update build host key with dev child channel
     When I follow the left menu "Systems > Activation Keys"
     And I follow "Build host Key x86_64" in the content area
@@ -214,7 +222,8 @@ Feature: Update activation keys
     And I click on "Update Activation Key"
     Then I should see a "Activation key Build host Key x86_64 has been modified" text
 
-@scc_credentials
+  @scc_credentials
+  @pxeboot_minion
   Scenario: Update terminal key with synced base product
     When I follow the left menu "Systems > Activation Keys"
     And I follow "Terminal Key x86_64" in the content area
@@ -235,8 +244,8 @@ Feature: Update activation keys
     And I click on "Update Activation Key"
     Then I should see a "Activation key Terminal Key x86_64 has been modified" text
 
-@susemanager
-@scc_credentials
+  @susemanager
+  @scc_credentials
   Scenario: Update terminal key with normal SUSE fake channel
     When I follow the left menu "Systems > Activation Keys"
     And I follow "Terminal Key x86_64" in the content area
@@ -246,9 +255,9 @@ Feature: Update activation keys
     And I click on "Update Activation Key"
     Then I should see a "Activation key Terminal Key x86_64 has been modified" text
 
-@pxeboot_minion
-@uyuni
-@scc_credentials
+  @pxeboot_minion
+  @uyuni
+  @scc_credentials
   Scenario: Update terminal key with specific fake channel
     When I follow the left menu "Systems > Activation Keys"
     And I follow "Terminal Key x86_64" in the content area
@@ -260,8 +269,8 @@ Feature: Update activation keys
     And I click on "Update Activation Key"
     Then I should see a "Activation key Terminal Key x86_64 has been modified" text
 
-@skip_if_github_validation
-@sle_minion
+  @skip_if_github_validation
+  @sle_minion
   Scenario: Update SLE key with to include dev child channel
     When I follow the left menu "Systems > Activation Keys"
     And I follow "SUSE Test Key x86_64" in the content area
@@ -270,8 +279,8 @@ Feature: Update activation keys
     And I click on "Update Activation Key"
     Then I should see a "Activation key SUSE Test Key x86_64 has been modified" text
 
-@skip_if_github_validation
-@deblike_minion
+  @skip_if_github_validation
+  @deblike_minion
   Scenario: Update Debian-like key with to include dev child channel
     When I follow the left menu "Systems > Activation Keys"
     And I follow "Debian-like Test Key" in the content area
@@ -280,8 +289,8 @@ Feature: Update activation keys
     And I click on "Update Activation Key"
     Then I should see a "Activation key Debian-like Test Key has been modified" text
 
-@skip_if_github_validation
-@rhlike_minion
+  @skip_if_github_validation
+  @rhlike_minion
   Scenario: Update RedHat-like key with to include dev child channel
     When I follow the left menu "Systems > Activation Keys"
     And I follow "RedHat like Test Key" in the content area

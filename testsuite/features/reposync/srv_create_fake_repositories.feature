@@ -30,7 +30,7 @@ Feature: Create fake repositories for each fake child channel
     Then I should see a "Repository updated successfully" text
     And I should see "metadataSigned" as unchecked
 
-@rhlike_minion
+  @rhlike_minion
   Scenario: Create a fake AppStream repository
     When I follow the left menu "Software > Manage > Repositories"
     And I follow "Create Repository"
@@ -40,7 +40,7 @@ Feature: Create fake repositories for each fake child channel
     Then I should see a "Repository created successfully" text
     And I should see "metadataSigned" as checked
 
-@rhlike_minion
+  @rhlike_minion
   Scenario: Disable metadata check for the fake AppStream repository
     When I follow the left menu "Software > Manage > Repositories"
     And I follow "fake-appstream-repo"
@@ -49,7 +49,7 @@ Feature: Create fake repositories for each fake child channel
     Then I should see a "Repository updated successfully" text
     And I should see "metadataSigned" as unchecked
 
-@sle_minion
+  @sle_minion
   Scenario: Add the fake RPM repository to the SUSE fake child channel
     When I follow the left menu "Software > Manage > Channels"
     And I follow "Fake-RPM-SUSE-Channel"
@@ -72,7 +72,7 @@ Feature: Create fake repositories for each fake child channel
     And I click on "Save Repositories"
     Then I should see a "Test-Child-Channel-x86_64 repository information was successfully updated" text
 
-@rhlike_minion
+  @rhlike_minion
   Scenario: Add the fake RPM repository to the RedHat-like base channel
     When I follow the left menu "Software > Manage > Channels"
     And I follow "Fake-Base-Channel-RH-like"
@@ -84,7 +84,7 @@ Feature: Create fake repositories for each fake child channel
     And I click on "Save Repositories"
     Then I should see a "Fake-Base-Channel-RH-like repository information was successfully updated" text
 
-@rhlike_minion
+  @rhlike_minion
   Scenario: Add the fake AppStream repository to the AppStream base channel
     When I follow the left menu "Software > Manage > Channels"
     And I follow "Fake-Base-Channel-AppStream"
@@ -116,7 +116,7 @@ Feature: Create fake repositories for each fake child channel
     And I click on "Save Repositories"
     Then I should see a "Fake-Child-Channel-i586 repository information was successfully updated" text
 
-@sle_minion
+  @sle_minion
   Scenario: Add the repository to the SUSE-like child channel
     When I follow the left menu "Software > Manage > Channels"
     And I follow "Fake-Child-Channel-SUSE-like"
@@ -125,7 +125,7 @@ Feature: Create fake repositories for each fake child channel
     And I click on "Save Repositories"
     Then I should see a "Fake-Child-Channel-SUSE-like repository information was successfully updated" text
 
-@deblike_minion
+  @deblike_minion
   Scenario: Create a fake repository for Debian-like
     When I follow the left menu "Software > Manage > Repositories"
     And I follow "Create Repository"
@@ -135,7 +135,7 @@ Feature: Create fake repositories for each fake child channel
     And I click on "Create Repository"
     Then I should see a "Repository created successfully" text
 
-@deblike_minion
+  @deblike_minion
   Scenario: Add the repository to the Debian-like base channel
     When I follow the left menu "Software > Manage > Channels"
     And I follow "Fake-Base-Channel-Debian-like"
@@ -144,9 +144,9 @@ Feature: Create fake repositories for each fake child channel
     And I click on "Save Repositories"
     Then I should see a "Fake-Base-Channel-Debian-like repository information was successfully updated" text
 
-@pxeboot_minion
-@uyuni
-@scc_credentials
+  @pxeboot_minion
+  @uyuni
+  @scc_credentials
   Scenario: Add the repository to the terminal child channel
     When I follow the left menu "Software > Manage > Channels"
     And I follow "Fake-RPM-Terminal-Channel"

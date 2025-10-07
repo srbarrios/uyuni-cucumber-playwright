@@ -7,7 +7,7 @@ Feature: Synchronize development channels
   As admin
   I want to synchronize the dev channels
 
-@sle_minion
+  @sle_minion
   Scenario: Synchronize Devel-SUSE-Channel channel
     Given I am authorized for the "Admin" section
     When I follow the left menu "Software > Manage > Channels"
@@ -19,7 +19,7 @@ Feature: Synchronize development channels
     Then I should see a "Repository sync scheduled for Devel-SUSE-Channel." text
     And I wait until the channel "devel-suse-channel" has been synced
 
-@deblike_minion
+  @deblike_minion
   Scenario: Synchronize Devel-Debian-like-Channel channel
     Given I am authorized for the "Admin" section
     When I follow the left menu "Software > Manage > Channels"
@@ -31,7 +31,7 @@ Feature: Synchronize development channels
     Then I should see a "Repository sync scheduled for Devel-Debian-like-Channel." text
     And I wait until the channel "devel-debian-like-channel" has been synced
 
-@rhlike_minion
+  @rhlike_minion
   Scenario: Synchronize Devel-RH-like-Channel channel
     Given I am authorized for the "Admin" section
     When I follow the left menu "Software > Manage > Channels"
@@ -43,8 +43,8 @@ Feature: Synchronize development channels
     Then I should see a "Repository sync scheduled for Devel-RH-like-Channel." text
     And I wait until the channel "devel-rh-like-channel" has been synced
 
-@build_host
-@uyuni
+  @build_host
+  @uyuni
   Scenario: Synchronize Devel-Build-Host-Channel channel
     Given I am authorized for the "Admin" section
     When I follow the left menu "Software > Manage > Channels"

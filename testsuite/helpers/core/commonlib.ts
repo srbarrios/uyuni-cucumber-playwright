@@ -422,6 +422,14 @@ export function getApiTest(): ApiTest {
     return globalVars.apiTest;
 }
 
+export function resetApiTest(): ApiTest {
+    if (globalVars.apiTest) {
+        globalVars.apiTest.close();
+        globalVars.apiTest = createApiTest(getAppHost());
+    }
+    return globalVars.apiTest;
+}
+
 export function setCobblerTest(cobblerTest: CobblerTest): void {
     globalVars.cobblerTest = cobblerTest;
 }

@@ -195,12 +195,7 @@ When(/^I (check|uncheck) "([^"]*)" by label$/, async function (action, label) {
 });
 
 When(/^I select "([^"]*)" from "([^"]*)"$/, async function (option, field) {
-    try {
-        await getCurrentPage().locator(`select[name="${field}"]`).selectOption(option);
-    } catch (e) {
-        await getCurrentPage().locator(`div[data-testid="${field}-child__control"]`).click();
-        await getCurrentPage().locator(`div[data-testid="${field}-child__option"]`).filter({hasText: option}).first().click();
-    }
+    await selectOptionFromField(option, field);
 });
 
 When(/^I select the parent channel for the "([^"]*)" from "([^"]*)"$/, async function (client, from) {
@@ -246,14 +241,14 @@ When(/^I choose "([^"]*)"$/, async function (value) {
 When(/^I enter "([^"]*)" as "([^"]*)"$/, async function (text: string, field: string) {
     const locators = [
         getCurrentPage().locator(`#${field}, [name="${field}"]`),
-        getCurrentPage().getByRole('textbox', { name: field }),
+        getCurrentPage().getByRole('textbox', {name: field}),
         getCurrentPage().getByLabel(field),
     ];
 
     let timeout = 1000;
     for (const locator of locators) {
         try {
-            await locator.waitFor({ state: "visible", timeout: timeout });
+            await locator.waitFor({state: "visible", timeout: timeout});
             await locator.fill(text);
             console.debug(`Input field "${field}" located through: ${locator}`)
             return; // stop at first success
@@ -266,6 +261,7 @@ When(/^I enter "([^"]*)" as "([^"]*)"$/, async function (text: string, field: st
     throw new Error(`Could not find a visible input field for "${field}"`);
 });
 
+
 When(/^I fill the field with ID "([^"]*)" with "([^"]*)"$/, async function (fieldId: string, text: string) {
     const locator = getCurrentPage().locator(`#${fieldId}`);
     await locator.fill(text);
@@ -277,12 +273,12 @@ When(/^I fill the field with name "([^"]*)" with "([^"]*)"$/, async function (fi
 });
 
 When(/^I fill the "([^"]*)" textbox with "([^"]*)"$/, async function (name: string, text: string) {
-    const locator = getCurrentPage().getByRole('textbox', { name: name, exact: true });
+    const locator = getCurrentPage().getByRole('textbox', {name: name, exact: true});
     await locator.fill(text);
 });
 
 When(/^I fill the "([^"]*)" label with "([^"]*)"$/, async function (fieldLabel: string, text: string) {
-    const locator = getCurrentPage().getByLabel(fieldLabel, { exact: true });
+    const locator = getCurrentPage().getByLabel(fieldLabel, {exact: true});
     await locator.fill(text);
 });
 
@@ -810,12 +806,97 @@ When(/^I enter "([^"]*)" as the filtered synopsis$/, async function (input) {
     await getCurrentPage().locator("input[placeholder*='Filter by Synopsis']").fill(input);
 });
 
+When(/^I enter "([^"]*)" as the filtered latest package$/, async function (input) {
+    await getCurrentPage().locator("input[placeholder*='Filter by Package Name']").fill(input);
+});
+
+When(/^I enter "([^"]*)" as the filtered synopsis$/, async function (input) {
+    await getCurrentPage().locator("input[placeholder*='Filter by Synopsis']").fill(input);
+});
+
+When(/^I enter "([^"]*)" as the filtered channel name$/, async function (input) {
+    await getCurrentPage().locator("input[placeholder*='Filter by Channel Name']").fill(input);
+});
+
+When(/^I enter "([^"]*)" as the filtered product description$/, async function (input) {
+    await getCurrentPage().locator("input[name='product-description-filter']").fill(input);
+});
+
+When(/^I enter "([^"]*)" as the filtered XCCDF result type$/, async function (input) {
+    await getCurrentPage().locator("input[placeholder*='Filter by Result']").fill(input);
+});
+
+When(/^I enter "([^"]*)" as the filtered snippet name$/, async function (input) {
+    await getCurrentPage().locator("input[placeholder*='Filter by Snippet Name']").fill(input);
+});
+
+When(/^I enter "([^"]*)" as the filtered formula name$/, async function (input) {
+    await getCurrentPage().locator("input[placeholder*='Filter by formula name']").fill(input);
+});
+
 When(/^I enter the package for "([^"]*)" as the filtered package name$/, async function (host) {
     const packageName = PACKAGE_BY_CLIENT[host];
     if (!packageName) {
         throw new Error(`Package for client '${host}' not found in PACKAGE_BY_CLIENT helper.`);
     }
     await enterFilteredPackageName(packageName);
+});
+
+
+When(/^I check the package( last version)? for "([^"]*)" in the list$/, async function (versionFlag, host) {
+    const packageName = PACKAGE_BY_CLIENT[host];
+    if (!packageName) {
+        throw new Error(`Package for client '${host}' not found in PACKAGE_BY_CLIENT helper.`);
+    }
+
+    if (versionFlag) {
+        const rowWithLatest = getCurrentPage().locator('tr', {hasText: packageName}).filter({hasText: /latest|last|Last/i});
+        if (await rowWithLatest.count() > 0) {
+            await rowWithLatest.locator('input[type="checkbox"]').first().check();
+            return;
+        }
+    }
+
+    await toggleCheckboxInList(getCurrentPage(), 'check', packageName);
+});
+
+Then(/^I should only see success signs in the product list$/, async function () {
+    const successIcons = getCurrentPage().locator('.fa-check-circle');
+    if (await successIcons.count() === 0) {
+        throw new Error('No product synchronized');
+    }
+    const spinnerIcons = getCurrentPage().locator('.fa-spinner');
+    if (await spinnerIcons.count() > 0) {
+        throw new Error('At least one product is not fully synchronized');
+    }
+    const warningIcons = getCurrentPage().locator('.fa-exclamation-triangle');
+    if (await warningIcons.count() > 0) {
+        throw new Error('Warning detected');
+    }
+    const errorIcons = getCurrentPage().locator('.fa-exclamation-circle');
+    if (await errorIcons.count() > 0) {
+        throw new Error('Error detected');
+    }
+});
+
+Then(/^I select the "([^"]*)" repo$/, async function (repo) {
+    await toggleCheckboxInList(getCurrentPage(), 'check', repo);
+});
+
+When(/^I (check|uncheck) "([^"]*)"( last version)? in the list$/, async function (action, text, versionFlag) {
+    if (versionFlag) {
+        const rowWithLatest = getCurrentPage().locator('tr', {hasText: text}).filter({hasText: /latest|last|Last/i});
+        if (await rowWithLatest.count() > 0) {
+            const checkbox = await rowWithLatest.locator('input[type="checkbox"]').first();
+            if (action === 'check') {
+                await checkbox.check();
+            } else {
+                await checkbox.uncheck();
+            }
+            return;
+        }
+    }
+    await toggleCheckboxInList(getCurrentPage(), action, text);
 });
 
 Then(/^I check the row with the "([^"]*)" link$/, async function (text) {

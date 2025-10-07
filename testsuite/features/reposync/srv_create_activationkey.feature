@@ -50,7 +50,7 @@ Feature: Create activation keys
     And I should see a "Groups" link
     And I should see a "Activated Systems" link
 
-@rhlike_minion
+  @rhlike_minion
   Scenario: Create an activation key for RedHat-like minion
     When I follow the left menu "Systems > Activation Keys"
     And I follow "Create Key"
@@ -61,7 +61,7 @@ Feature: Create activation keys
     And I click on "Create Activation Key"
     Then I should see a "Activation key RedHat like Test Key has been created" text
 
-@deblike_minion
+  @deblike_minion
   Scenario: Create an activation key for Debian-like minion
     When I follow the left menu "Systems > Activation Keys"
     And I follow "Create Key"
@@ -113,7 +113,7 @@ Feature: Create activation keys
     And I click on "Create Activation Key"
     Then I should see a "Activation key Build host Key x86_64 has been created" text
 
-@scc_credentials
+  @scc_credentials
   Scenario: Create an activation key for the terminal
     When I follow the left menu "Systems > Activation Keys"
     And I follow "Create Key"

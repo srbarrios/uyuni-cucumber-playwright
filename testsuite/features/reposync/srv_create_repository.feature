@@ -88,7 +88,7 @@ Feature: Add a repository to a channel
     And I click on "Sync Now"
     Then I should see a "Repository sync scheduled for Fake-i586-Channel." text
 
-@deblike_minion
+  @deblike_minion
   Scenario: Add a test repository for Debian-like
     When I follow the left menu "Software > Manage > Repositories"
     And I follow "Create Repository"
@@ -98,7 +98,7 @@ Feature: Add a repository to a channel
     And I click on "Create Repository"
     Then I should see a "Repository created successfully" text
 
-@deblike_minion
+  @deblike_minion
   Scenario: Add the Debian-like repository to the AMD64 channel
     When I follow the left menu "Software > Manage > Channels"
     And I follow "Fake-Deb-AMD64-Channel"
@@ -107,7 +107,7 @@ Feature: Add a repository to a channel
     And I click on "Save Repositories"
     Then I should see a "Fake-Deb-AMD64-Channel repository information was successfully updated" text
 
-@deblike_minion
+  @deblike_minion
   Scenario: Synchronize the Debian-like repository in the AMD64 channel
     When I follow the left menu "Software > Manage > Channels"
     And I follow "Fake-Deb-AMD64-Channel"
@@ -117,7 +117,7 @@ Feature: Add a repository to a channel
     And I click on "Sync Now"
     Then I should see a "Repository sync scheduled for Fake-Deb-AMD64-Channel." text
 
-@rhlike_minion
+  @rhlike_minion
   Scenario: Add the repository to the RedHat-like channel
     When I follow the left menu "Software > Manage > Channels"
     And I follow "Fake-RH-Like-Channel"
@@ -129,7 +129,7 @@ Feature: Add a repository to a channel
     And I click on "Save Repositories"
     Then I should see a "Fake-RH-Like-Channel repository information was successfully updated" text
 
-@rhlike_minion
+  @rhlike_minion
   Scenario: Synchronize the repository in the x86_64 channel
     When I follow the left menu "Software > Manage > Channels"
     And I follow "Fake-RH-Like-Channel"
@@ -162,7 +162,7 @@ Feature: Add a repository to a channel
     And I follow "Packages" in the content area
     And I wait until I see "blackhole-dummy" text, refreshing the page
 
-@deblike_minion
+  @deblike_minion
   Scenario: Reposync handles wrong encoding on DEB attributes
     When I follow the left menu "Software > Channel List"
     And I follow "Fake-Deb-AMD64-Channel"

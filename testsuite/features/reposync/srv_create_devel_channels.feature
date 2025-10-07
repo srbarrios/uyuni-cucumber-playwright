@@ -10,7 +10,7 @@ Feature: Create custom channels with development repositories
   Scenario: Log in as admin user
     Given I am authorized for the "Admin" section
 
-@sle_minion
+  @sle_minion
   Scenario: Create a custom channel for SUSE minions
     When I follow the left menu "Software > Manage > Channels"
     And I follow "Create Channel"
@@ -23,12 +23,12 @@ Feature: Create custom channels with development repositories
     And I click on "Create Channel"
     Then I should see a "Channel Devel-SUSE-Channel created." text
 
-@sle_minion
+  @sle_minion
   Scenario: Create custom repositories inside the SUSE custom channel
     When I prepare the development repositories of "sle_minion" as part of "devel-suse-channel" channel
 
-@uyuni
-@build_host
+  @uyuni
+  @build_host
   Scenario: Create a custom channel for Build Host
     When I follow the left menu "Software > Manage > Channels"
     And I follow "Create Channel"
@@ -41,12 +41,12 @@ Feature: Create custom channels with development repositories
     And I click on "Create Channel"
     Then I should see a "Channel Devel-Build-Host-Channel created." text
 
-@uyuni
-@build_host
+  @uyuni
+  @build_host
   Scenario: Create custom repositories inside the Build Host custom channel
     When I prepare the development repositories of "build_host" as part of "devel-build-host-channel" channel
 
-@deblike_minion
+  @deblike_minion
   Scenario: Create a custom channel for Debian-like minions
     When I follow the left menu "Software > Manage > Channels"
     And I follow "Create Channel"
@@ -59,11 +59,11 @@ Feature: Create custom channels with development repositories
     And I click on "Create Channel"
     Then I should see a "Channel Devel-Debian-like-Channel created." text
 
-@deblike_minion
+  @deblike_minion
   Scenario: Create custom repositories inside the Debian-like custom channel
     When I prepare the development repositories of "deblike_minion" as part of "devel-debian-like-channel" channel
 
-@rhlike_minion
+  @rhlike_minion
   Scenario: Create a custom channel for RH-like minions
     When I follow the left menu "Software > Manage > Channels"
     And I follow "Create Channel"
@@ -76,6 +76,6 @@ Feature: Create custom channels with development repositories
     And I click on "Create Channel"
     Then I should see a "Channel Devel-RH-like-Channel created." text
 
-@rhlike_minion
+  @rhlike_minion
   Scenario: Create custom repositories inside the RH-like custom channel
     When I prepare the development repositories of "rhlike_minion" as part of "devel-rh-like-channel" channel
