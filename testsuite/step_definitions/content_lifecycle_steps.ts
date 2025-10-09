@@ -139,3 +139,7 @@ When(/^I enter the reactivation key of "([^"]*)"$/, async function (host) {
     const reactKey = await getApiTest().system.obtainReactivationKey(nodeId);
     await enterTextAsField(reactKey, 'reactivationKey');
 });
+
+When(/^I check the "remove fonts packages" CLM filter$/, async function () {
+    await getCurrentPage().locator('input[name="remove_fonts_packages"]').check();
+});

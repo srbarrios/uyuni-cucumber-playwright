@@ -422,9 +422,9 @@ export function getApiTest(): ApiTest {
     return globalVars.apiTest;
 }
 
-export function resetApiTest(): ApiTest {
+export async function resetApiTest(): Promise<ApiTest> {
     if (globalVars.apiTest) {
-        globalVars.apiTest.close();
+        await globalVars.apiTest.close();
         globalVars.apiTest = createApiTest(getAppHost());
     }
     return globalVars.apiTest;
@@ -434,10 +434,10 @@ export function setCobblerTest(cobblerTest: CobblerTest): void {
     globalVars.cobblerTest = cobblerTest;
 }
 
-export function getCobblerTest(): CobblerTest {
+export async function getCobblerTest(): Promise<CobblerTest> {
     if (!globalVars.cobblerTest) {
         // Create the instance only when it's first needed
-        globalVars.cobblerTest = createCobblerTest();
+        globalVars.cobblerTest = await createCobblerTest();
     }
     return globalVars.cobblerTest;
 }

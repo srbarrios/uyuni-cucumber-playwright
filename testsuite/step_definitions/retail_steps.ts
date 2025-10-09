@@ -1,7 +1,17 @@
 import {Then, When} from '@cucumber/cucumber';
 
-import {getTarget, globalVars, PRIVATE_ADDRESSES} from '../helpers/index.js';
-import {manageBranchServerRepositories} from '../helpers/embedded_steps/retail_helper.js';
+import {getTarget, globalVars, PRIVATE_ADDRESSES, getSystemId} from '../helpers/index.js';
+import {
+    computeKiwiProfileName,
+    computeKiwiProfileVersion,
+    manageBranchServerRepositories,
+    openImageDetailsPage,
+    shouldSeeImageIsBuilt,
+    shouldSeeLinkToDownloadImage
+} from '../helpers/embedded_steps/retail_helper.js';
+import {getCurrentPage, getAppHost} from "../helpers/index.js";
+import {expect} from "@playwright/test";
+import {followLinkInContentArea} from "../helpers/embedded_steps/navigation_helper.js";
 
 When(/^I start tftp on the proxy$/, async function () {
     const proxy = await getTarget('proxy');
@@ -188,9 +198,21 @@ When(/^I enter the local network in (.*) field of zone with local name$/, async 
     throw new Error('This step requires network addresses which cannot be accessed.');
 });
 
+Then(/^I should see the image for "([^"]*)" is built$/, async function (host: string) {
+    await shouldSeeImageIsBuilt(host);
+});
+
+Then(/^I open the details page of the image for "([^"]*)"$/, async function (host: string) {
+    await openImageDetailsPage(host);
+});
+
+Then(/^I should see a link to download the image for "([^"]*)"$/, async function (host: string) {
+    await shouldSeeLinkToDownloadImage(host);
+});
+
 When(/^I enter the image name for "([^"]*)" in (.*) field$/, async function (host, field) {
-    // This step relies on internal data structures which are not available.
-    throw new Error('This step requires internal data structures which cannot be accessed.');
+    const name = computeKiwiProfileName(host);
+    await getCurrentPage().locator(`#${field}`).fill(name);
 });
 
 When(/^I press "Add Item" in (.*) section$/, async function (section) {
@@ -248,12 +270,17 @@ When(/^I am on the image store of the Kiwi image for organization "([^"]*)"$/, a
     throw new Error('This step requires internal data structures which cannot be accessed.');
 });
 
-Then(/^I should see the name of the image for "([^"]*)"$/, async function (host) {
-    // This step relies on internal data structures which are not available.
-    throw new Error('This step requires internal data structures which cannot be accessed.');
+Then(/^I should see the name of the image for "([^"]*)"$/, async function (host: string) {
+    const name = computeKiwiProfileName(host);
+    await expect(getCurrentPage().getByText(name)).toBeVisible();
 });
 
-Then(/^the image for "([^"]*)" should exist on the branch server$/, async function (host) {
-    // This step relies on internal data structures which are not available.
-    throw new Error('This step requires internal data structures which cannot be accessed.');
+Then(/^the image for "([^"]*)" should exist on the branch server$/, async function (host: string) {
+    const name = computeKiwiProfileName(host);
+    const version = computeKiwiProfileVersion(host);
+    const proxy = await getTarget('proxy');
+    const {stdout} = await proxy.run(`ls /srv/saltboot/image/${name}-${version}*.kiwi`);
+    if (!stdout.includes(`${name}-${version}`)) {
+        throw new Error(`Image for ${host} does not exist on the branch server`);
+    }
 });

@@ -133,3 +133,7 @@ export async function waitUntilEventIsCompleted(pickupTimeout: number, completeT
     await waitUntilSeeText(event);
     await waitUntilEventIsCompletedRefreshingPage(completeTimeout);
 }
+
+export async function checkTextInField(text: string, field: string) {
+    await expect(getCurrentPage().locator(`//label[text()='${field}']/following-sibling::input`)).toHaveValue(text);
+}

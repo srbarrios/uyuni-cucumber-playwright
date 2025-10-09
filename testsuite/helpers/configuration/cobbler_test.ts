@@ -11,7 +11,12 @@ class CobblerTest {
     async init() {
         const server = await getTarget('server');
         const host = server.fullHostname || process.env.SERVER || 'localhost';
-        this.client = xmlrpc.createClient({host, port: 80, path: '/cobbler_api'});
+        try {
+            this.client = xmlrpc.createClient({host, port: 80, path: '/cobbler_api'});
+            return this.client;
+        } catch (e) {
+            throw new Error(`Initializing Cobbler client failed. ${e}`);
+        }
     }
 
     async login(user: string, pass: string): Promise<string> {
@@ -214,8 +219,8 @@ export default CobblerTest
  * Factory function to create Cobbler test instances
  * @returns CobblerTest instance
  */
-export function createCobblerTest(): CobblerTest {
+export async function createCobblerTest(): Promise<CobblerTest> {
     const cobbler = new CobblerTest();
-    cobbler.init();
+    await cobbler.init();
     return cobbler;
 }

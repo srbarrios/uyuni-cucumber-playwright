@@ -597,6 +597,12 @@ Then(/^I should see "([^"]*)" short hostname$/, async function (host) {
     await expect(getCurrentPage().getByText(shortName)).toBeVisible();
 });
 
+Then(/^I should see "([^"]*)" hostname as first search result$/, async function (host) {
+    const systemName = await getSystemName(host);
+    const firstSearchResult = getCurrentPage().locator('tbody tr:first-child td.sortedCol');
+    await expect(firstSearchResult).toHaveText(systemName);
+});
+
 Then(/^I should see "([^"]*)" hostname$/, async function (host) {
     const systemName = await getSystemName(host);
     await expect(getCurrentPage().getByText(systemName)).toBeVisible();
@@ -650,12 +656,18 @@ Then(/^I should not see a "([^"]*)" link$/, async function (text) {
     await expect(getCurrentPage().getByRole('link', {name: text, exact: false})).not.toBeVisible();
 });
 
+Then(/^I should see a Sign Out link$/, async function () {
+    const signOutLink = getCurrentPage().getByRole('link', {name: 'Sign Out', exact: false});
+    const logoutLink = getCurrentPage().getByRole('link', {name: 'Logout', exact: false});
+    await expect(signOutLink.or(logoutLink)).toBeVisible();
+});
+
 Then(/^I should see a "([^"]*)" button$/, async function (text) {
     await expect(getCurrentPage().getByRole('button', {name: text, exact: false})).toBeVisible();
 });
 
 Then(/^I should see a "([^"]*)" text in element "([^"]*)"$/, async function (text, element) {
-    const elementLocator = getCurrentPage().locator(`div#${element}, div.${element}`);
+    const elementLocator = getCurrentPage().locator(`div#${element}, div.${element}, span#${element}, span.${element}`);
     await expect(elementLocator.getByText(text)).toBeVisible();
 });
 
@@ -793,9 +805,33 @@ When(/^I click on the filter button$/, async function () {
     await expect(getCurrentPage().getByText('is filtered')).toBeVisible({timeout: 10000});
 });
 
+When(/^I click on the filter button until page does contain "([^"]*)" text$/, async function (text) {
+    await getCurrentPage().locator('button.spacewalk-button-filter').click();
+    await expect(getCurrentPage().getByText('is filtered')).toBeVisible({timeout: 10000});
+    await repeatUntilTimeout(async () => {
+        if (await getCurrentPage().getByText(text).isVisible({timeout: 3000})) return true;
+        await refreshPage(getCurrentPage());
+        return false;
+    }, {message: `Couldn't find text '${text}'`});
+});
+
+When(/^I click on the filter button until page does not contain "([^"]*)" text$/, async function (text) {
+    await getCurrentPage().locator('button.spacewalk-button-filter').click();
+    await expect(getCurrentPage().getByText('is filtered')).toBeVisible({timeout: 10000});
+    await repeatUntilTimeout(async () => {
+        if (!await getCurrentPage().getByText(text).isVisible({timeout: 3000})) return true;
+        await refreshPage(getCurrentPage());
+        return false;
+    }, {message: `Text '${text}' is still visible`});
+});
+
 When(/^I enter the hostname of "([^"]*)" as the filtered system name$/, async function (host) {
     const systemName = await getSystemName(host);
     await getCurrentPage().locator("input[placeholder*='Filter by System Name']").fill(systemName);
+});
+
+When(/^I enter "([^"]*)" as the left menu search field$/, async function (text) {
+    await getCurrentPage().locator('#filter').fill(text);
 });
 
 When(/^I enter "([^"]*)" as the filtered package name$/, async function (input) {
@@ -828,6 +864,10 @@ When(/^I enter "([^"]*)" as the filtered XCCDF result type$/, async function (in
 
 When(/^I enter "([^"]*)" as the filtered snippet name$/, async function (input) {
     await getCurrentPage().locator("input[placeholder*='Filter by Snippet Name']").fill(input);
+});
+
+When(/^I should see left menu empty$/, async function () {
+    await expect(getCurrentPage().locator('aside #nav nav ul li')).toHaveCount(0);
 });
 
 When(/^I enter "([^"]*)" as the filtered formula name$/, async function (input) {
@@ -904,6 +944,11 @@ Then(/^I check the row with the "([^"]*)" link$/, async function (text) {
     await row.locator('input[type="checkbox"]').first().check();
 });
 
+Then(/^I should see a "([^"]*)" link in the table first column$/, async function (text) {
+    const firstColumnLink = getCurrentPage().locator('tbody tr:first-child td:first-child a');
+    await expect(firstColumnLink).toHaveText(text);
+});
+
 Then(/^I check the row with the "([^"]*)" text$/, async function (text) {
     await toggleCheckboxInList(getCurrentPage(), 'check', text);
 });
@@ -912,6 +957,12 @@ When(/^I check row with "([^"]*)" and arch of "([^"]*)"$/, async function (text,
     const arch = PKGARCH_BY_CLIENT[client];
     const row = getCurrentPage().locator('tr', {hasText: text}).filter({hasText: arch});
     await row.locator('input[type="checkbox"]').first().check();
+});
+
+When(/^I uncheck row with "([^"]*)" and arch of "([^"]*)"$/, async function (text, client) {
+    const arch = PKGARCH_BY_CLIENT[client];
+    const row = getCurrentPage().locator('tr', {hasText: text}).filter({hasText: arch});
+    await row.locator('input[type="checkbox"]').first().uncheck();
 });
 
 // #####################################################################################

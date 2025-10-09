@@ -9,7 +9,7 @@ import {
     checkShutdown,
     ENV_VAR_BY_HOST,
     envConfig,
-    escapeRegex,
+    escapeRegex, extractLogsFromNode,
     fileDelete,
     fileExists,
     fileExtract,
@@ -849,6 +849,15 @@ When(/^I shutdown the spacewalk service$/, async function () {
     await server.run('spacewalk-service stop');
 });
 
+When(/^I execute spacewalk-debug on the server$/, async function () {
+    const server = await getTarget('server');
+    await server.run('spacewalk-debug');
+    const success = await fileExtract(server, '/tmp/spacewalk-debug.tar.bz2', 'spacewalk-debug.tar.bz2');
+    if (!success) {
+        throw new Error('Download debug file failed');
+    }
+});
+
 When(/^I extract the log files from all our active nodes$/, async function () {
     for (const host in ENV_VAR_BY_HOST) {
         try {
@@ -857,8 +866,30 @@ When(/^I extract the log files from all our active nodes$/, async function () {
             // Catch exceptions silently
         }
     }
-    // This part of the original code is not directly translatable as it relies on global state.
-    // A more robust implementation would involve iterating through a list of active nodes.
+    const nodes = getAllNodes();
+    for (const [host, node] of Object.entries(nodes)) {
+        if (
+            !node ||
+            ['salt_migration_minion', 'localhost'].includes(host) ||
+            host.endsWith('-ctl')
+        ) {
+            continue;
+        }
+        console.log(`Host: ${host}`);
+        console.log(`Node: ${node.fullHostname}`);
+        await extractLogsFromNode(node, host);
+    }
+});
+
+Then(/^files on container volumes should all have the proper SELinux label$/, async function () {
+    const node = await getTarget('server');
+    const cmd = '[ "$(sestatus 2>/dev/null | head -n 1 | grep enabled)" != "" ] && ' +
+        '(find /var/lib/containers/storage/volumes/*/_data -exec ls -Zd {} \\; | grep -v ":object_r:container_file_t:s0 ")';
+    const {stdout} = await node.runLocal(cmd, {checkErrors: false});
+    if (stdout !== '') {
+        console.log(stdout);
+        throw new Error('Wrong SELinux labels');
+    }
 });
 
 When(/^I run "([^"]*)" on "([^"]*)"$/, async function (cmd: string, host: string) {
@@ -1535,6 +1566,11 @@ When('I copy unset package file on "{string}"', async function (minion) {
     if (!success) throw new Error('File injection failed');
 });
 
+When(/^I restart the "([^"]*)" service on "([^"]*)"$/, async function (service: string, host: string) {
+    const node = await getTarget(host);
+    await node.run(`systemctl restart ${service}.service`);
+});
+
 When('I copy vCenter configuration file on server', async function () {
     const base_dir = "../upload_files/virtualization/";
     const success = await fileInject(await getTarget('server'), `${base_dir}vCenter.json`, '/var/tmp/vCenter.json');
@@ -1754,7 +1790,7 @@ When('I run spacewalk-hostname-rename command on the server', async function () 
 
     // Reset the API client to take the new CA into account
     console.log('Resetting the API client');
-    resetApiTest();
+    await resetApiTest();
 
     if (result_code !== 0) throw new Error('Error while running spacewalk-hostname-rename command - see logs above');
     if (out_spacewalk.includes('No such file or directory')) throw new Error('Error in the output logs - see logs above');
@@ -2020,4 +2056,47 @@ Then('the clock from {string} should be exact', async function (host: string) {
     const controller = Math.floor(Date.now() / 1000);
     const diff = parseInt(String(clockNode).trim(), 10) - controller;
     if (Math.abs(diff) >= 2) throw new Error(`clocks differ by ${diff} seconds`);
+});
+
+When(/^I clean the search index on the server$/, async function () {
+    const server = await getTarget('server');
+    const {returnCode} = await server.run('/usr/sbin/rhn-search cleanindex', {checkErrors: false});
+    if (returnCode !== 0) {
+        throw new Error('Failed to clean search index on the server');
+    }
+});
+
+When(/^I start the health check tool with supportconfig "([^"]*)" on "([^"]*)"$/, async function (supportconfig: string, host: string) {
+    const node = await getTarget(host);
+    await node.run(`podman run -d --name health-check-tool -p 8080:8080 -v ${supportconfig}:/supportconfig:ro registry.suse.com/suse/manager/5.0/manager-health-check:latest`);
+});
+
+When(/^I stop health check tool on "([^"]*)"$/, async function (host: string) {
+    const node = await getTarget(host);
+    await node.run('podman stop health-check-tool && podman rm health-check-tool');
+});
+
+Then(/^I check that the health check tool exposes metrics on "([^"]*)"$/, async function (host: string) {
+    const node = await getTarget(host);
+    const {stdout, returnCode} = await node.run('curl -s http://localhost:8080/metrics');
+    if (returnCode !== 0 || !stdout.includes('health_check_tool_info')) {
+        throw new Error('Health check tool is not exposing metrics correctly');
+    }
+});
+
+Then(/^I check that the health check tool (is|is not) running on "([^"]*)"$/, async function (action: string, host: string) {
+    const node = await getTarget(host);
+    const {returnCode} = await node.run('podman ps | grep health-check-tool', {checkErrors: false});
+    const isRunning = returnCode === 0;
+
+    if (action === 'is' && !isRunning) {
+        throw new Error('Health check tool is not running');
+    } else if (action === 'is not' && isRunning) {
+        throw new Error('Health check tool is still running');
+    }
+});
+
+Then(/^I remove test supportconfig on "([^"]*)"$/, async function (host: string) {
+    const node = await getTarget(host);
+    await node.run('rm -rf /root/server-supportconfig');
 });

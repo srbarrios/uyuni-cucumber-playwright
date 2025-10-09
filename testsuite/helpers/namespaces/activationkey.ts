@@ -21,7 +21,7 @@ export class NamespaceActivationkey {
 
     async delete(id: string): Promise<any> {
         const res = await this.test.call('activationkey.delete', {sessionKey: this.test.currentToken || '', key: id});
-        // Refresh keys (side-effect kept for parity)
+        // Refresh keys (side effect kept for parity)
         await this.test.call('activationkey.listActivationKeys', {sessionKey: this.test.currentToken || ''});
         return res;
     }

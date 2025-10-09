@@ -334,6 +334,10 @@ Then('service {string} is enabled on {string}', async function (service: string,
     if (status !== 'enabled') throw new Error(`Service ${service} not enabled on ${host} (got: ${status})`);
 });
 
+When(/^I check the first row in the list$/, async function () {
+    await getCurrentPage().locator('tbody tr:first-child input[type="checkbox"]').check();
+});
+
 Then('service {string} is active on {string}', async function (service: string, host: string) {
     const node = await getTarget(host);
     const {stdout} = await node.run(`systemctl is-active '${service}'`, {checkErrors: false});
@@ -661,4 +665,12 @@ Then(/^the user creation should fail with error containing "([^"]*)"$/, async fu
 Then(/^the user creation should succeed$/, async function () {
     let status = getContext('user_creation_status')
     expect(status, `Expected user creation to succeed, but status was ${status}`).toBe('success');
+});
+
+Then(/^I should see "([^"]*)" in field identified by "([^"]*)"$/, async function (text: string, field: string) {
+    await expect(getCurrentPage().locator(`//label[text()='${field}']/following-sibling::input`)).toHaveValue(text);
+});
+
+Then(/^I should see the text "([^"]*)" in the "([^"]*)" field$/, async function (text: string, field: string) {
+    await expect(getCurrentPage().locator(`//td[text()='${field}']/following-sibling::td`)).toHaveText(text);
 });
