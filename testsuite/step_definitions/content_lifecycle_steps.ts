@@ -1,7 +1,7 @@
 import {Then, When} from '@cucumber/cucumber';
 
 import {
-    checkTextAndCatchRequestTimeoutPopup,
+    checkTextAndCatchRequestTimeoutPopup, fileInject,
     getApiTest,
     getCurrentPage,
     getSystemName,
@@ -10,6 +10,11 @@ import {
     TIMEOUTS
 } from '../helpers/index.js';
 import {enterTextAsField} from '../helpers/embedded_steps/navigation_helper.js';
+import * as path from "path";
+import {dirname} from "path";
+import {fileURLToPath} from "url";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 When(/^I click the environment build button$/, async function (...args: any[]) {
     const buildButton = getCurrentPage().getByRole('button', {name: 'Build'}).first();
@@ -113,6 +118,16 @@ When(/^I add pre-generated SSH public key to authorized_keys of host "([^"]*)"$/
     throw new Error('This step requires file injection which cannot be performed.');
 });
 
+When(/^I add pre-generated SSH public key to authorized_keys of host "([^"]*)"$/, async function (host) {
+    const keyFilename = 'id_rsa_bootstrap-passphrase_linux.pub';
+    const target = await getTarget(host);
+    const source = path.join(__dirname, `../upload_files/ssh_keypair/${keyFilename}`);
+    const dest = `/tmp/${keyFilename}`;
+    const success = await fileInject(target, source, dest);
+    if (!success) throw new Error('File injection failed');
+    await target.run(`cat /tmp/${keyFilename} >> /root/.ssh/authorized_keys`, {timeout: 500});
+});
+
 When(/^I restore the SSH authorized_keys file of host "([^"]*)"$/, async function (host) {
     const target = await getTarget(host);
     const authKeysPath = '/root/.ssh/authorized_keys';
@@ -127,9 +142,45 @@ When(/^I add "([^"]*)" calendar file as url$/, async function (file) {
     throw new Error('This step requires file injection which cannot be performed.');
 });
 
+When(/^I add "([^"]*)" calendar file as url$/, async function (file) {
+    const server = await getTarget('server');
+    const source = path.join(__dirname, `../upload_files/${file}`);
+    const dest = `/srv/www/htdocs/pub/${file}`;
+    const success = await fileInject(server, source, dest);
+    if (!success) throw new Error('File injection failed');
+
+    await server.run(`chmod 644 ${dest}`);
+    const url = `https://${(await getTarget('server')).fullHostname}/pub/${file}`;
+    console.log(`URL: ${url}`);
+    await enterTextAsField(url, 'calendar-data-text');
+});
+
 When(/^I deploy testing playbooks and inventory files to "([^"]*)"$/, async function (host) {
     // File injection cannot be performed
     throw new Error('This step requires file injection which cannot be performed.');
+});
+
+When(/^I deploy testing playbooks and inventory files to "([^"]*)"$/, async function (host) {
+    const target = await getTarget(host);
+    const dest = '/srv/playbooks/orion_dummy/';
+    await target.run(`mkdir -p ${dest}`);
+    const baseDir = path.join(__dirname, '../upload_files/ansible/playbooks/orion_dummy/');
+
+    const filesToInject = [
+        {src: 'playbook_orion_dummy.yml', dest: `${dest}playbook_orion_dummy.yml`},
+        {src: 'hosts', dest: `${dest}hosts`},
+        {src: 'file.txt', dest: `${dest}file.txt`},
+    ];
+
+    for (const file of filesToInject) {
+        const success = await fileInject(target, path.join(baseDir, file.src), file.dest);
+        if (!success) throw new Error(`File injection failed for ${file.src}`);
+    }
+
+    const playbookPingSource = path.join(__dirname, '../upload_files/ansible/playbooks/playbook_ping.yml');
+    const playbookPingDest = '/srv/playbooks/playbook_ping.yml';
+    const successPing = await fileInject(target, playbookPingSource, playbookPingDest);
+    if (!successPing) throw new Error('File injection failed for playbook_ping.yml');
 });
 
 When(/^I enter the reactivation key of "([^"]*)"$/, async function (host) {

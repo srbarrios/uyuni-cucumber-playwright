@@ -27,6 +27,7 @@ import {
     waitForEventCompletion,
     waitUntilEventIsCompleted
 } from '../helpers/embedded_steps/common_helper.js';
+import {selectOptionFromField} from "../helpers/embedded_steps/navigation_helper.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -673,4 +674,8 @@ Then(/^I should see "([^"]*)" in field identified by "([^"]*)"$/, async function
 
 Then(/^I should see the text "([^"]*)" in the "([^"]*)" field$/, async function (text: string, field: string) {
     await expect(getCurrentPage().locator(`//td[text()='${field}']/following-sibling::td`)).toHaveText(text);
+});
+
+When(/^I select the next maintenance window$/, async function () {
+    await selectOptionFromField('Next Maintenance Window', 'next_maintenance_window');
 });

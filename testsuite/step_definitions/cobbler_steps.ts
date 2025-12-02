@@ -1,12 +1,12 @@
 import {Given, Then, When} from '@cucumber/cucumber';
 
-import {fileExtract, fileExists, fileInject, getCobblerTest, getCurrentPage, getTarget} from '../helpers/index.js';
+import {fileExtract, fileExists, fileInject, getCobblerTest, getCurrentPage, getTarget, getAppHost} from '../helpers/index.js';
 import {runCobblerBuildisoAllProfiles} from '../helpers/cobbler_helper.js';
 import {expect} from "@playwright/test";
 import {setPXEMenuEntry} from "../helpers/embedded_steps/retail_helper.js";
 
 Given(/^cobblerd is running$/, async function (...args: any[]) {
-    if (!(await getCobblerTest().running())) {
+    if (!(await (await getCobblerTest()).running())) {
         throw new Error('cobblerd is not running');
     }
 });
@@ -29,6 +29,28 @@ When(/^I open the details page of the image for "([^"]*)"$/, async function (min
     const exists = await fileExists(server, imagePath);
     expect(exists).toBeTruthy();
     console.log(`Navigated to details page for image: ${minion}.iso`);
+});
+
+When(/^I open the details page of the image for "([^"]*)"$/, async function (host: string) {
+    const node = await getTarget(host);
+    const {stdout} = await node.run('ls /srv/www/os-images');
+    const imagePath = stdout.split('\n').find(line => line.includes(host));
+    if (!imagePath) {
+        throw new Error(`Image for ${host} not found`);
+    }
+    const imageName = imagePath.split('/').pop();
+    await getCurrentPage().goto(`${getAppHost()}/rhn/images/details/Overview.do?imageName=${imageName}`);
+});
+
+When(/^I should see a link to download the image for "([^"]*)"$/, async function (host: string) {
+    const node = await getTarget(host);
+    const {stdout} = await node.run('ls /srv/www/os-images');
+    const imagePath = stdout.split('\n').find(line => line.includes(host));
+    if (!imagePath) {
+        throw new Error(`Image for ${host} not found`);
+    }
+    const imageName = imagePath.split('/').pop();
+    await expect(getCurrentPage().getByRole('link', {name: `Download ${imageName}`})).toBeVisible();
 });
 
 Then(/^I should see a link to download the image for "([^"]*)"$/, async function (minion: string) {
@@ -54,56 +76,71 @@ When(/^I restart cobbler on the server$/, async function () {
 });
 
 Given(/^I am logged in via the Cobbler API as user "([^"]*)" with password "([^"]*)"$/, async function (user, pwd) {
-    await getCobblerTest().login(user, pwd);
+    await (await getCobblerTest()).login(user, pwd);
 });
 
 When(/^I log out from Cobbler via the API$/, async function () {
-    await getCobblerTest().logout();
+    await (await getCobblerTest()).logout();
 });
 
 Given(/^distro "([^"]*)" exists$/, async function (distro) {
-    if (!(await getCobblerTest().elementExists('distros', distro))) {
+    if (!(await (await getCobblerTest()).elementExists('distros', distro))) {
         throw new Error(`Distro ${distro} does not exist`);
     }
 });
 
 Given(/^profile "([^"]*)" exists$/, async function (profile) {
-    if (!(await getCobblerTest().elementExists('profiles', profile))) {
+    if (!(await (await getCobblerTest()).elementExists('profiles', profile))) {
         throw new Error(`Profile ${profile} does not exist`);
     }
 });
 
 When(/^I create distro "([^"]*)"$/, async function (distro) {
-    if (await getCobblerTest().elementExists('distros', distro)) {
+    if (await (await getCobblerTest()).elementExists('distros', distro)) {
         throw new Error(`Distro ${distro} already exists`);
     }
-    await getCobblerTest().distroCreate(distro, '/var/autoinstall/SLES15-SP4-x86_64/DVD1/boot/x86_64/loader/linux', '/var/autoinstall/SLES15-SP4-x86_64/DVD1/boot/x86_64/loader/initrd');
+    await (await getCobblerTest()).distroCreate(distro, '/var/autoinstall/SLES15-SP4-x86_64/DVD1/boot/x86_64/loader/linux', '/var/autoinstall/SLES15-SP4-x86_64/DVD1/boot/x86_64/loader/initrd');
 });
 
 When(/^I create profile "([^"]*)" for distro "([^"]*)"$/, async function (profile, distro) {
-    if (await getCobblerTest().elementExists('profiles', profile)) {
+    if (await (await getCobblerTest()).elementExists('profiles', profile)) {
         throw new Error(`Profile ${profile} already exists`);
     }
-    await getCobblerTest().profileCreate(profile, distro, '/var/autoinstall/mock/empty.xml');
+    await (await getCobblerTest()).profileCreate(profile, distro, '/var/autoinstall/mock/empty.xml');
 });
 
 When(/^I create system "([^"]*)" for profile "([^"]*)"$/, async function (system, profile) {
-    if (await getCobblerTest().elementExists('systems', system)) {
+    if (await (await getCobblerTest()).elementExists('systems', system)) {
         throw new Error(`System ${system} already exists`);
     }
-    await getCobblerTest().systemCreate(system, profile);
+    await (await getCobblerTest()).systemCreate(system, profile);
 });
 
 When(/^I remove system "([^"]*)"$/, async function (system) {
-    await getCobblerTest().systemRemove(system);
+    await (await getCobblerTest()).systemRemove(system);
 });
 
 When(/^I remove profile "([^"]*)"$/, async function (profile) {
-    await getCobblerTest().profileRemove(profile);
+    await (await getCobblerTest()).profileRemove(profile);
 });
 
 When(/^I remove distro "([^"]*)"$/, async function (distro) {
-    await getCobblerTest().distroRemove(distro);
+    await (await getCobblerTest()).distroRemove(distro);
+});
+
+Then(/^I should see "self_update=http:\/\/" in field identified by "kernelopts"$/, async function (field: string) {
+    const fieldLocator = getCurrentPage().locator(`input#${field}`);
+    await expect(fieldLocator).toHaveValue(/self_update=http:\/\//);
+});
+
+Then(/^I should see "self_update=0" in field identified by "kernelopts"$/, async function (field: string) {
+    const fieldLocator = getCurrentPage().locator(`input#${field}`);
+    await expect(fieldLocator).toHaveValue(/self_update=0/);
+});
+
+Then(/^I should see "self_update=1" in field identified by "postkernelopts"$/, async function (field: string) {
+    const fieldLocator = getCurrentPage().locator(`input#${field}`);
+    await expect(fieldLocator).toHaveValue(/self_update=1/);
 });
 
 When(/^I clear the caches on the server$/, async function () {

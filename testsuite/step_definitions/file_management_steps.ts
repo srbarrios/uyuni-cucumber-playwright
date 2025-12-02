@@ -1,6 +1,9 @@
 import {Then, When} from '@cucumber/cucumber';
 
-import {fileDelete, getTarget} from '../helpers/index.js';
+import {fileDelete, getTarget, getSystemName, globalVars, fileInject, generateTempFile} from '../helpers/index.js';
+import {expect} from "@playwright/test";
+import {getCurrentPage} from "../helpers/index.js";
+import {writeFileSync} from "fs";
 
 When(/^I destroy "([^"]*)" directory on server$/, async function (directory) {
     await (await getTarget('server')).run(`rm -rf ${directory}`);
@@ -58,6 +61,33 @@ Then(/^file "([^"]*)" should contain "([^"]*)" on "([^"]*)"$/, async function (f
 Then(/^I remove server hostname from hosts file on "([^"]*)"$/, async function (host) {
     const node = await getTarget(host);
     await node.run(`sed -i 's/${(await getTarget('server')).fullHostname}//' /etc/hosts`);
+});
+
+When(/^I install a user-defined state for "([^"]*)" on the server$/, async function (host) {
+    const systemName = await getSystemName(host);
+    const file = 'user_defined_state.sls';
+    const source = `../upload_files/${file}`;
+    const dest = `/srv/salt/${file}`;
+    const server = await getTarget('server')
+    const success = await fileInject(server, source, dest);
+    if (!success) throw new Error('File injection failed');
+
+    const script = `base:\n  '${systemName}':\n    - user_defined_state\n`;
+    const tempFile = await generateTempFile('top.sls', script);
+    const injected = await fileInject(server, tempFile, '/srv/salt/top.sls');
+    if (!injected) throw new Error('File injection failed');
+
+    await server.run('chgrp salt /srv/salt/*');
+    await server.run('chmod 644 /srv/salt/*');
+});
+
+When(/^I uninstall the user-defined state from the server$/, async function () {
+    await (await getTarget('server')).run('rm /srv/salt/{user_defined_state.sls,top.sls}');
+});
+
+When(/^I uninstall the managed file from "([^"]*)"$/, async function (host) {
+    const node = await getTarget(host);
+    await node.run('rm /tmp/test_user_defined_state');
 });
 
 When(/^I ensure folder "([^"]*)" doesn't exist on "([^"]*)"$/, async function (folder: string, host: string) {

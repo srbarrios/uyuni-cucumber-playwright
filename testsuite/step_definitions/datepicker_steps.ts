@@ -1,6 +1,7 @@
 import {Given, Then, When} from '@cucumber/cucumber';
 import {getCurrentPage, getFutureTime} from '../helpers/index.js';
 import {checkDatePickerTitle, openDatePicker} from '../helpers/embedded_steps/datepicker_helper.js';
+import {expect} from "@playwright/test";
 
 Given(/^I pick "([^"]*)" as date$/, async function (desiredDate) {
     const dateInput = getCurrentPage().locator('input[data-testid="date-picker"]');
@@ -101,4 +102,9 @@ Then(/^the time field should be set to "([^"]*)"$/, async function (expectedTime
     if (ampmValue !== (h >= 12 ? 1 : 0)) {
         throw new Error('invalid hidden AM/PM');
     }
+});
+
+Then(/^I should see the correct timestamp for task "([^"]*)"$/, async function (task: string) {
+    const taskLocator = getCurrentPage().locator(`//td[text()='${task}']/following-sibling::td/time`);
+    await expect(taskLocator).toBeVisible();
 });

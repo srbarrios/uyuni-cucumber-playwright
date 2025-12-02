@@ -1,10 +1,10 @@
 import {
+    getApiTest,
     getAppHost,
-    getCurrentPage,
+    getCurrentPage, getSystemId,
     getSystemName,
     getTarget,
     globalVars,
-    is and isNot,
     isSuseHost,
     repeatUntilTimeout,
     TIMEOUTS
@@ -66,7 +66,7 @@ export function computeKiwiProfileVersion(host: string): string {
 }
 
 export async function retrieveBuildHostId(): Promise<string> {
-    const apiTest = await globalVars.getApiTest();
+    const apiTest = getApiTest();
     const systems = await apiTest.system.listSystems();
     const buildHost = await getTarget('build_host');
     const buildHostId = systems

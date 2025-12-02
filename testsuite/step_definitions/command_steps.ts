@@ -20,8 +20,8 @@ import {
     generateCertificate,
     generateTempFile,
     getAllNodes,
-    getApiTest,
-    getContext,
+    getApiTest, getAppHost,
+    getContext, getCurrentPage,
     getSystemName,
     getTarget,
     getVariableFromConfFile,
@@ -1898,6 +1898,36 @@ When(/^I check the cloud-init status on "([^"]*)"$/, async function (host: strin
         },
         {reportResult: true, message: 'Cloud-init did not finish.'}
     );
+});
+
+When(/^I should see the image for "([^"]*)" is built$/, async function (host: string) {
+    const node = await getTarget(host);
+    const {stdout} = await node.run('ls /srv/www/os-images');
+    if (!stdout.includes(host)) {
+        throw new Error(`Image for ${host} is not built`);
+    }
+});
+
+When(/^I open the details page of the image for "([^"]*)"$/, async function (host: string) {
+    const node = await getTarget(host);
+    const {stdout} = await node.run('ls /srv/www/os-images');
+    const imagePath = stdout.split('\n').find(line => line.includes(host));
+    if (!imagePath) {
+        throw new Error(`Image for ${host} not found`);
+    }
+    const imageName = imagePath.split('/').pop();
+    await getCurrentPage().goto(`${getAppHost()}/rhn/images/details/Overview.do?imageName=${imageName}`);
+});
+
+When(/^I should see a link to download the image for "([^"]*)"$/, async function (host: string) {
+    const node = await getTarget(host);
+    const {stdout} = await node.run('ls /srv/www/os-images');
+    const imagePath = stdout.split('\n').find(line => line.includes(host));
+    if (!imagePath) {
+        throw new Error(`Image for ${host} not found`);
+    }
+    const imageName = imagePath.split('/').pop();
+    await expect(getCurrentPage().getByRole('link', {name: `Download ${imageName}`})).toBeVisible();
 });
 
 When(/^I wait until I see "([^"]*)" in file "([^"]*)" on "([^"]*)"$/, async function (text: string, file: string, host: string) {
