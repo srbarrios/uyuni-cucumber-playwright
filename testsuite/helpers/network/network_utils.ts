@@ -261,3 +261,16 @@ export function createSshOptions(host: string, port: number = 22): SshOptions {
         agent: process.env.SSH_AUTH_SOCK
     };
 }
+
+export function getNetPrefix(): string {
+    return process.env.NET_PREFIX || '192.168.124.';
+}
+
+export function getPrivateNet(): string {
+    return `${getNetPrefix()}0/24`;
+}
+
+export function getReverseNet(net: string): string {
+    const parts = net.split('.');
+    return `${parts[2]}.${parts[1]}.${parts[0]}.in-addr.arpa`;
+}
