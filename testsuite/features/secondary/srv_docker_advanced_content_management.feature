@@ -33,7 +33,7 @@ Feature: Advanced content management
     And I enter "norole" as "login"
     And I enter "norole" as "desiredpassword"
     And I enter "norole" as "desiredpasswordConfirm"
-    And I select "Mr." from "prefix"
+    # And I select "Mr." from "prefix"
     And I enter "norole" as "firstNames"
     And I enter "norole" as "lastName"
     And I enter "norole-ginae@susy.de" as "email"

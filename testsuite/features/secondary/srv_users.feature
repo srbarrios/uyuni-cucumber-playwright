@@ -28,7 +28,7 @@ Feature: Manage users
     And I enter "user1" as "login"
     And I enter "user1" as "desiredpassword"
     And I enter "user1" as "desiredpasswordConfirm"
-    And I select "Mr." from "prefix"
+    # And I select "Mr." from "prefix"
     And I enter "Test" as "firstNames"
     And I enter "User" as "lastName"
     And I enter "galaxy-noise@localhost" as "email"

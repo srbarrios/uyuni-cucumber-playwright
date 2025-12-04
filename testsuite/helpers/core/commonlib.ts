@@ -142,17 +142,6 @@ export async function getProductVersionFull(serverNode: RemoteNode): Promise<str
     return undefined;
 }
 
-/**
- * WARN: It's working for /24 mask, but may not work properly with others
- * Returns the reverse DNS lookup address for a given network address.
- * @param net The network address in the format "x.x.x.x"
- * @returns The reverse DNS lookup address in the format "x.x.x.in-addr.arpa"
- */
-export function getReverseNet(net: string): string {
-    const parts = net.split('.');
-    return `${parts[2]}.${parts[1]}.${parts[0]}.in-addr.arpa`;
-}
-
 /** Repeats a function until it returns a truthy value or a timeout/retry limit is reached.
  *
  * @param fn

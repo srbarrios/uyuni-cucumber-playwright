@@ -31,21 +31,18 @@ export async function waitUntilDoNotSeeTextRefreshingPage(text: string) {
 
 export async function selectOptionFromField(option: string, field: string) {
     const locators = [
-        getCurrentPage().getByRole('combobox', {name: field}),
         getCurrentPage().locator(`select#${field}`),
+        getCurrentPage().getByRole('combobox', {name: field}),
         getCurrentPage().getByLabel(field),
     ];
 
-    let timeout = 1000;
     for (const locator of locators) {
         try {
-            await locator.waitFor({state: "visible", timeout: timeout});
             await locator.selectOption(option);
             console.debug(`Input field "${field}" located through: ${locator}`)
             return; // stop at first success
         } catch {
-            // ignore error and try next locator without timeout.
-            timeout = 0;
+            // ignore error and try next locator.
         }
     }
 
@@ -80,7 +77,7 @@ export async function authorizeUser(user: string, password_str: string) {
     }
 
     try {
-        const logoutButton = getCurrentPage().getByRole('button', {name: 'Sign Out'});
+        const logoutButton = getCurrentPage().locator('a[href="/rhn/Logout.do"]');
         if (await logoutButton.isVisible()) {
             await logoutButton.click();
         }
@@ -120,7 +117,7 @@ export async function createUser(user: string, password: string) {
 }
 
 export async function shouldBeLoggedIn() {
-    const signOutButton = getCurrentPage().getByRole('button', {name: 'Sign Out'});
+    const signOutButton = getCurrentPage().locator('a[href="/rhn/Logout.do"]');
     await expect(signOutButton).toBeVisible();
 }
 

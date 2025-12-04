@@ -17,7 +17,7 @@ Feature: Prepare server for using Kiwi
     And I enter "kiwikiwi" as "login"
     And I enter "kiwikiwi" as "desiredpassword"
     And I enter "kiwikiwi" as "desiredpasswordConfirm"
-    And I select "Mr." from "prefix"
+    # And I select "Mr." from "prefix"
     And I enter "TestKiwi" as "firstNames"
     And I enter "TestKiwi" as "lastName"
     And I enter "kiwi@susy.de" as "email"

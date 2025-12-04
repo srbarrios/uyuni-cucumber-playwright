@@ -8,6 +8,7 @@ import {
     repeatUntilTimeout
 } from '../index.js';
 import {writeFileSync} from 'fs';
+import tmp from 'tmp';
 
 export async function waitUntilFileExists(seconds: string, file: string, host: string) {
     const node = await getTarget(host);
@@ -121,8 +122,7 @@ export async function installSaltPillarTopFile(files: string, host: string) {
         script += `    - '${file}'\n`;
     });
 
-    const tmp = require('tmp');
     const tempFile = tmp.fileSync({postfix: '.sls'});
     writeFileSync(tempFile.name, script);
-    await server.inject(tempFile.path, 'top.sls')
+    await server.inject(tempFile.name, 'top.sls')
 }

@@ -21,7 +21,7 @@ Feature: Correct timezone display
     And I enter "MalaysianUser" as "login"
     And I enter "MalaysianUser" as "desiredpassword"
     And I enter "MalaysianUser" as "desiredpasswordConfirm"
-    And I select "Mr." from "prefix"
+    # And I select "Mr." from "prefix"
     And I enter "Test" as "firstNames"
     And I enter "User" as "lastName"
     And I enter "galaxy-noise@localhost" as "email"

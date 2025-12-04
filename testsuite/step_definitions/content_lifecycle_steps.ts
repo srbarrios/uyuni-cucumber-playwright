@@ -112,12 +112,6 @@ When(/^I backup the SSH authorized_keys file of host "([^"]*)"$/, async function
     }
 });
 
-When(/^I add pre-generated SSH public key to authorized_keys of host "([^"]*)"$/, async function (host) {
-    const keyFilename = 'id_rsa_bootstrap-passphrase_linux.pub';
-    const target = await getTarget(host);
-    // File injection cannot be performed
-    throw new Error('This step requires file injection which cannot be performed.');
-});
 
 When(/^I add pre-generated SSH public key to authorized_keys of host "([^"]*)"$/, async function (host) {
     const keyFilename = 'id_rsa_bootstrap-passphrase_linux.pub';
@@ -137,11 +131,6 @@ When(/^I restore the SSH authorized_keys file of host "([^"]*)"$/, async functio
     await target.run(`rm ${authKeysSavPath}`);
 });
 
-When(/^I add "([^"]*)" calendar file as url$/, async function (file) {
-    const server = await getTarget('server');
-    // File injection cannot be performed
-    throw new Error('This step requires file injection which cannot be performed.');
-});
 
 When(/^I add "([^"]*)" calendar file as url$/, async function (file) {
     const server = await getTarget('server');
@@ -156,10 +145,6 @@ When(/^I add "([^"]*)" calendar file as url$/, async function (file) {
     await enterTextAsField(url, 'calendar-data-text');
 });
 
-When(/^I deploy testing playbooks and inventory files to "([^"]*)"$/, async function (host) {
-    // File injection cannot be performed
-    throw new Error('This step requires file injection which cannot be performed.');
-});
 
 When(/^I deploy testing playbooks and inventory files to "([^"]*)"$/, async function (host) {
     const target = await getTarget(host);

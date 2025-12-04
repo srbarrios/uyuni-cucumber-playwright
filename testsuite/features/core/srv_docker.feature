@@ -15,7 +15,7 @@ Feature: Prepare server for using Docker
     And I enter "docker" as "login"
     And I enter "docker" as "desiredpassword"
     And I enter "docker" as "desiredpasswordConfirm"
-    And I select "Mr." from "prefix"
+    # And I select "Mr." from "prefix"
     And I enter "TestDocky" as "firstNames"
     And I enter "TestDocky" as "lastName"
     And I enter "gino-ginae@susy.de" as "email"

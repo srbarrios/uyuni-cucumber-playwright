@@ -442,7 +442,7 @@ When(/^I follow the left menu "([^"]*)"$/, async function (menuPath) {
 Given(/^I am not authorized$/, async function () {
     try {
         await getCurrentPage().waitForLoadState('networkidle');
-        const signOutButton = getCurrentPage().getByRole('button', {name: 'Sign Out'});
+        const signOutButton = getCurrentPage().locator('a[href="/rhn/Logout.do"]');
         if (await signOutButton.isVisible()) {
             await signOutButton.click();
         }
@@ -696,9 +696,8 @@ Then(/^I should not see a "([^"]*)" link$/, async function (text) {
 });
 
 Then(/^I should see a Sign Out link$/, async function () {
-    const signOutLink = getCurrentPage().getByRole('link', {name: 'Sign Out', exact: false});
-    const logoutLink = getCurrentPage().getByRole('link', {name: 'Logout', exact: false});
-    await expect(signOutLink.or(logoutLink)).toBeVisible();
+    const logoutLink = getCurrentPage().locator('a[href="/rhn/Logout.do"]');
+    await expect(logoutLink).toBeVisible();
 });
 
 Then(/^I should see a "([^"]*)" button$/, async function (text) {
