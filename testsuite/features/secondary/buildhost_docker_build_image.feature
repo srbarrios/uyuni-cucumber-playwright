@@ -37,7 +37,7 @@ Feature: Build container images and CVE audit them
     And I enter "Docker/serverhost" relative to profiles as "path"
     And I click on "create-btn"
 
-@scc_credentials
+  @scc_credentials
   Scenario: Create an image profile with activation key
     When I follow the left menu "Images > Profiles"
     And I follow "Create"
@@ -47,7 +47,7 @@ Feature: Build container images and CVE audit them
     And I enter "Docker" relative to profiles as "path"
     And I click on "create-btn"
 
-@scc_credentials
+  @scc_credentials
   Scenario: Create a simple real image profile with activation key
     When I follow the left menu "Images > Profiles"
     And I follow "Create"
@@ -57,7 +57,7 @@ Feature: Build container images and CVE audit them
     And I enter "Docker/serverhost" relative to profiles as "path"
     And I click on "create-btn"
 
-@scc_credentials
+  @scc_credentials
   Scenario: Build the suse_key image with and without activation key
     Given I am on the Systems overview page of this "build_host"
     When I schedule the build of image "suse_key" via API calls
@@ -67,7 +67,7 @@ Feature: Build container images and CVE audit them
     And I wait at most 900 seconds until image "suse_key" with version "latest" is built successfully via API
     And I wait at most 300 seconds until image "suse_key" with version "latest" is inspected successfully via API
 
-@skip_if_github_validation
+  @skip_if_github_validation
   Scenario: Check the list of packages is not empty
     Then the list of packages of image "suse_key" with version "latest" is not empty
 
@@ -79,11 +79,11 @@ Feature: Build container images and CVE audit them
     And I wait at most 900 seconds until image "suse_simple" with version "latest" is built successfully via API
     And I wait at most 300 seconds until image "suse_simple" with version "latest" is inspected successfully via API
 
-@skip_if_github_validation
+  @skip_if_github_validation
   Scenario: Check the list of packages is not empty
     Then the list of packages of image "suse_simple" with version "latest" is not empty
 
-@scc_credentials
+  @scc_credentials
   Scenario: Build the suse_real_key image with and without activation key
     Given I am on the Systems overview page of this "build_host"
     When I schedule the build of image "suse_real_key" via API calls
@@ -93,18 +93,18 @@ Feature: Build container images and CVE audit them
     And I wait at most 300 seconds until image "suse_real_key" with version "latest" is inspected successfully via API
     When I wait until no Salt job is running on "build_host"
 
-@skip_if_github_validation
+  @skip_if_github_validation
   Scenario: Check the list of packages is not empty
     Then the list of packages of image "suse_real_key" with version "latest" is not empty
 
-@scc_credentials
+  @scc_credentials
   Scenario: Build suse_key images with different versions
     When I schedule the build of image "suse_key" with version "Latest_key-activation1" via API calls
     And I wait at most 900 seconds until image "suse_key" with version "Latest_key-activation1" is built successfully via API
     And I wait at most 300 seconds until image "suse_key" with version "Latest_key-activation1" is inspected successfully via API
     When I wait until no Salt job is running on "build_host"
 
-@skip_if_github_validation
+  @skip_if_github_validation
   Scenario: Check the list of packages is not empty
     Then the list of packages of image "suse_key" with version "Latest_key-activation1" is not empty
 
@@ -114,11 +114,11 @@ Feature: Build container images and CVE audit them
     And I wait at most 300 seconds until image "suse_simple" with version "Latest_simple" is inspected successfully via API
     When I wait until no Salt job is running on "build_host"
 
-@skip_if_github_validation
+  @skip_if_github_validation
   Scenario: Check the list of packages is not empty
     Then the list of packages of image "suse_simple" with version "Latest_simple" is not empty
 
-@scc_credentials
+  @scc_credentials
   Scenario: Delete image via API calls with key
     When I delete the image "suse_key" with version "Latest_key-activation1" via API calls
     Then the image "suse_simple" with version "Latest_key-activation1" doesn't exist via API calls
@@ -135,22 +135,22 @@ Feature: Build container images and CVE audit them
     And I wait at most 300 seconds until image "suse_simple" with version "Latest_simple" is inspected successfully via API
     When I wait until no Salt job is running on "build_host"
 
-@skip_if_github_validation
+  @skip_if_github_validation
   Scenario: Check the list of packages is not empty
     Then the list of packages of image "suse_simple" with version "Latest_simple" is not empty
 
-@scc_credentials
+  @scc_credentials
   Scenario: Rebuild suse_key image
     When I schedule the build of image "suse_key" with version "Latest_key-activation1" via API calls
     And I wait at most 900 seconds until image "suse_key" with version "Latest_key-activation1" is built successfully via API
     And I wait at most 300 seconds until image "suse_key" with version "Latest_key-activation1" is inspected successfully via API
     When I wait until no Salt job is running on "build_host"
 
-@skip_if_github_validation
+  @skip_if_github_validation
   Scenario: Check the list of packages is not empty
     Then the list of packages of image "suse_key" with version "Latest_key-activation1" is not empty
 
-@scc_credentials
+  @scc_credentials
   Scenario: Build an image via the GUI
     When I follow the left menu "Images > Build"
     And I select "suse_real_key" from "profileId"
@@ -162,7 +162,7 @@ Feature: Build container images and CVE audit them
     And I wait at most 900 seconds until image "suse_real_key" with version "GUI_BUILT_IMAGE" is built successfully via API
     And I wait at most 300 seconds until image "suse_real_key" with version "GUI_BUILT_IMAGE" is inspected successfully via API
 
-@scc_credentials
+  @scc_credentials
   Scenario: Login as Docker image administrator and build an image
     Given I am authorized as "docker" with password "docker"
     When I follow the left menu "Images > Build"
@@ -175,7 +175,7 @@ Feature: Build container images and CVE audit them
     And I wait at most 900 seconds until image "suse_real_key" with version "GUI_DOCKERADMIN" is built successfully via API
     And I wait at most 300 seconds until image "suse_real_key" with version "GUI_DOCKERADMIN" is inspected successfully via API
 
-@scc_credentials
+  @scc_credentials
   Scenario: Audit images, searching for a known CVE number
     When I follow the left menu "Audit > CVE Audit"
     And I select "1999" from "cveIdentifierYear"
@@ -190,7 +190,7 @@ Feature: Build container images and CVE audit them
     And I click on "Audit Images"
     Then I should see a "The specified CVE number was not found" text
 
-@scc_credentials
+  @scc_credentials
   Scenario: Cleanup: delete all images with key
     Given I am authorized as "admin" with password "admin"
     When I delete the image "suse_key" with version "latest" via API calls
@@ -204,7 +204,7 @@ Feature: Build container images and CVE audit them
     When I delete the image "suse_simple" with version "latest" via API calls
     And I delete the image "suse_simple" with version "Latest_simple" via API calls
 
-@scc_credentials
+  @scc_credentials
   Scenario: Cleanup: delete all profiles with key
     When I follow the left menu "Images > Profiles"
     And I check "suse_key" in the list

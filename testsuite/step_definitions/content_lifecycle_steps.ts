@@ -1,7 +1,8 @@
 import {Then, When} from '@cucumber/cucumber';
 
 import {
-    checkTextAndCatchRequestTimeoutPopup, fileInject,
+    checkTextAndCatchRequestTimeoutPopup,
+    fileInject,
     getApiTest,
     getCurrentPage,
     getSystemName,

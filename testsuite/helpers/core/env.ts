@@ -202,7 +202,7 @@ export async function initializeBrowser(): Promise<{ browser: Browser; context: 
         browserContext = await globalBrowser.newContext({
             ignoreHTTPSErrors: config.ignoreHTTPSErrors,
             viewport: config.viewport,
-            permissions:['storage-access']
+            permissions: ['storage-access']
         });
 
         // Set download behavior

@@ -16,8 +16,8 @@ Feature: Distribution Channel Mapping
     And I should see a "Create Distribution Channel Mapping" link
     And I should see a "No distribution channel mappings currently exist." text in the content area
 
-@scc_credentials
-@susemanager
+  @scc_credentials
+  @susemanager
   Scenario: Create new map for x86_64 SUSE clients
     When I follow the left menu "Software > Distribution Channel Mapping"
     And I follow "Create Distribution Channel Mapping"
@@ -29,8 +29,8 @@ Feature: Distribution Channel Mapping
     And I click on "Create Mapping"
     Then I should see a "SUSE Linux Enterprise Server 15 SP 4" link in the content area
 
-@scc_credentials
-@uyuni
+  @scc_credentials
+  @uyuni
   Scenario: Create new map for x86_64 openSUSE clients
     When I follow the left menu "Software > Distribution Channel Mapping"
     And I follow "Create Distribution Channel Mapping"
@@ -42,7 +42,7 @@ Feature: Distribution Channel Mapping
     And I click on "Create Mapping"
     Then I should see a "openSUSE Leap 15.6" link in the content area
 
-@deblike_minion
+  @deblike_minion
   Scenario: Create new map for amd64 Ubuntu clients with test base channel
     When I follow the left menu "Software > Distribution Channel Mapping"
     And I follow "Create Distribution Channel Mapping"
@@ -54,7 +54,7 @@ Feature: Distribution Channel Mapping
     And I click on "Create Mapping"
     Then I should see a "Ubuntu 24.04" link in the content area
 
-@scc_credentials
+  @scc_credentials
   Scenario: Create new map for iSeries SUSE clients using test channel
     When I follow the left menu "Software > Distribution Channel Mapping"
     And I follow "Create Distribution Channel Mapping"
@@ -66,8 +66,8 @@ Feature: Distribution Channel Mapping
     And I click on "Create Mapping"
     Then I should see a "SUSE Linux Enterprise Server 15 SP 4 iSeries" link in the content area
 
-@scc_credentials
-@susemanager
+  @scc_credentials
+  @susemanager
   Scenario: Update map for x86_64 SUSE clients using test-x86_64 channel
     When I follow the left menu "Software > Distribution Channel Mapping"
     Then I should see the text "SUSE Linux Enterprise Server 15 SP 4" in the Operating System field
@@ -81,8 +81,8 @@ Feature: Distribution Channel Mapping
     Then I should see the text "SUSE Linux Enterprise Server 15 SP 4 modified" in the Operating System field
     And I should see the text "sle-product-sles15-sp4-pool-x86_64" in the Channel Label field
 
-@scc_credentials
-@uyuni
+  @scc_credentials
+  @uyuni
   Scenario: Update map for x86_64 openSUSE clients using test-x86_64 channel
     When I follow the left menu "Software > Distribution Channel Mapping"
     Then I should see the text "openSUSE Leap 15.6" in the Operating System field
@@ -96,7 +96,7 @@ Feature: Distribution Channel Mapping
     Then I should see the text "openSUSE Leap 15.6 modified" in the Operating System field
     And I should see the text "opensuse_leap15_6-x86_64" in the Channel Label field
 
-@deblike_minion
+  @deblike_minion
   Scenario: Update map for amd64 Ubuntu clients using test base channel
     When I follow the left menu "Software > Distribution Channel Mapping"
     Then I should see the text "Ubuntu 24.04" in the Operating System field
@@ -107,7 +107,7 @@ Feature: Distribution Channel Mapping
     And I click on "Update Mapping"
     Then I should see the text "Ubuntu 24.04 modified" in the Operating System field
 
-@scc_credentials
+  @scc_credentials
   Scenario: Update map for IA-32 SUSE clients using amd deb test channel
     When I follow the left menu "Software > Distribution Channel Mapping"
     Then I should see the text "SUSE Linux Enterprise Server 15 SP 4 iSeries" in the Operating System field
@@ -120,8 +120,8 @@ Feature: Distribution Channel Mapping
     Then I should see the text "SUSE Linux Enterprise Server 15 SP 4 iSeries modified" in the Operating System field
     And I should see the text "fake-base-channel-debian-like" in the Channel Label field
 
-@scc_credentials
-@susemanager
+  @scc_credentials
+  @susemanager
   Scenario: Cleanup: delete the map created for x68_64 SUSE clients
     When I follow the left menu "Software > Distribution Channel Mapping"
     Then I should see the text "SUSE Linux Enterprise Server 15 SP 4 modified" in the Operating System field
@@ -134,8 +134,8 @@ Feature: Distribution Channel Mapping
     When I click on "Delete Mapping"
     Then I should not see a "SUSE Linux Enterprise Server 15 SP 4 modified" link
 
-@scc_credentials
-@uyuni
+  @scc_credentials
+  @uyuni
   Scenario: Cleanup: delete the map created for x68_64 openSUSE clients
     When I follow the left menu "Software > Distribution Channel Mapping"
     Then I should see the text "openSUSE Leap 15.6 modified" in the Operating System field
@@ -148,7 +148,7 @@ Feature: Distribution Channel Mapping
     When I click on "Delete Mapping"
     Then I should not see a "openSUSE Leap 15.6 modified" link
 
-@deblike_minion
+  @deblike_minion
   Scenario: Cleanup: delete the map created for amd64 Ubuntu clients
     When I follow the left menu "Software > Distribution Channel Mapping"
     Then I should see the text "Ubuntu 24.04 modified" in the Operating System field
@@ -161,7 +161,7 @@ Feature: Distribution Channel Mapping
     When I click on "Delete Mapping"
     Then I should not see a "Ubuntu 24.04 modified" link
 
-@scc_credentials
+  @scc_credentials
   Scenario: Cleanup: delete the map created for i586 clients
     When I follow the left menu "Software > Distribution Channel Mapping"
     Then I should see the text "SUSE Linux Enterprise Server 15 SP 4 iSeries modified" in the Operating System field

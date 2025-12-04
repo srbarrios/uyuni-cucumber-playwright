@@ -279,8 +279,6 @@ Then(
     /^I should have '([^']*)' in the patch metadata for "([^"]*)"$/,
     async function (text: string, host: string) {
         const node = await getTarget(host);
-        const {stdout} = await node.run('uname -m');
-        const arch = stdout.trim();
         const cmd = `zgrep '${text}' /var/cache/zypp/raw/susemanager:fake-rpm-suse-channel/repodata/*updateinfo.xml.gz`;
         await node.run(cmd, {timeout: 500});
     }
@@ -328,7 +326,7 @@ When(/^I schedule a task to update ReportDB$/, async function () {
 });
 
 // Remote/system helpers
-Then('service {string} is enabled on {string}', async function (service: string, host: string) {
+Then('service "([^"]*)" is enabled on "([^"]*)"', async function (service: string, host: string) {
     const node = await getTarget(host);
     const {stdout} = await node.run(`systemctl is-enabled '${service}'`, {checkErrors: false});
     const status = (stdout || '').trim().split(/\n+/).pop();
@@ -339,28 +337,28 @@ When(/^I check the first row in the list$/, async function () {
     await getCurrentPage().locator('tbody tr:first-child input[type="checkbox"]').check();
 });
 
-Then('service {string} is active on {string}', async function (service: string, host: string) {
+Then('service "([^"]*)" is active on "([^"]*)"', async function (service: string, host: string) {
     const node = await getTarget(host);
     const {stdout} = await node.run(`systemctl is-active '${service}'`, {checkErrors: false});
     const status = (stdout || '').trim().split(/\n+/).pop();
     if (status !== 'active') throw new Error(`Service ${service} not active on ${host} (got: ${status})`);
 });
 
-Then('socket {string} is enabled on {string}', async function (socket: string, host: string) {
+Then('socket "([^"]*)" is enabled on "([^"]*)"', async function (socket: string, host: string) {
     const node = await getTarget(host);
     const {stdout} = await node.run(`systemctl is-enabled '${socket}.socket'`, {checkErrors: false});
     const status = (stdout || '').trim().split(/\n+/).pop();
     if (status !== 'enabled') throw new Error(`Socket ${socket} not enabled on ${host} (got: ${status})`);
 });
 
-Then('socket {string} is active on {string}', async function (socket: string, host: string) {
+Then('socket "([^"]*)" is active on "([^"]*)"', async function (socket: string, host: string) {
     const node = await getTarget(host);
     const {stdout} = await node.run(`systemctl is-active '${socket}.socket'`, {checkErrors: false});
     const status = (stdout || '').trim().split(/\n+/).pop();
     if (status !== 'active') throw new Error(`Socket ${socket} not active on ${host} (got: ${status})`);
 });
 
-Then('reverse resolution should work for {string}', async function (host: string) {
+Then('reverse resolution should work for "([^"]*)"', async function (host: string) {
     const node = await getTarget(host);
     const {
         stdout: result,
@@ -672,7 +670,7 @@ Then(/^I should see "([^"]*)" in field identified by "([^"]*)"$/, async function
     await expect(getCurrentPage().locator(`//label[text()='${field}']/following-sibling::input`)).toHaveValue(text);
 });
 
-Then(/^I should see the text "([^"]*)" in the "([^"]*)" field$/, async function (text: string, field: string) {
+Then(/^I should see the text "([^"]*)" in the ([^"]*) field$/, async function (text: string, field: string) {
     await expect(getCurrentPage().locator(`//td[text()='${field}']/following-sibling::td`)).toHaveText(text);
 });
 

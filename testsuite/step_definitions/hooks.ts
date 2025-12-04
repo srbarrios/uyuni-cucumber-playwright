@@ -12,9 +12,9 @@ import {
     setFeatureScope,
     TIMEOUTS
 } from '../helpers/index.js';
-import {getProduct, suseProxyNonTransactional, suseProxyTransactional} from '../helpers/core/commonlib.js';
+import {suseProxyNonTransactional, suseProxyTransactional} from '../helpers/core/commonlib.js';
 import {ENV_VAR_BY_HOST} from '../helpers/core/constants.js';
-import {envConfig, globalVars} from '../helpers/core/env.js';
+import {envConfig} from '../helpers/core/env.js';
 import {getTarget} from '../helpers/system/remote_nodes_env.js';
 import {authorizeUser, createUser} from "../helpers/embedded_steps/navigation_helper.js";
 
@@ -64,8 +64,12 @@ async function clickDetailsIfPresent(): Promise<void> {
 async function relogAndVisitPreviousUrl(): Promise<void> {
     try {
         const previousUrl = getCurrentPage().url();
-        await authorizeUser(globalVars.currentUser, globalVars.currentPassword);
-        await getCurrentPage().goto(previousUrl, {timeout: TIMEOUTS.long * 1000});
+        const currentUser = getContext('currentUser');
+        const currentUserPassword = getContext('currentPassword');
+        if (currentUser && currentUserPassword) {
+            await authorizeUser(currentUser, currentUserPassword);
+            await getCurrentPage().goto(previousUrl, {timeout: TIMEOUTS.long * 1000});
+        }
     } catch (error: any) {
         if (error.name === 'TimeoutError') {
             console.warn(`Timed out while attempting to relog and visit the previous URL: ${getCurrentPage().url()}`);
@@ -115,9 +119,9 @@ async function printServerLogs(): Promise<void> {
 
 async function processCodeCoverage(): Promise<void> {
     const featureFilename = getContext('featureScope');
-    if (featureFilename && globalVars.codeCoverage) {
-        await globalVars.codeCoverage.jacocoDump(featureFilename);
-        await globalVars.codeCoverage.pushFeatureCoverage(featureFilename);
+    if (featureFilename && getContext('codeCoverage')) {
+        await getContext('codeCoverage').jacocoDump(featureFilename);
+        await getContext('codeCoverage').pushFeatureCoverage(featureFilename);
     }
 }
 
@@ -146,7 +150,7 @@ After(async function (scenario) {
     logScenarioTiming(currentEpoch);
     if (scenario.result?.status === Status.FAILED) {
         try {
-            if (!globalVars.browserDisconnected) {
+            if (!getContext('browserDisconnected')) {
                 await handleScreenshotAndRelog(this, scenario, currentEpoch);
             } else {
                 console.warn('There is no active web session; unable to take a screenshot or relog.');
@@ -250,7 +254,7 @@ Before('@deblike_minion', async function () {
 });
 
 Before('@pxeboot_minion', async function () {
-    skipThisScenarioUnless(globalVars.pxebootMac);
+    skipThisScenarioUnless(getContext('pxebootMac'));
 });
 
 Before('@ssh_minion', async function () {
@@ -498,7 +502,7 @@ Before('@sle12sp5_buildhost', async function () {
 });
 
 Before('@sle12sp5_terminal', async function () {
-    skipThisScenarioUnless(globalVars.sle12sp5TerminalMac);
+    skipThisScenarioUnless(getContext('sle12sp5TerminalMac'));
 });
 
 Before('@sle15sp4_buildhost', async function () {
@@ -510,7 +514,7 @@ Before('@monitoring_server', async function () {
 });
 
 Before('@sle15sp4_terminal', async function () {
-    skipThisScenarioUnless(globalVars.sle15sp4TerminalMac);
+    skipThisScenarioUnless(getContext('sle15sp4TerminalMac'));
 });
 
 Before('@suse_minion', async function (scenario) {
@@ -574,56 +578,56 @@ Before('@scc_credentials', async function () {
 
 // do some tests only if there is a private network
 Before('@private_net', async function () {
-    skipThisScenarioUnless(globalVars.privateNet);
+    skipThisScenarioUnless(getContext('privateNet'));
 });
 
 // do some tests only if we don't use a mirror
 Before('@no_mirror', async function () {
-    if (globalVars.mirror) {
+    if (getContext('mirror')) {
         skipThisScenario();
     }
 });
 
 // do some tests only if the server is using SUSE Manager
 Before('@susemanager', async function () {
-    skipThisScenarioUnless(globalVars.product == 'SUSE Multi-Linux Manager');
+    skipThisScenarioUnless(getContext('product') == 'SUSE Multi-Linux Manager');
 });
 
 // do some tests only if the server is using Uyuni
 Before('@uyuni', async function () {
-    skipThisScenarioUnless(globalVars.product == 'Uyuni');
+    skipThisScenarioUnless(getContext('product') == 'Uyuni');
 });
 
 // do some tests only if we are using salt bundle
 Before('@salt_bundle', async function () {
-    skipThisScenarioUnless(globalVars.useSaltBundle);
+    skipThisScenarioUnless(getContext('useSaltBundle'));
 });
 
 // do some tests only if we are using salt bundle
 Before('@skip_if_salt_bundle', async function () {
-    if (globalVars.useSaltBundle) {
+    if (getContext('useSaltBundle')) {
         skipThisScenario();
     }
 });
 
 // do test only if HTTP proxy for Uyuni is defined
 Before('@server_http_proxy', async function () {
-    skipThisScenarioUnless(globalVars.serverHttpProxy);
+    skipThisScenarioUnless(getContext('serverHttpProxy'));
 });
 
 // do test only if custom downlad endpoint for packages is defined
 Before('@custom_download_endpoint', async function () {
-    skipThisScenarioUnless(globalVars.customDownloadEndpoint);
+    skipThisScenarioUnless(getContext('customDownloadEndpoint'));
 });
 
 // do test only if the registry is available
 Before('@no_auth_registry', async function () {
-    skipThisScenarioUnless(globalVars.noAuthRegistry);
+    skipThisScenarioUnless(getContext('noAuthRegistry'));
 });
 
 // do test only if the registry with authentication is available
 Before('@auth_registry', async function () {
-    skipThisScenarioUnless(globalVars.authRegistry);
+    skipThisScenarioUnless(getContext('authRegistry'));
 });
 
 // skip tests if executed in cloud environment

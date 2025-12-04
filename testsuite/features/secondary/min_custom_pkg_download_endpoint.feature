@@ -11,7 +11,7 @@ Feature: Repos file generation based on custom pillar data
   Scenario: Log in as org admin user
     Given I am authorized
 
-@susemanager
+  @susemanager
   Scenario: Select the channels of the SLES minion
     Given I am on the Systems overview page of this "sle_minion"
     When I follow "Software" in the content area
@@ -28,7 +28,7 @@ Feature: Repos file generation based on custom pillar data
     When I follow "scheduled" in the content area
     And I wait until I see "1 system successfully completed this action." text, refreshing the page
 
-@uyuni
+  @uyuni
   Scenario: Select the channels of the openSUSE minion
     Given I am on the Systems overview page of this "sle_minion"
     When I follow "Software" in the content area
@@ -54,7 +54,7 @@ Feature: Repos file generation based on custom pillar data
     And I install the package download endpoint pillar file on the server
     And I refresh the pillar data
 
-@susemanager
+  @susemanager
   Scenario: Select the channels of the SLES minion again so new RPM end point will be taken into account
     When I follow "Software" in the content area
     And I follow "Software Channels" in the content area
@@ -67,7 +67,7 @@ Feature: Repos file generation based on custom pillar data
     When I follow "scheduled" in the content area
     And I wait until I see "1 system successfully completed this action." text, refreshing the page
 
-@uyuni
+  @uyuni
   Scenario: Select the channels of the openSUSE minion again so new RPM end point will be taken into account
     When I follow "Software" in the content area
     And I follow "Software Channels" in the content area
@@ -90,7 +90,7 @@ Feature: Repos file generation based on custom pillar data
     And I install a salt pillar top file for "disable_local_repos_off, salt_bundle_config" with target "*" on the server
     And I refresh the pillar data
 
-@susemanager
+  @susemanager
   Scenario: Cleanup: select the channels of the SLES minion as before
     When I follow "Software" in the content area
     And I follow "Software Channels" in the content area
@@ -109,7 +109,7 @@ Feature: Repos file generation based on custom pillar data
     When I follow "scheduled" in the content area
     And I wait until I see "1 system successfully completed this action." text, refreshing the page
 
-@uyuni
+  @uyuni
   Scenario: Cleanup: select the channels of the openSUSE minion as before
     When I follow "Software" in the content area
     And I follow "Software Channels" in the content area

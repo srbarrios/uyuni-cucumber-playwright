@@ -15,7 +15,7 @@ Feature: Assign child channel to a system
   Scenario: Log in as org admin user
     Given I am authorized
 
-@susemanager
+  @susemanager
   Scenario: Pre-requisite: unsubscribe from old channels
     Given I am on the Systems overview page of this "sle_minion"
     When I follow "Software" in the content area
@@ -31,7 +31,7 @@ Feature: Assign child channel to a system
     When I click on "Confirm"
     Then I should see a "Changing the channels has been scheduled." text
 
-@uyuni
+  @uyuni
   Scenario: Pre-requisite: unsubscribe from old channels
     Given I am on the Systems overview page of this "sle_minion"
     When I follow "Software" in the content area
@@ -49,19 +49,19 @@ Feature: Assign child channel to a system
     When I click on "Confirm"
     Then I should see a "Changing the channels has been scheduled." text
 
-@susemanager
+  @susemanager
   Scenario: Pre-requisite: check via API that the system is unsubscribed from old channels
     When I refresh the metadata for "sle_minion"
     Then channel "SLE-Product-SLES15-SP4-Pool for x86_64" should be enabled on "sle_minion"
     And channel "SLE15-SP4-Installer-Updates for x86_64" should be disabled on "sle_minion"
 
-@uyuni
+  @uyuni
   Scenario: Pre-requisite: check via API that the system is unsubscribed from old channels
     When I refresh the metadata for "sle_minion"
     Then channel "openSUSE Leap 15.6 (x86_64)" should be enabled on "sle_minion"
     And channel "Uyuni Client Tools for openSUSE Leap 15.6 (x86_64)" should be disabled on "sle_minion"
 
-@susemanager
+  @susemanager
   Scenario: Assign a child channel to the system
     When I follow "Software" in the content area
     And I follow "Software Channels" in the content area
@@ -77,7 +77,7 @@ Feature: Assign child channel to a system
     And I wait until I see "1 system successfully completed this action." text, refreshing the page
     Then channel "SLE15-SP4-Installer-Updates for x86_64" should be enabled on "sle_minion"
 
-@uyuni
+  @uyuni
   Scenario: Assign a child channel to the system
     When I follow "Software" in the content area
     And I follow "Software Channels" in the content area
@@ -99,7 +99,7 @@ Feature: Assign child channel to a system
     When I wait until event "Subscribe channels scheduled" is completed
     Then I should see a "The client completed this action on" text
 
-@susemanager
+  @susemanager
   Scenario: Check the system is subscribed to the new channels
     When I follow "Software" in the content area
     And I follow "Software Channels" in the content area
@@ -108,7 +108,7 @@ Feature: Assign child channel to a system
     And I wait until I do not see "Loading..." text
     And I should see "SLE15-SP4-Installer-Updates for x86_64" as checked
 
-@uyuni
+  @uyuni
   Scenario: Check the system is subscribed to the new channels
     When I follow "Software" in the content area
     And I follow "Software Channels" in the content area
@@ -117,19 +117,19 @@ Feature: Assign child channel to a system
     And I wait until I do not see "Loading..." text
     And I should see "Uyuni Client Tools for openSUSE Leap 15.6 (x86_64)" as checked
 
-@susemanager
+  @susemanager
   Scenario: Check via API the new channels are enabled on the system
     When I refresh the metadata for "sle_minion"
     Then channel "SLE-Product-SLES15-SP4-Pool for x86_64" should be enabled on "sle_minion"
     And channel "SLE15-SP4-Installer-Updates for x86_64" should be enabled on "sle_minion"
 
-@uyuni
+  @uyuni
   Scenario: Check via API the new channels are enabled on the system
     When I refresh the metadata for "sle_minion"
     Then channel "openSUSE Leap 15.6 (x86_64)" should be enabled on "sle_minion"
     And channel "Uyuni Client Tools for openSUSE Leap 15.6 (x86_64)" should be enabled on "sle_minion"
 
-@susemanager
+  @susemanager
   Scenario: Cleanup: subscribe the system back to previous channels
     When I follow "Software" in the content area
     And I follow "Software Channels" in the content area
@@ -149,7 +149,7 @@ Feature: Assign child channel to a system
     And I wait until I see "1 system successfully completed this action." text, refreshing the page
     Then channel "SLE15-SP4-Installer-Updates for x86_64" should be disabled on "sle_minion"
 
-@uyuni
+  @uyuni
   Scenario: Cleanup: subscribe the system back to previous channels
     When I follow "Software" in the content area
     And I follow "Software Channels" in the content area

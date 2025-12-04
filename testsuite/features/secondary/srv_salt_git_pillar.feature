@@ -28,12 +28,12 @@ Feature: Salt master integration with Git pillar
     And I wait until Salt master can reach "sle_minion"
     Then file "/etc/salt/master.d/zz-testing-gitpillar.conf" should not exist on server
 
-Scenario: Cleanup: Check for the expected pillar data after disabling Git pillar
+  Scenario: Cleanup: Check for the expected pillar data after disabling Git pillar
     When I refresh the pillar data
     Then the pillar data for "git_pillar_foobar" should be empty on "sle_minion"
     And the pillar data for "org_id" should be "1" on "sle_minion"
     And the pillar data for "git_pillar_foobar" should be empty on the Salt master
 
-Scenario: Pre-Cleanup: Disabling repositories for uninstalling git-core
-  When I remove repository "SLE-Module-Basesystem15-SP6-Updates" on "server" without error control
-  And I remove repository "SLE-Module-Basesystem15-SP6-Pool" on "server" without error control
+  Scenario: Pre-Cleanup: Disabling repositories for uninstalling git-core
+    When I remove repository "SLE-Module-Basesystem15-SP6-Updates" on "server" without error control
+    And I remove repository "SLE-Module-Basesystem15-SP6-Pool" on "server" without error control

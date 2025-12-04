@@ -3,7 +3,7 @@
 
 @rhlike_minion
 Feature: Native AppStreams support for Red Hat-like Salt minion
-  
+
   Scenario: Log in as admin user
     Given I am authorized for the "Admin" section
 
@@ -62,7 +62,7 @@ Feature: Native AppStreams support for Red Hat-like Salt minion
     When I click on "Confirm"
     Then I should see a "Updating the selection of AppStream modules has been scheduled." text
     And I wait until event "Change AppStreams (enable: [scorpio:2.0]) scheduled by admin" is completed
-  
+
   Scenario: Upgrade to modular package
     Given I am on the Systems overview page of this "rhlike_minion"
     And I follow "Software" in the content area
@@ -76,7 +76,7 @@ Feature: Native AppStreams support for Red Hat-like Salt minion
     And I should see a "1 package upgrade has been scheduled for" text
     When I wait until event "Package Install/Upgrade scheduled by admin" is completed
     Then "scorpio-dummy-2.0" should be installed on "rhlike_minion"
-  
+
   Scenario: Remove modular package
     Given I am on the Systems overview page of this "rhlike_minion"
     And I follow "Software" in the content area
@@ -128,7 +128,7 @@ Feature: Native AppStreams support for Red Hat-like Salt minion
     And I click on "Confirm"
     Then I should see a "1 package removal has been scheduled" text
     When I wait until event "Package Removal scheduled" is completed
-  
+
   Scenario: Cleanup: disable AppStream module
     Given I am on the Systems overview page of this "rhlike_minion"
     And I follow "Software" in the content area

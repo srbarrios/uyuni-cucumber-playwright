@@ -40,7 +40,7 @@ Feature: Managing channels
     And I click on "Create Channel"
     Then I should see a "Invalid channel name, please see the format described below" text
 
-@scc_credentials
+  @scc_credentials
   Scenario: Fail when trying to use reserved names for channels
     When I follow the left menu "Software > Manage > Channels"
     And I follow "Create Channel"
@@ -50,7 +50,7 @@ Feature: Managing channels
     And I click on "Create Channel"
     Then I should see a "The channel name 'openSUSE-Leap-15.6-Pool for x86_64' is reserved, please enter a different name" text
 
-@scc_credentials
+  @scc_credentials
   Scenario: Fail when trying to use reserved labels for channels
     When I follow the left menu "Software > Manage > Channels"
     And I follow "Create Channel"
@@ -69,7 +69,7 @@ Feature: Managing channels
     And I click on "Create Channel"
     Then I should see a "Channel aaaSLE-12-Cloud-Compute5-Pool for x86_64 created." text
 
-@scc_credentials
+  @scc_credentials
   Scenario: Fail when trying to change the channel name to a reserved name
     When I follow the left menu "Software > Manage > Channels"
     And I follow "aaaSLE-12-Cloud-Compute5-Pool for x86_64"

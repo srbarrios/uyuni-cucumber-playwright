@@ -25,7 +25,7 @@ Feature: Reboot systems managed by Uyuni
   Scenario: Log in as org admin user
     Given I am authorized
 
-@ssh_minion
+  @ssh_minion
   Scenario: Reboot the SSH-managed SLES minion
     Given I am on the Systems overview page of this "ssh_minion"
     When I follow first "Schedule System Reboot"
@@ -44,7 +44,7 @@ Feature: Reboot systems managed by Uyuni
     When I wait at most 600 seconds until event "System reboot scheduled" is completed
     And I should see a "Reboot completed." text
 
-@rhlike_minion
+  @rhlike_minion
   Scenario: Reboot the Red Hat-like minion and wait until reboot is completed
     Given I am on the Systems overview page of this "rhlike_minion"
     When I follow first "Schedule System Reboot"
@@ -55,7 +55,7 @@ Feature: Reboot systems managed by Uyuni
     When I wait at most 600 seconds until event "System reboot scheduled" is completed
     Then I should see a "Reboot completed." text
 
-@deblike_minion
+  @deblike_minion
   Scenario: Reboot the Debian-like minion and wait until reboot is completed
     Given I am on the Systems overview page of this "deblike_minion"
     When I follow first "Schedule System Reboot"

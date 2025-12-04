@@ -1,6 +1,7 @@
 import {Given, Then, When} from '@cucumber/cucumber';
 
 import {
+    addContext,
     BASE_CHANNEL_BY_CLIENT,
     envConfig,
     getAppHost,
@@ -306,8 +307,46 @@ When(/^I enter the URI of the registry as "([^"]*)"$/, async function (field) {
     }
 });
 
+When(/^I enter "([^"]*)" hostname on the search field$/, async function (host) {
+    const systemName = await getSystemName(host);
+    await enterTextAsField(systemName, 'search_string');
+});
+
 When(/^I enter "([^"]*)" on the search field$/, async function (searchText) {
     await enterTextAsField(searchText, 'search_string');
+});
+
+When(/^I click on the search button$/, async function () {
+    const page = getCurrentPage();
+    const clickSearch = async () => {
+        const searchButton = page.getByRole('button', {name: 'Search'});
+        await searchButton.first().click();
+    };
+
+    await clickSearch();
+
+    // After a search reindex, the UI might temporarily show transient errors.
+    const errorText = 'Could not connect to search server.';
+    const noMatchesText = 'No matches found';
+
+    if (await page.getByText(errorText).isVisible({timeout: 0})) {
+        await repeatUntilTimeout(
+            async () => {
+                const hasError = await page.getByText(errorText).isVisible({timeout: 0});
+                const hasNoMatches = await page.getByText(noMatchesText).isVisible({timeout: 0});
+                if (!hasError && !hasNoMatches) {
+                    return true;
+                }
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                await clickSearch();
+                return false;
+            },
+            {
+                message: 'Could not perform a successful search after reindexation',
+                timeout: 10
+            }
+        );
+    }
 });
 
 When(/^I go back$/, async function () {
@@ -635,7 +674,7 @@ Then(/^I should see "([^"]*)" or "([^"]*)" in the ([^ ]+) textarea$/, async func
     expect(value.includes(text1) || value.includes(text2)).toBeTruthy();
 });
 
-Then('the {string} checkbox should be disabled', async function (arg1: string) {
+Then('the "([^"]*)" checkbox should be disabled', async function (arg1: string) {
     const checkbox = getCurrentPage().locator(`#${arg1}`);
     await expect(checkbox).toBeDisabled();
 });
@@ -994,6 +1033,17 @@ Given(/^I have a property "([^"]*)" with value "([^"]*)" on "([^"]*)"$/, async f
     await shouldSeeSystemPropertiesChangedText();
 });
 
+Given(/^I have a combobox property "([^"]*)" with value "([^"]*)" on "([^"]*)"$/, async function (property_name, property_value, host) {
+    await navigateToSystemsOverviewPage(host);
+    await followLinkInContentArea('Properties');
+    await selectOptionFromField(property_value, property_name);
+    await clickUpdateProperties();
+    await shouldSeeSystemPropertiesChangedText();
+    // Call the step to clean the search index on the server
+    // This step is defined in command_steps.ts, so we need to ensure it's loaded
+    await this.When('I clean the search index on the server');
+});
+
 
 When(/^I visit "([^"]*)" endpoint of this "([^"]*)"$/, async function (service, host) {
     const node = await getTarget(host);
@@ -1045,6 +1095,12 @@ When(/^I set the maximum allowed occurrence of any character to "([^"]*)"$/, asy
     await getCurrentPage().locator('#maxCharacterOccurrence').fill(max);
 });
 
+When(/^I enter the controller hostname as the redfish server address$/, async function () {
+    const controllerNode = await getTarget('controller');
+    const hostname = controllerNode.fullHostname;
+    await this.When(`I enter "${hostname}:8443" as "powerAddress"`);
+});
+
 When(/^I (enable|disable) the following restrictions:$/, async function (action, dataTable) {
     const restrictions = dataTable.raw().flat();
     const shouldCheck = action === 'enable';
@@ -1093,4 +1149,13 @@ Then(/^the following restrictions should be (enabled|disabled):$/, async functio
             await expect(checkbox).not.toBeChecked();
         }
     }
+});
+
+When(/^I make a list of the existing systems$/, async function () {
+    const systemElements = await getCurrentPage().locator('//td[contains(@class, \'sortedCol\')]').all();
+    const systemsList: string[] = [];
+    for (const element of systemElements) {
+        systemsList.push((await element.textContent())!.trim());
+    }
+    addContext('systems_list', systemsList);
 });

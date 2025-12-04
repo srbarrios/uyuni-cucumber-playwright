@@ -38,18 +38,18 @@ Feature: Monitor SUMA environment with Prometheus on a Debian-like Salt minion
   Scenario: Enable tools_update_repo tools_pool_repo so the exporters packages are available
     When I enable the repositories "tools_update_repo tools_pool_repo" on this "deblike_minion" without error control
 
-@skip_if_github_validation
+  @skip_if_github_validation
   Scenario: Apply highstate for Prometheus exporters on the Debian-like minion
     When I follow "States" in the content area
     And I click on "Apply Highstate"
     Then I should see a "Applying the highstate has been scheduled." text
     And I wait until event "Apply highstate scheduled" is completed
 
-@skip_if_github_validation
+  @skip_if_github_validation
   Scenario: Wait for services
-     When I wait until "node" exporter service is active on "deblike_minion"
-     And I wait until "apache" exporter service is active on "deblike_minion"
-     And I wait until "postgres" exporter service is active on "deblike_minion"
+    When I wait until "node" exporter service is active on "deblike_minion"
+    And I wait until "apache" exporter service is active on "deblike_minion"
+    And I wait until "postgres" exporter service is active on "deblike_minion"
 
   Scenario: Visit monitoring endpoints on the Debian-like minion
     And I visit "Prometheus node exporter" endpoint of this "deblike_minion"
@@ -62,7 +62,7 @@ Feature: Monitor SUMA environment with Prometheus on a Debian-like Salt minion
     And I click on "Save"
     Then I wait until I see "Formula saved" text
 
-@skip_if_github_validation
+  @skip_if_github_validation
   Scenario: Cleanup: apply highstate after test monitoring on the Debian-like minion
     When I follow "States" in the content area
     And I click on "Apply Highstate"

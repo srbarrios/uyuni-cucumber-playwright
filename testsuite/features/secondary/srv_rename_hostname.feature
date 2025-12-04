@@ -22,7 +22,7 @@ Feature: Reconfigure the server's hostname
     And I reboot the server through SSH
     And I run spacewalk-hostname-rename command on the server
 
-@proxy
+  @proxy
   Scenario: Copy the new server keys and configure the proxy
     When I copy server's keys to the proxy
     And I configure the proxy
@@ -32,27 +32,27 @@ Feature: Reconfigure the server's hostname
     When I restart the "salt-broker" service on "proxy"
     Then service "salt-broker" is active on "proxy"
 
-@proxy
+  @proxy
   Scenario: Apply high state on the proxy to populate new server CA
     When I apply highstate on "proxy"
 
-@sle_minion
+  @sle_minion
   Scenario: Apply high state on the SUSE Minion to populate new server CA
     When I apply highstate on "sle_minion"
 
-@ssh_minion
+  @ssh_minion
   Scenario: Apply high state on the SUSE SSH Minion to populate new server CA
     When I apply highstate on "ssh_minion"
 
-@rhlike_minion
+  @rhlike_minion
   Scenario: Apply high state on the Red Hat-like Minion to populate new server CA
     When I apply highstate on "rhlike_minion"
 
-@deblike_minion
+  @deblike_minion
   Scenario: Apply high state on the Debian-like Minion to populate new server CA
     When I apply highstate on "deblike_minion"
 
-@build_host
+  @build_host
   Scenario: Apply high state on the build host to populate new server CA
     When I apply highstate on "build_host"
 
@@ -79,7 +79,7 @@ Feature: Reconfigure the server's hostname
     When I change back the server's hostname
     And I run spacewalk-hostname-rename command on the server
 
-@proxy
+  @proxy
   Scenario: Copy the new server keys and configure the proxy
     When I copy server's keys to the proxy
     And I configure the proxy
@@ -89,27 +89,27 @@ Feature: Reconfigure the server's hostname
     When I restart the "salt-broker" service on "proxy"
     Then service "salt-broker" is active on "proxy"
 
-@proxy
+  @proxy
   Scenario: Apply high state on the proxy to populate new server CA
     When I apply highstate on "proxy"
 
-@sle_minion
+  @sle_minion
   Scenario: Apply high state on the SUSE Minion to populate new server CA
     When I apply highstate on "sle_minion"
 
-@ssh_minion
+  @ssh_minion
   Scenario: Apply high state on the SUSE SSH Minion to populate new server CA
     When I apply highstate on "ssh_minion"
 
-@rhlike_minion
+  @rhlike_minion
   Scenario: Apply high state on the Red Hat-like Minion to populate new server CA
     When I apply highstate on "rhlike_minion"
 
-@deblike_minion
+  @deblike_minion
   Scenario: Apply high state on the Debian-like Minion to populate new server CA
     When I apply highstate on "deblike_minion"
 
-@build_host
+  @build_host
   Scenario: Apply high state on the build host to populate new server CA
     When I apply highstate on "build_host"
 

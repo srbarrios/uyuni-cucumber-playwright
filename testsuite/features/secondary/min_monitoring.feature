@@ -44,14 +44,14 @@ Feature: Monitor SUMA environment with Prometheus on a SLE Salt minion
     And I click on "Save"
     Then I should see a "Formula saved" text
 
-@skip_if_github_validation
+  @skip_if_github_validation
   Scenario: Apply highstate for Prometheus exporters
     When I follow "States" in the content area
     And I click on "Apply Highstate"
     Then I should see a "Applying the highstate has been scheduled." text
     And I wait until event "Apply highstate scheduled" is completed
 
-@skip_if_github_validation
+  @skip_if_github_validation
   Scenario: Wait for services
     When I wait until "prometheus" service is active on "sle_minion"
     And I wait until "node" exporter service is active on "sle_minion"
@@ -71,7 +71,7 @@ Feature: Monitor SUMA environment with Prometheus on a SLE Salt minion
     And I click on "Save"
     Then I wait until I see "Formula saved" text
 
-@skip_if_github_validation
+  @skip_if_github_validation
   Scenario: Cleanup: apply highstate after test monitoring
     And I follow "States" in the content area
     And I click on "Apply Highstate"

@@ -74,7 +74,7 @@ Feature: Configuration state channels
     When I click on "Delete Config Channel"
     Then I should see a "Channel 'My State Channel' has been deleted." text
     And I remove "/root/foobar" from "sle_minion"
- 
+
   Scenario: Create the 1st state channel
     When I follow the left menu "Configuration > Channels"
     And I follow "Create State Channel"

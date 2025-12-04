@@ -193,7 +193,7 @@ Feature: Cobbler and distribution autoinstallation
     And I should not see a "fedora_kickstart_distro_kernel_api" text
     And I should not see a "SLE-15-FAKE" text
 
-@flaky
+  @flaky
   Scenario: Check for errors in Cobbler monitoring
     When I wait for "5" seconds
     Then the local logs for Cobbler should not contain errors

@@ -1,17 +1,17 @@
 import {Then, When} from '@cucumber/cucumber';
 
-import {getTarget, globalVars, PRIVATE_ADDRESSES, getSystemId} from '../helpers/index.js';
+import {getCurrentPage, getTarget, globalVars, PRIVATE_ADDRESSES} from '../helpers/index.js';
 import {
     computeKiwiProfileName,
     computeKiwiProfileVersion,
     manageBranchServerRepositories,
     openImageDetailsPage,
+    readBranchPrefixFromYaml,
+    readTerminalsFromYaml,
     shouldSeeImageIsBuilt,
     shouldSeeLinkToDownloadImage
-} from '../helpers/embedded_steps/retail_helper.js';
-import {getCurrentPage, getAppHost} from "../helpers/index.js";
+} from '../helpers/retail_helper.js';
 import {expect} from "@playwright/test";
-import {followLinkInContentArea} from "../helpers/embedded_steps/navigation_helper.js";
 
 When(/^I start tftp on the proxy$/, async function () {
     const proxy = await getTarget('proxy');
@@ -134,23 +134,44 @@ When(/^I import the retail configuration using retail_yaml command$/, async func
 });
 
 When(/^I follow "([^"]*)" terminal$/, async function (host) {
-    // This step relies on reading from a YAML file, which is not supported.
-    throw new Error('This step requires reading a YAML file which cannot be performed.');
+    const domain = readBranchPrefixFromYaml();
+    if (host.includes('pxeboot')) {
+        await this.step(`I follow "${host}.${domain}"`);
+    } else {
+        await this.step(`I follow "${domain}.${host}"`);
+    }
 });
 
 Then(/^I should see the terminals imported from the configuration file$/, async function () {
-    // This step relies on reading from a YAML file, which is not supported.
-    throw new Error('This step requires reading a YAML file which cannot be performed.');
+    const terminals = readTerminalsFromYaml();
+    for (const terminal of terminals) {
+        await this.step(`I wait until I see the "${terminal}" system, refreshing the page`);
+    }
 });
 
 Then(/^I should not see any terminals imported from the configuration file$/, async function () {
-    // This step relies on reading from a YAML file, which is not supported.
-    throw new Error('This step requires reading a YAML file which cannot be performed.');
+    const terminals = readTerminalsFromYaml();
+    for (const terminal of terminals) {
+        if (!terminal.includes('minion') && !terminal.includes('client')) {
+            await this.step(`I should not see a "${terminal}" text`);
+        }
+    }
 });
 
 When(/^I delete all the imported terminals$/, async function () {
-    // This step relies on reading from a YAML file, which is not supported.
-    throw new Error('This step requires reading a YAML file which cannot be performed.');
+    const terminals = readTerminalsFromYaml();
+    for (const terminal of terminals) {
+        if (!terminal.includes('minion') && !terminal.includes('client')) {
+            console.log(`Deleting terminal with name: ${terminal}`);
+            await this.steps(
+                `When I follow "${terminal}" terminal
+                And I follow "Delete System"
+                And I should see a "Confirm System Profile Deletion" text
+                And I click on "Delete Profile"
+                Then I should see a "has been deleted" text`
+            );
+        }
+    }
 });
 
 When(/^I enter the local IP address of "([^"]*)" in (.*) field$/, async function (host, field) {

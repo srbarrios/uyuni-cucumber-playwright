@@ -36,7 +36,7 @@ Feature: Register a Salt minion via API
     Given I am on the Systems overview page of this "sle_minion"
     Then I should see a "Default" text
 
-@proxy
+  @proxy
   Scenario: Check registration on proxy of minion bootstrapped via API
     Given I am on the Systems overview page of this "proxy"
     When I follow "Details" in the content area
@@ -47,7 +47,7 @@ Feature: Register a Salt minion via API
     Given I am on the Systems overview page of this "sle_minion"
     Then I run spacecmd listeventhistory for "sle_minion"
 
-@susemanager
+  @susemanager
   Scenario: API bootstrap: subscribe to base channel
     Given I am on the Systems overview page of this "sle_minion"
     When I follow "Software" in the content area
@@ -64,7 +64,7 @@ Feature: Register a Salt minion via API
     Then I should see a "Changing the channels has been scheduled." text
     And I wait until event "Subscribe channels scheduled" is completed
 
-@uyuni
+  @uyuni
   Scenario: API bootstrap: subscribe to base channel
     Given I am on the Systems overview page of this "sle_minion"
     When I follow "Software" in the content area

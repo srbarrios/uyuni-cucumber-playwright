@@ -1,7 +1,10 @@
 import {
+    addContext,
     getApiTest,
     getAppHost,
-    getCurrentPage, getSystemId,
+    getContext,
+    getCurrentPage,
+    getSystemId,
     getSystemName,
     getTarget,
     globalVars,
@@ -269,8 +272,8 @@ export async function shouldNotBeAbleToModifyReportDB(action: string, tableType:
 
 export async function shouldBeAbleToConnectToReportDBWithAdminUser() {
     const server = await getTarget('server');
-    const reportdb_admin_user = globalVars.reportdbAdminUser;
-    const reportdb_admin_password = globalVars.reportdbAdminPassword;
+    const reportdb_admin_user = getContext('reportdbAdminUser');
+    const reportdb_admin_password = getContext('reportdbAdminPassword');
     const {returnCode} = await server.run(`PGPASSWORD=${reportdb_admin_password} psql -h ${server.publicIp} -U ${reportdb_admin_user} -d reportdb -c '\\q'`, {checkErrors: false});
     if (returnCode !== 0) {
         throw new Error('Couldn\'t connect to the ReportDB with admin user');
@@ -279,8 +282,8 @@ export async function shouldBeAbleToConnectToReportDBWithAdminUser() {
 
 export async function shouldNotBeAbleToConnectToProductDBWithAdminUser() {
     const server = await getTarget('server');
-    const reportdb_admin_user = globalVars.reportdbAdminUser;
-    const reportdb_admin_password = globalVars.reportdbAdminPassword;
+    const reportdb_admin_user = getContext('reportdbAdminUser');
+    const reportdb_admin_password = getContext('reportdbAdminPassword');
     const {returnCode} = await server.run(`PGPASSWORD=${reportdb_admin_password} psql -h ${server.publicIp} -U ${reportdb_admin_user} -d susemanager -c '\\q'`, {checkErrors: false});
     if (returnCode === 0) {
         throw new Error('Was able to connect to product database with ReportDB admin user');
@@ -290,17 +293,17 @@ export async function shouldNotBeAbleToConnectToProductDBWithAdminUser() {
 export async function makeListOfExistingSystems() {
     const server = await getTarget('server');
     const {stdout} = await server.run('spacecmd -u admin -p admin system_list');
-    globalVars.existingSystems = stdout.split('\n').filter(line => line.trim() !== '');
+    addContext('existingSystems', stdout.split('\n').filter(line => line.trim() !== ''));
 }
 
 export async function shouldFindSystemsFromUIInReportDB() {
     const server = await getTarget('server');
-    const reportdb_admin_user = globalVars.reportdbAdminUser;
-    const reportdb_admin_password = globalVars.reportdbAdminPassword;
+    const reportdb_admin_user = getContext('reportdbAdminUser');
+    const reportdb_admin_password = getContext('reportdbAdminPassword');
     const {stdout} = await server.run(`PGPASSWORD=${reportdb_admin_password} psql -h ${server.publicIp} -U ${reportdb_admin_user} -d reportdb -c 'SELECT name FROM rhn_system;'`);
     const reportdbSystems = stdout.split('\n').map(line => line.trim()).filter(line => line.length > 0 && !line.includes('name') && !line.includes('rows'));
 
-    for (const system of globalVars.existingSystems) {
+    for (const system of getContext('existingSystems')) {
         if (!reportdbSystems.includes(system)) {
             throw new Error(`System ${system} not found in ReportDB`);
         }
@@ -309,17 +312,17 @@ export async function shouldFindSystemsFromUIInReportDB() {
 
 export async function knowCurrentSyncedDate(host: string) {
     const server = await getTarget('server');
-    const reportdb_admin_user = globalVars.reportdbAdminUser;
-    const reportdb_admin_password = globalVars.reportdbAdminPassword;
+    const reportdb_admin_user = getContext('reportdbAdminUser');
+    const reportdb_admin_password = getContext('reportdbAdminPassword');
     const systemName = await getSystemName(host);
     const {stdout} = await server.run(`PGPASSWORD=${reportdb_admin_password} psql -h ${server.publicIp} -U ${reportdb_admin_user} -d reportdb -c 'SELECT last_synced FROM rhn_system WHERE name = \'${systemName}\';'`);
-    globalVars.syncedDate = stdout.split('\n')[2].trim();
+    addContext('syncedDate', stdout.split('\n')[2].trim());
 }
 
 export async function shouldFindUpdatedCityPropertyInReportDB(city: string, host: string) {
     const server = await getTarget('server');
-    const reportdb_admin_user = globalVars.reportdbAdminUser;
-    const reportdb_admin_password = globalVars.reportdbAdminPassword;
+    const reportdb_admin_user = getContext('reportdbAdminUser');
+    const reportdb_admin_password = getContext('reportdbAdminPassword');
     const systemName = await getSystemName(host);
     await repeatUntilTimeout(async () => {
         const {stdout} = await server.run(`PGPASSWORD=${reportdb_admin_password} psql -h ${server.publicIp} -U ${reportdb_admin_user} -d reportdb -c 'SELECT value FROM rhn_system_custom_info WHERE system_name = \'${systemName}\' AND label = \'City\';'`);

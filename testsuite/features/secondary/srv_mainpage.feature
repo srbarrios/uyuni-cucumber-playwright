@@ -12,14 +12,14 @@ Feature: Main landing page options and preferences
     When I go to the home page
     Then I should see a "Sign In" text
 
-@uyuni
+  @uyuni
   Scenario: Access the API Documentation
     Given I am not authorized
     When I go to the home page
     And I follow "API Documentation"
     Then I should see a "API Overview" text
 
-@susemanager
+  @susemanager
   Scenario: Access the Copyright Notice
     Given I am authorized
     When I follow the left menu "Help"
@@ -32,7 +32,7 @@ Feature: Main landing page options and preferences
     And I should see a "SUSE Multi-Linux Manager LICENSE AGREEMENT" text
     When I close the last opened window
 
-@susemanager
+  @susemanager
   Scenario: Access the EULA
     Given I am authorized
     When I follow the left menu "Help"

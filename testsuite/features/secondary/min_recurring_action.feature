@@ -65,7 +65,7 @@ Feature: Recurring Actions
     And I should see a "SLS: util.syncstates" text
 
 # This fails in github actions...
-@skip_if_github_validation
+  @skip_if_github_validation
   Scenario: Cleanup: Disable IP forwarding
     When I follow the left menu "Salt > Remote Commands"
     Then I should see a "Remote Commands" text in the content area
@@ -153,7 +153,7 @@ Feature: Recurring Actions
     Then I should see a "Changing the channels has been scheduled." text
     And I wait until event "Subscribe channels scheduled" is completed
 
-@skip_if_github_validation
+  @skip_if_github_validation
   Scenario: Pre-requisite: downgrade milkyway-dummy to lower version
     When I enable repository "test_repo_rpm_pool" on this "sle_minion"
     And I install old package "milkyway-dummy-1.0" on this "sle_minion"
@@ -195,7 +195,7 @@ Feature: Recurring Actions
     When I am on the Systems overview page of this "sle_minion"
     Then I wait at most 500 seconds until I do not see "System is up to date" text, refreshing the page
 
-@susemanager
+  @susemanager
   Scenario: Cleanup: subscribe system back to default base channel
     Given I am on the Systems overview page of this "sle_minion"
     When I follow "Software" in the content area
@@ -222,7 +222,7 @@ Feature: Recurring Actions
     Then I should see a "Changing the channels has been scheduled." text
     And I wait until event "Subscribe channels scheduled" is completed
 
-@uyuni
+  @uyuni
   Scenario: Cleanup: subscribe system back to default base channel
     Given I am on the Systems overview page of this "sle_minion"
     When I follow "Software" in the content area
@@ -384,7 +384,7 @@ Feature: Recurring Actions
     And I should see a "schedule_name_org" text
     And I should see a "Organization" text
 
- Scenario: View details in list of all actions
+  Scenario: View details in list of all actions
     When I follow the left menu "Schedule > Recurring Actions"
     And I click the "schedule_name_minion" item details button
     Then I should see a "Every Wednesday at 01:35" text

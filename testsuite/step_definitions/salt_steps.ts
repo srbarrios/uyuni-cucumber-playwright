@@ -8,6 +8,7 @@ import {
     fileInject,
     getApiTest,
     getContext,
+    getCurrentPage,
     getSystemName,
     getTarget,
     globalVars,
@@ -29,7 +30,6 @@ import {storeFileInSaltMinionConfig} from '../helpers/embedded_steps/salt_helper
 import * as fs from 'fs/promises';
 import * as tmp from 'tmp';
 import {expect} from "@playwright/test";
-import {getAppHost, getCurrentPage} from "../helpers/index.js";
 
 Given(/^the Salt master can reach "(.*?)"$/, async function (minion) {
     const systemName = await getSystemName(minion);

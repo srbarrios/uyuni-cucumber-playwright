@@ -1,6 +1,14 @@
 import {Given, Then, When} from '@cucumber/cucumber';
 
-import {fileExtract, fileExists, fileInject, getCobblerTest, getCurrentPage, getTarget, getAppHost} from '../helpers/index.js';
+import {
+    fileExists,
+    fileExtract,
+    fileInject,
+    getAppHost,
+    getCobblerTest,
+    getCurrentPage,
+    getTarget
+} from '../helpers/index.js';
 import {runCobblerBuildisoAllProfiles} from '../helpers/cobbler_helper.js';
 import {expect} from "@playwright/test";
 import {setPXEMenuEntry} from "../helpers/embedded_steps/retail_helper.js";

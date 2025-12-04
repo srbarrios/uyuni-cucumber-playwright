@@ -26,7 +26,7 @@ Feature: Register a salt-ssh system via API
     And I wait until I see "has been deleted" text
     Then "ssh_minion" should not be registered
 
-@proxy
+  @proxy
   Scenario: Block direct access from server to sshminion to test proxy as jumphost
     Given I block connections from "server" on "ssh_minion"
 
@@ -42,7 +42,7 @@ Feature: Register a salt-ssh system via API
     Given I am on the Systems overview page of this "ssh_minion"
     Then I should see a "Push via SSH" text
 
-@proxy
+  @proxy
   Scenario: Check registration on proxy of SSH minion bootstrapped via API
     Given I am on the Systems overview page of this "proxy"
     When I follow "Details" in the content area
@@ -57,7 +57,7 @@ Feature: Register a salt-ssh system via API
     Given I am on the Systems overview page of this "ssh_minion"
     Then I check for failed events on history event page
 
-@susemanager
+  @susemanager
   Scenario: API bootstrap: subscribe SSH minion to base channel
     Given I am on the Systems overview page of this "ssh_minion"
     When I follow "Software" in the content area
@@ -74,7 +74,7 @@ Feature: Register a salt-ssh system via API
     Then I should see a "Changing the channels has been scheduled." text
     And I wait until event "Subscribe channels scheduled" is completed
 
-@uyuni
+  @uyuni
   Scenario: API bootstrap: subscribe SSH minion to base channel
     Given I am on the Systems overview page of this "ssh_minion"
     When I follow "Software" in the content area
@@ -90,6 +90,6 @@ Feature: Register a salt-ssh system via API
     Then I should see a "Changing the channels has been scheduled." text
     And I wait until event "Subscribe channels scheduled" is completed
 
-@proxy
+  @proxy
   Scenario: Cleanup and flush the firewall rules
     When I flush firewall on "ssh_minion"

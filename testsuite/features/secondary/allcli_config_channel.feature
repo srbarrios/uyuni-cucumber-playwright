@@ -27,7 +27,7 @@ Feature: Management of configuration of all types of clients in a single channel
     And file "/srv/susemanager/salt/manager_org_1/mixedchannel/init.sls" should exist on server
     And file "/srv/susemanager/salt/manager_org_1/mixedchannel/etc/s-mgr/config" should exist on server
 
-@sle_minion
+  @sle_minion
   Scenario: Subscribe a Salt minion to the configuration channel
     When I am on the Systems overview page of this "sle_minion"
     And I follow "Configuration" in the content area
@@ -38,7 +38,7 @@ Feature: Management of configuration of all types of clients in a single channel
     And I click on "Update Channel Rankings"
     Then I should see a "Channel Subscriptions successfully changed for" text
 
-@rhlike_minion
+  @rhlike_minion
   Scenario: Subscribe a Red Hat-like minion to the configuration channel
     When I am on the Systems overview page of this "rhlike_minion"
     And I follow "Configuration" in the content area
@@ -49,7 +49,7 @@ Feature: Management of configuration of all types of clients in a single channel
     And I click on "Update Channel Rankings"
     Then I should see a "Channel Subscriptions successfully changed for" text
 
-@deblike_minion
+  @deblike_minion
   Scenario: Subscribe a Debian-like minion to the configuration channel
     When I am on the Systems overview page of this "deblike_minion"
     And I follow "Configuration" in the content area
@@ -60,7 +60,7 @@ Feature: Management of configuration of all types of clients in a single channel
     And I click on "Update Channel Rankings"
     Then I should see a "Channel Subscriptions successfully changed for" text
 
-@ssh_minion
+  @ssh_minion
   Scenario: Subscribe a SSH minion to the configuration channel
     When I am on the Systems overview page of this "ssh_minion"
     And I follow "Configuration" in the content area
@@ -80,51 +80,51 @@ Feature: Management of configuration of all types of clients in a single channel
     Then I should see a "revision-deploys are being scheduled," text
     And I should see a "0 revision-deploys overridden." text
 
-@sle_minion
+  @sle_minion
   Scenario: Check that file has been created on SLE minion
     When I wait until file "/etc/s-mgr/config" exists on "sle_minion"
     Then file "/etc/s-mgr/config" should contain "COLOR=white" on "sle_minion"
 
-@rhlike_minion
+  @rhlike_minion
   Scenario: Check that file has been created on Red Hat-like minion
     When I wait until file "/etc/s-mgr/config" exists on "rhlike_minion"
     Then file "/etc/s-mgr/config" should contain "COLOR=white" on "rhlike_minion"
 
-@deblike_minion
+  @deblike_minion
   Scenario: Check that file has been created on Debian-like minion
     When I wait until file "/etc/s-mgr/config" exists on "deblike_minion"
     Then file "/etc/s-mgr/config" should contain "COLOR=white" on "deblike_minion"
 
-@ssh_minion
+  @ssh_minion
   Scenario: Check that file has been created on SSH minion
     When I wait until file "/etc/s-mgr/config" exists on "ssh_minion"
     Then file "/etc/s-mgr/config" should contain "COLOR=white" on "ssh_minion"
 
-@sle_minion
+  @sle_minion
   Scenario: Apply highstate to override changed content on SLE minion
     When I store "COLOR=blue" into file "/etc/s-mgr/config" on "sle_minion"
     And I apply highstate on "sle_minion"
     Then file "/etc/s-mgr/config" should contain "COLOR=white" on "sle_minion"
 
-@rhlike_minion
+  @rhlike_minion
   Scenario: Apply highstate to override changed content on Red Hat-like minion
     When I store "COLOR=blue" into file "/etc/s-mgr/config" on "rhlike_minion"
     And I apply highstate on "rhlike_minion"
     Then file "/etc/s-mgr/config" should contain "COLOR=white" on "rhlike_minion"
 
-@deblike_minion
+  @deblike_minion
   Scenario: Apply highstate to override changed content on Debian-like minion
     When I store "COLOR=blue" into file "/etc/s-mgr/config" on "deblike_minion"
     And I apply highstate on "deblike_minion"
     Then file "/etc/s-mgr/config" should contain "COLOR=white" on "deblike_minion"
 
-@ssh_minion
+  @ssh_minion
   Scenario: Apply highstate to override changed content on SSH minion
     When I store "COLOR=blue" into file "/etc/s-mgr/config" on "ssh_minion"
     And I apply highstate on "ssh_minion"
     Then file "/etc/s-mgr/config" should contain "COLOR=white" on "ssh_minion"
 
-@rhlike_minion
+  @rhlike_minion
   Scenario: Unsubscribe Red Hat-like minion and delete configuration files
     When I follow the left menu "Configuration > Channels"
     And I follow "Mixed Channel"
@@ -134,7 +134,7 @@ Feature: Management of configuration of all types of clients in a single channel
     Then I should see a "Successfully unsubscribed 1 system(s)." text
     And I destroy "/etc/s-mgr" directory on "rhlike_minion"
 
-@deblike_minion
+  @deblike_minion
   Scenario: Unsubscribe Debian-like minion and delete configuration files
     When I follow the left menu "Configuration > Channels"
     And I follow "Mixed Channel"
@@ -144,7 +144,7 @@ Feature: Management of configuration of all types of clients in a single channel
     Then I should see a "Successfully unsubscribed 1 system(s)." text
     And I destroy "/etc/s-mgr" directory on "deblike_minion"
 
-@ssh_minion
+  @ssh_minion
   Scenario: Unsubscribe SSH minion and delete configuration files
     When I follow the left menu "Configuration > Channels"
     And I follow "Mixed Channel"
@@ -154,7 +154,7 @@ Feature: Management of configuration of all types of clients in a single channel
     Then I should see a "Successfully unsubscribed 1 system(s)." text
     And I destroy "/etc/s-mgr" directory on "ssh_minion"
 
-@sle_minion
+  @sle_minion
   Scenario: Change file on Salt minion and compare
     When I am on the Systems overview page of this "sle_minion"
     And I store "COLOR=red" into file "/etc/s-mgr/config" on "sle_minion"
@@ -170,13 +170,13 @@ Feature: Management of configuration of all types of clients in a single channel
     Then I should see a "+COLOR=white" text
     And I should see a "-COLOR=red" text
 
-@sle_minion
+  @sle_minion
   Scenario: Check configuration channel and files via API for Salt minion
     Then channel "mixedchannel" should exist
     And channel "mixedchannel" should contain file "/etc/s-mgr/config"
     And "sle_minion" should be subscribed to channel "mixedchannel"
 
-@sle_minion
+  @sle_minion
   Scenario: Extend configuration channel and deploy files via API for Salt minion
     When I store "COLOR=green" into file "/etc/s-mgr/config" on "sle_minion"
     And I add file "/etc/s-mgr/other" containing "NAME=Dante" to channel "mixedchannel"
@@ -185,12 +185,12 @@ Feature: Management of configuration of all types of clients in a single channel
     Then file "/etc/s-mgr/config" should contain "COLOR=white" on "sle_minion"
     And file "/etc/s-mgr/other" should contain "NAME=Dante" on "sle_minion"
 
-@sle_minion
+  @sle_minion
   Scenario: Unsubscribe systems via API for Salt minion
     When I unsubscribe "sle_minion" from configuration channel "mixedchannel"
     Then "sle_minion" should not be subscribed to channel "mixedchannel"
 
-@sle_minion
+  @sle_minion
   Scenario: Re-add SLE Minion via SSM
     When I follow the left menu "Systems > System List > All"
     And I click on the clear SSM button
@@ -203,7 +203,7 @@ Feature: Management of configuration of all types of clients in a single channel
     And I click on "Confirm"
     Then I should see a "Configuration channel subscriptions changed for 1 system successfully." text
 
-@sle_minion
+  @sle_minion
   Scenario: Cleanup: remove remaining Salt minion from configuration channel
     When I follow the left menu "Configuration > Channels"
     And I follow "Mixed Channel"
@@ -219,7 +219,7 @@ Feature: Management of configuration of all types of clients in a single channel
     And I click on "Delete Config Channel"
     Then file "/srv/susemanager/salt/manager_org_1/mixedchannel/init.sls" should not exist on server
 
-@sle_minion
+  @sle_minion
   Scenario: Cleanup: delete configuration files on remaining Salt minion
     When I destroy "/etc/s-mgr" directory on "sle_minion"
 

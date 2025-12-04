@@ -139,6 +139,6 @@ Feature: PXE boot a terminal with Cobbler and containerized proxy
     And I wait until Salt client is inactive on the PXE boot minion
     Then "pxeboot_minion" should not be registered
 
-@flaky
+  @flaky
   Scenario: Check for errors in Cobbler monitoring
     Then the local logs for Cobbler should not contain errors

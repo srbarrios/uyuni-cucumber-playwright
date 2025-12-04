@@ -64,7 +64,7 @@ Feature: Manage users
     And I should see a "Created:" text
     And I should see a "Last Sign In:" text
 
-@susemanager
+  @susemanager
   Scenario: Add roles
     When I follow the left menu "Users > User List > Active"
     And I follow "user1"
@@ -90,7 +90,7 @@ Feature: Manage users
     And I should see "role_regular_user" as checked
     And I should see a "Regular User" text
 
-@uyuni
+  @uyuni
   Scenario: Add roles
     When I follow the left menu "Users > User List > Active"
     And I follow "user1"
@@ -157,7 +157,7 @@ Feature: Manage users
     When I follow "All"
     Then I should see a "user1" link
 
-@susemanager
+  @susemanager
   Scenario: Reactivate user
     When I follow the left menu "Users > User List > Active"
     And I follow "Deactivated"
@@ -171,7 +171,7 @@ Feature: Manage users
     When I follow "Deactivated"
     Then I should not see a "user1" link
 
-@uyuni
+  @uyuni
   Scenario: Reactivate user
     When I follow the left menu "Users > User List > Active"
     And I follow "Deactivated"

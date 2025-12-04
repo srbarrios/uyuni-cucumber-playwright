@@ -42,7 +42,7 @@ Feature: Content lifecycle
     And I should see a "Filters" text
     And I should see a "Environment Lifecycle" text
 
-@susemanager
+  @susemanager
   Scenario: Add a source to the project
     When I follow the left menu "Content Lifecycle > Projects"
     And I follow "clp_name"
@@ -53,7 +53,7 @@ Feature: Content lifecycle
     And I wait until I see "SLE-Product-SLES15-SP4-Pool for x86_64" text
     Then I should see a "Version 1: (draft - not built) - Check the changes below" text
 
-@uyuni
+  @uyuni
   Scenario: Add a source to the project
     When I follow the left menu "Content Lifecycle > Projects"
     And I follow "clp_name"
@@ -64,14 +64,14 @@ Feature: Content lifecycle
     And I wait until I see "openSUSE Leap 15.6 (x86_64)" text
     Then I should see a "Version 1: (draft - not built) - Check the changes below" text
 
-@susemanager
+  @susemanager
   Scenario: Verify added sources
     When I follow the left menu "Content Lifecycle > Projects"
     And I follow "clp_name"
     Then I should see a "SLE-Product-SLES15-SP4-Updates for x86_64" text
     And I should see a "Build (2)" text
 
-@uyuni
+  @uyuni
   Scenario: Verify added sources
     When I follow the left menu "Content Lifecycle > Projects"
     And I follow "clp_name"
@@ -117,7 +117,7 @@ Feature: Content lifecycle
     Then I wait until I see "qa_name" text
     And I should see a "qa_desc" text
 
-@susemanager
+  @susemanager
   Scenario: Build the sources in the project
     When I follow the left menu "Content Lifecycle > Projects"
     And I follow "clp_name"
@@ -129,7 +129,7 @@ Feature: Content lifecycle
     And I wait until I see "Version 1: test version message 1" text in the environment "dev_name"
     And I wait at most 600 seconds until I see "Built" text in the environment "dev_name"
 
-@uyuni
+  @uyuni
   Scenario: Build the sources in the project
     When I follow the left menu "Content Lifecycle > Projects"
     And I follow "clp_name"
@@ -159,7 +159,7 @@ Feature: Content lifecycle
     Then I wait at most 600 seconds until I see "Built" text in the environment "prod_name"
 
 # flaky test
-@skip_if_github_validation
+  @skip_if_github_validation
   Scenario: Add new sources and promote again
     When I follow the left menu "Content Lifecycle > Projects"
     And I follow "clp_name"
@@ -207,7 +207,7 @@ Feature: Content lifecycle
     And I click on "Save" in "Create a new filter" modal
     Then I should see a "Filter created successfully" text
 
-   Scenario: Create a CLM filter of type Package(NEVRA) that denys packages whose version and release number are lower to a defined one
+  Scenario: Create a CLM filter of type Package(NEVRA) that denys packages whose version and release number are lower to a defined one
     When I follow the left menu "Content Lifecycle > Filters"
     And I click on "Create Filter"
     And I wait at most 10 seconds until I see modal containing "Create a new filter" text
@@ -224,7 +224,7 @@ Feature: Content lifecycle
     And I click on "Save" in "Create a new filter" modal
     Then I should see a "Filter created successfully" text
 
-Scenario: Create CLM filter that allows packages of type Package (Provides Name)
+  Scenario: Create CLM filter that allows packages of type Package (Provides Name)
     When I follow the left menu "Content Lifecycle > Filters"
     And I click on "Create Filter"
     And I wait at most 10 seconds until I see modal containing "Create a new filter" text
@@ -235,7 +235,7 @@ Scenario: Create CLM filter that allows packages of type Package (Provides Name)
     And I enter "cereal" as "Provides Name"
     And I click on "Save" in "Create a new filter" modal
     Then I should see a "Filter created successfully" text
-  
+
   Scenario: Create CLM filter that denys packages of type Package (Provides Name)
     When I follow the left menu "Content Lifecycle > Filters"
     And I click on "Create Filter"
@@ -249,7 +249,7 @@ Scenario: Create CLM filter that allows packages of type Package (Provides Name)
     And I click on "Save" in "Create a new filter" modal
     Then I should see a "Filter created successfully" text
 
-Scenario: Create CLM filter of type Package (Build date) that allows packages whose date is lower than a defined one
+  Scenario: Create CLM filter of type Package (Build date) that allows packages whose date is lower than a defined one
     When I follow the left menu "Content Lifecycle > Filters"
     And I click on "Create Filter"
     And I wait at most 10 seconds until I see modal containing "Create a new filter" text
@@ -260,7 +260,7 @@ Scenario: Create CLM filter of type Package (Build date) that allows packages wh
     And I check radio button "Allow"
     And I click on "Save" in "Create a new filter" modal
     Then I should see a "Filter created successfully" text
-  
+
   Scenario: Create CLM filter of type Package (Build date) that denys packages whose date is lower than a defined one
     When I follow the left menu "Content Lifecycle > Filters"
     And I click on "Create Filter"
@@ -388,7 +388,7 @@ Scenario: Create CLM filter of type Package (Build date) that allows packages wh
     And I check radio button "Allow"
     And I click on "Save" in "Create a new filter" modal
     Then I should see a "Filter created successfully" text
-  
+
   Scenario: Create CLM filter of type Patch(Issue date) that denys patches whose date is greater or equal than a defined one
     When I follow the left menu "Content Lifecycle > Filters"
     And I click on "Create Filter"
@@ -608,7 +608,7 @@ Scenario: Create CLM filter of type Package (Build date) that allows packages wh
     Then I should see a "Filter created successfully" text
 
 # This test fails, but this error is tracked in the bug 1238922
-@skip_if_github_validation
+  @skip_if_github_validation
   Scenario: Create CLM filter that allows packages versions that are equal to a specific Product Temporary Fix (Fixes Package Name)
     When I follow the left menu "Content Lifecycle > Filters"
     And I click on "Create Filter"
@@ -663,7 +663,7 @@ Scenario: Create CLM filter of type Package (Build date) that allows packages wh
     And I should not see a "ruby 2.7 module" text
     And I should not see a "key" text
 
-@susemanager
+  @susemanager
   Scenario: Cleanup: remove the created channels
     When I delete these channels with spacewalk-remove-channel:
       | clp_label-prod_label-fake-base-channel-suse-like           |
@@ -671,17 +671,17 @@ Scenario: Create CLM filter of type Package (Build date) that allows packages wh
       | clp_label-qa_label-fake-base-channel-suse-like             |
       | clp_label-qa_label-sle-product-sles15-sp4-updates-x86_64   |
       | clp_label-dev_label-fake-base-channel-suse-like            |
-      | clp_label-dev_label-sle-product-sles15-sp4-updates-x86_64|
+      | clp_label-dev_label-sle-product-sles15-sp4-updates-x86_64  |
     And I delete these channels with spacewalk-remove-channel:
-      |clp_label-prod_label-sle-product-sles15-sp4-pool-x86_64|
-      |clp_label-qa_label-sle-product-sles15-sp4-pool-x86_64|
-      |clp_label-dev_label-sle-product-sles15-sp4-pool-x86_64|
+      | clp_label-prod_label-sle-product-sles15-sp4-pool-x86_64 |
+      | clp_label-qa_label-sle-product-sles15-sp4-pool-x86_64   |
+      | clp_label-dev_label-sle-product-sles15-sp4-pool-x86_64  |
     And I list channels with spacewalk-remove-channel
     Then I shouldn't get "clp_label"
 
 # flaky test
-@skip_if_github_validation
-@uyuni
+  @skip_if_github_validation
+  @uyuni
   Scenario: Cleanup: remove the created channels
     When I delete these channels with spacewalk-remove-channel:
       | clp_label-prod_label-fake-base-channel-suse-like |

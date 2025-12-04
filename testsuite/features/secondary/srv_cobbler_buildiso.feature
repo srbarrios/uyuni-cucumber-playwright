@@ -91,7 +91,7 @@ Feature: Cobbler buildiso
   Scenario: Cleanup: Remove buildiso tmpdir and built ISO file in the Cobbler buildiso context
     When I cleanup after Cobbler buildiso
 
-@flaky
+  @flaky
   Scenario: Check for errors in Cobbler monitoring
     Then the local logs for Cobbler should not contain errors
 

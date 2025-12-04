@@ -9,7 +9,7 @@ Feature: Manage a group of systems and the Systems Set Manager
   Scenario: Log in as org admin user
     Given I am authorized for the "Admin" section
 
-@skip_if_github_validation
+  @skip_if_github_validation
   Scenario: Pre-requisite: install dummy packages to allow patching
     When I enable repository "test_repo_rpm_pool" on this "sle_minion"
     And I refresh the metadata for "sle_minion"
@@ -103,7 +103,7 @@ Feature: Manage a group of systems and the Systems Set Manager
     And I am on the Systems overview page of this "sle_minion"
     And I wait until event "Patch Update: andromeda-dummy-6789 - Test update for andromeda-dummy scheduled by admin" is completed
 
-@skip_if_github_validation
+  @skip_if_github_validation
   Scenario: Delete a package from systems in the SSM
     When I follow the left menu "Systems > System Set Manager > Overview"
     And I follow "Packages"
@@ -116,7 +116,7 @@ Feature: Manage a group of systems and the Systems Set Manager
     And I click on "Confirm"
     Then I should see a "Package removals are being scheduled, it may take several minutes for this to complete." text
 
-@skip_if_github_validation
+  @skip_if_github_validation
   Scenario: Install a package to systems in the SSM
     When I follow the left menu "Systems > System Set Manager > Overview"
     And I follow "Packages"
@@ -131,7 +131,7 @@ Feature: Manage a group of systems and the Systems Set Manager
     And I click on "Confirm"
     Then I should see a "Package installations are being scheduled, it may take several minutes for this to complete." text
 
-@rhlike_minion
+  @rhlike_minion
   Scenario: Add the Red Hat-like minion to the group in a different way
     When I follow the left menu "Systems > System Groups"
     Then I should see a "System Groups" text
@@ -150,7 +150,7 @@ Feature: Manage a group of systems and the Systems Set Manager
     And I should see "sle_minion" as link
 
 # container already has locale formula installed
-@skip_if_containerized_server
+  @skip_if_containerized_server
   Scenario: Install the locale formula package on the server
     When I manually install the "locale" formula on the server
 
@@ -165,7 +165,7 @@ Feature: Manage a group of systems and the Systems Set Manager
     And I should see a "General System Configuration" text
     And the "locale" formula should be unchecked
 
-@rhlike_minion
+  @rhlike_minion
   Scenario: Apply the highstate to the group
     When I follow the left menu "Systems > System Groups"
     Then I should see a "System Groups" text
@@ -187,7 +187,7 @@ Feature: Manage a group of systems and the Systems Set Manager
 
   # Red Hat-like minion is intentionally not removed from group
 
-@skip_if_containerized_server
+  @skip_if_containerized_server
   Scenario: Cleanup: uninstall formula from the server
     When I manually uninstall the "locale" formula from the server
 

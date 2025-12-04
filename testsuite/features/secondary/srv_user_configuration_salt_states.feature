@@ -8,7 +8,7 @@ Feature: Create organizations, users, groups, and activation keys using Salt sta
   Scenario: Log in as org admin user
     Given I am authorized
 
-@skip_if_containerized_server
+  @skip_if_containerized_server
   Scenario: Apply configuration salt state to server
     When I manually install the "uyuni-config" formula on the server
 
@@ -72,7 +72,7 @@ Feature: Create organizations, users, groups, and activation keys using Salt sta
   Scenario: Cleanup: apply configuration teardown salt state to server
     When I apply "teardown_users_configuration" local salt state on "server"
 
-@skip_if_containerized_server
+  @skip_if_containerized_server
   Scenario: Cleanup: uninstall the uyuni-config formula from the server
     And I manually uninstall the "uyuni-config" formula from the server
 

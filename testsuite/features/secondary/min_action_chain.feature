@@ -43,7 +43,7 @@ Feature: Action chains on Salt minions
     And I wait until the table contains "FINISHED" or "SKIPPED" followed by "FINISHED" in its first rows
 
   Scenario: Create a custom action chain for the Salt minion
-    When I create an action chain with label "salt_minion_action_chain" via API 
+    When I create an action chain with label "salt_minion_action_chain" via API
     And I follow the left menu "Schedule > Action Chains"
     Then I should see a "salt_minion_action_chain" text
 
@@ -231,7 +231,7 @@ Feature: Action chains on Salt minions
 
   Scenario: Add operations to the action chain via API for Salt minions
     Given I want to operate on this "sle_minion"
-    When I create an action chain with label "salt_minion_api_chain" via API 
+    When I create an action chain with label "salt_minion_api_chain" via API
     And I add a package install to the action chain via API
     And I add a package removal to the action chain via API
     And I add a package upgrade to the action chain via API

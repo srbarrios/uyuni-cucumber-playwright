@@ -11,7 +11,7 @@ Feature: Channel subscription with recommended or required dependencies
   Scenario: Pre-requisite: remove remaining systems from SSM after software channel tests
     When I click on the clear SSM button
 
-@susemanager
+  @susemanager
   Scenario: Play with recommended and required child channels selection for a single system
     Given I am on the Systems overview page of this "sle_minion"
     When I follow "Software" in the content area
@@ -34,7 +34,7 @@ Feature: Channel subscription with recommended or required dependencies
 
 # These tests do not test if recommended channesl are shown correctly due to the fact that we kill the reposync
 # for openSUSE Leap. With this caveat, no child channels are selected when selection openSUSE as parent.
-@uyuni
+  @uyuni
   Scenario: Play with recommended and required child channels selection for a single system
     Given I am on the Systems overview page of this "sle_minion"
     When I follow "Software" in the content area
@@ -47,7 +47,7 @@ Feature: Channel subscription with recommended or required dependencies
     When I select the child channel "Uyuni Client Tools for openSUSE Leap 15.6 (x86_64)"
     Then I should see the child channel "Uyuni Client Tools for openSUSE Leap 15.6 (x86_64)" "selected"
 
-@susemanager
+  @susemanager
   Scenario: Play with recommended and required child channels selection in SSM
     When I follow the left menu "Systems > System List > All"
     And I check the "sle_minion" client
@@ -68,7 +68,7 @@ Feature: Channel subscription with recommended or required dependencies
 
 # These tests do not test if recommended channesl are shown correctly due to the fact that we kill the reposync
 # for openSUSE Leap. With this caveat, no child channels are selected when selection openSUSE as parent.
-@uyuni
+  @uyuni
   Scenario: Play with recommended and required child channels selection in SSM
     When I follow the left menu "Systems > System List > All"
     And I check the "sle_minion" client

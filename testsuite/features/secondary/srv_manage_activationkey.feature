@@ -65,8 +65,8 @@ Feature: Manipulate activation keys
     And I click on "Delete Activation Key"
     Then I should see a "Activation key SUSE Test PKG Key i586 has been deleted." text
 
-@scc_credentials
-@susemanager
+  @scc_credentials
+  @susemanager
   Scenario: Create an activation key with a channel and a package list for x86_64
     When I follow the left menu "Systems > Activation Keys"
     And I follow "Create Key"
@@ -81,8 +81,8 @@ Feature: Manipulate activation keys
     And I click on "Update Activation Key"
     Then I should see a "Activation key SUSE Test PKG Key x86_64 has been modified." text
 
-@scc_credentials    
-@uyuni
+  @scc_credentials
+  @uyuni
   Scenario: Create an activation key with a channel and a package list for x86_64
     When I follow the left menu "Systems > Activation Keys"
     And I follow "Create Key"
@@ -97,7 +97,7 @@ Feature: Manipulate activation keys
     And I click on "Update Activation Key"
     Then I should see a "Activation key SUSE Test PKG Key x86_64 has been modified." text
 
-@scc_credentials
+  @scc_credentials
   Scenario: Delete the x86_64 activation key with packages
     When I follow the left menu "Systems > Activation Keys"
     And I follow "SUSE Test PKG Key x86_64" in the content area

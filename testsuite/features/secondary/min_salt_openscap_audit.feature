@@ -12,7 +12,7 @@ Feature: OpenSCAP audit of Salt minion
     Given I am authorized for the "Admin" section
     And I am on the Systems overview page of this "sle_minion"
 
-@Uyuni
+  @Uyuni
   Scenario: Enable required repositories
     When I enable repository "os_pool_repo" on this "sle_minion" without error control
 
@@ -23,7 +23,7 @@ Feature: OpenSCAP audit of Salt minion
     And I click on "Update Package List"
     And I wait until event "Package List Refresh" is completed
 
-@susemanager
+  @susemanager
   Scenario: Schedule an OpenSCAP audit job on the SLE minion
     When I follow "Audit" in the content area
     And I follow "OpenSCAP" in the content area
@@ -35,7 +35,7 @@ Feature: OpenSCAP audit of Salt minion
     Then I should see a "XCCDF scan has been scheduled" text
     And I wait at most 500 seconds until event "OpenSCAP xccdf scanning" is completed
 
-@uyuni
+  @uyuni
   Scenario: Schedule an OpenSCAP audit job on the SLE minion
     When I follow "Audit" in the content area
     And I follow "OpenSCAP" in the content area
@@ -47,7 +47,7 @@ Feature: OpenSCAP audit of Salt minion
     Then I should see a "XCCDF scan has been scheduled" text
     And I wait at most 500 seconds until event "OpenSCAP xccdf scanning" is completed
 
-@susemanager
+  @susemanager
   Scenario: Check results of the audit job on the minion
     When I follow "Audit" in the content area
     And I follow "OpenSCAP" in the content area
@@ -59,7 +59,7 @@ Feature: OpenSCAP audit of Salt minion
     And I click on the filter button
     Then I should see a "xccdf_org.ssgproject.content_rule_service_httpd_disabled" link
 
-@uyuni
+  @uyuni
   Scenario: Check results of the audit job on the minion
     When I follow "Audit" in the content area
     And I follow "OpenSCAP" in the content area
@@ -71,7 +71,7 @@ Feature: OpenSCAP audit of Salt minion
     And I click on the filter button
     Then I should see a "xccdf_org.ssgproject.content_rule_file_permissions_etc_passwd" link
 
-@susemanager
+  @susemanager
   Scenario: Create a second, almost identical, audit job
     When I follow "Audit" in the content area
     And I follow "OpenSCAP" in the content area
@@ -83,7 +83,7 @@ Feature: OpenSCAP audit of Salt minion
     Then I should see a "XCCDF scan has been scheduled" text
     When I wait for the OpenSCAP audit to finish
 
-@uyuni
+  @uyuni
   Scenario: Create a second, almost identical, audit job
     When I follow "Audit" in the content area
     And I follow "OpenSCAP" in the content area
@@ -133,6 +133,6 @@ Feature: OpenSCAP audit of Salt minion
   Scenario: Cleanup: remove the OpenSCAP packages from the SLE minion
     When I remove OpenSCAP dependencies from "sle_minion"
 
-@Uyuni
+  @Uyuni
   Scenario: Cleanup: Disable required repositories
     When I disable repository "os_pool_repo" on this "sle_minion" without error control

@@ -23,6 +23,7 @@ export interface CommandResult {
 export interface OsInfo {
     version: string | null;
     family: string | null;
+    arch: string | null;
 }
 
 export interface RunOptions {
@@ -61,6 +62,7 @@ export class RemoteNode {
     public localOsFamily?: string;
     public localOsVersion?: string;
     public hasMgrctl: boolean = false;
+    public osArch?: string;
 
     /**
      * Initializes a new remote node instance.
@@ -144,6 +146,7 @@ export class RemoteNode {
         const osInfo = await this.getOsInfo();
         this.osVersion = osInfo.version || undefined;
         this.osFamily = osInfo.family || undefined;
+        this.osArch = osInfo.arch || undefined;
 
         const localOsInfo = await this.getOsInfo(false);
         this.localOsVersion = localOsInfo.version || undefined;
@@ -548,8 +551,14 @@ export class RemoteNode {
     private async getOsInfo(runsInContainer: boolean = true): Promise<OsInfo> {
         let osFamily: string | undefined;
         let osVersion: string | undefined;
+        let osArch: string | undefined;
 
         try {
+            let archResult = await this.run('uname -m', {runsInContainer, checkErrors: false});
+            if (archResult.returnCode === 0) {
+                osArch = archResult.stdout.trim();
+            }
+
             // Try Linux /etc/os-release first
             let result = await this.run('grep "^ID=" /etc/os-release', {runsInContainer, checkErrors: false});
             if (result.returnCode !== 0) {
@@ -562,7 +571,7 @@ export class RemoteNode {
                 osFamily = result.stdout.trim().split('=')[1]?.replace(/"/g, '');
             }
 
-            if (!osFamily) return {version: null, family: null};
+            if (!osFamily) return {version: null, family: null, arch: null};
 
             // Get OS version
             if (osFamily === 'macOS') {
@@ -577,22 +586,21 @@ export class RemoteNode {
                 });
                 if (versionResult.returnCode === 0) {
                     osVersion = versionResult.stdout.trim().split('=')[1]?.replace(/"/g, '');
+                    // On SLES, replace the dot with '-SP'
+                    if (osFamily.match(/^sles/)) {
+                        osVersion = osVersion.replace('.', '-SP');
+                    }
                 }
             }
 
-            if (!osVersion) return {version: null, family: osFamily};
-
-            // On SLES, replace the dot with '-SP'
-            if (osFamily.match(/^sles/)) {
-                osVersion = osVersion.replace('.', '-SP');
-            }
+            if (!osVersion || !osArch) return {version: null, family: osFamily, arch: null};
 
             console.log(`Node: ${this.hostname}, OS Version: ${osVersion}, Family: ${osFamily}`);
-            return {version: osVersion, family: osFamily};
+            return {version: osVersion, family: osFamily, arch: osArch};
 
         } catch (error) {
             console.warn(`Failed to get OS info for ${this.hostname}:`, error);
-            return {version: null, family: null};
+            return {version: null, family: null, arch: null};
         }
     }
 }

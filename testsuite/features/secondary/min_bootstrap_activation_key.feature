@@ -38,7 +38,7 @@ Feature: Bootstrap a Salt minion via the GUI with an activation key
     And I enter "e^i.pi=-1" in the editor
     And I click on "Create Configuration File"
 
-@susemanager
+  @susemanager
   Scenario: Create a complete minion activation key
     When I follow the left menu "Systems > Activation Keys"
     And I follow "Create Key"
@@ -61,7 +61,7 @@ Feature: Bootstrap a Salt minion via the GUI with an activation key
     And I click on "Update Activation Key"
     Then I should see a "Activation key Minion testing has been modified" text
 
-@uyuni
+  @uyuni
   Scenario: Create a complete minion activation key
     When I follow the left menu "Systems > Activation Keys"
     And I follow "Create Key"
@@ -109,12 +109,12 @@ Feature: Bootstrap a Salt minion via the GUI with an activation key
     Given I am on the Systems overview page of this "sle_minion"
     Then I run spacecmd listeventhistory for "sle_minion"
 
-@susemanager
+  @susemanager
   Scenario: Verify that minion bootstrapped with base channel
     Given I am on the Systems page
     Then I should see a "SLE-Product-SLES15-SP4-Pool for x86_64" text
 
-@uyuni
+  @uyuni
   Scenario: Verify that minion bootstrapped with base channel
     Given I am on the Systems page
     Then I should see a "openSUSE Leap 15.6 (x86_64)" text

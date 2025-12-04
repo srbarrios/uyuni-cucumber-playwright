@@ -8,8 +8,8 @@ Feature: Channel subscription via SSM
   Scenario: Log in as org admin user
     Given I am authorized
 
-@sle_minion
-@susemanager
+  @sle_minion
+  @susemanager
   Scenario: Change child channels for SLES minion subscribed to a base channel
     When I follow the left menu "Systems > System List > All"
     And I click on the clear SSM button
@@ -34,8 +34,8 @@ Feature: Channel subscription via SSM
     Then I wait until I see "Channel Changes Actions" text
     And a table line should contain system "sle_minion", "Scheduled"
 
-@sle_minion
-@uyuni
+  @sle_minion
+  @uyuni
   Scenario: Change child channels for openSUSE minion subscribed to a base channel
     When I follow the left menu "Systems > System List > All"
     And I click on the clear SSM button
@@ -60,8 +60,8 @@ Feature: Channel subscription via SSM
     Then I wait until I see "Channel Changes Actions" text
     And a table line should contain system "sle_minion", "Scheduled"
 
-@sle_minion
-@susemanager
+  @sle_minion
+  @susemanager
   Scenario: Check SLES minion is still subscribed to old channels before channel change completes
     Given I am on the Systems overview page of this "sle_minion"
     When I follow "Software" in the content area
@@ -71,8 +71,8 @@ Feature: Channel subscription via SSM
     And I wait until I do not see "Loading..." text
     And I should see "SLE15-SP4-Installer-Updates for x86_64" as unchecked
 
-@sle_minion
-@uyuni
+  @sle_minion
+  @uyuni
   Scenario: Check openSUSE minion is still subscribed to old channels before channel change completes
     Given I am on the Systems overview page of this "sle_minion"
     When I follow "Software" in the content area
@@ -82,15 +82,15 @@ Feature: Channel subscription via SSM
     And I wait until I do not see "Loading..." text
     And I should see "Uyuni Client Tools for openSUSE Leap 15.6 (x86_64)" as unchecked
 
-@sle_minion
-@susemanager
+  @sle_minion
+  @susemanager
   Scenario: Check via API old channels are still the same on SLES minion before channel change completes
     When I refresh the metadata for "sle_minion"
     Then channel "SLE-Product-SLES15-SP4-Pool for x86_64" should be enabled on "sle_minion"
     And channel "SLE15-SP4-Installer-Updates for x86_64" should be disabled on "sle_minion"
 
-@sle_minion
-@uyuni
+  @sle_minion
+  @uyuni
   Scenario: Check via API old channels are still the same on openSUSE minion before channel change completes
     When I refresh the metadata for "sle_minion"
     Then channel "openSUSE Leap 15.6 (x86_64)" should be enabled on "sle_minion"
@@ -99,13 +99,13 @@ Feature: Channel subscription via SSM
   Scenario: Wait 3 minutes for the scheduled action to be executed
     When I wait for "180" seconds
 
-@sle_minion
+  @sle_minion
   Scenario: Check channel change has completed for the SLES minion
     Given I am on the Systems overview page of this "sle_minion"
     When I wait until event "Subscribe channels scheduled" is completed
     Then I should see "The client completed this action on" at least 3 minutes after I scheduled an action
 
-@sle_minion
+  @sle_minion
   Scenario: Check the SLES minion is subscribed to the new channels
     Given I am on the Systems overview page of this "sle_minion"
     When I follow "Software" in the content area
@@ -115,22 +115,22 @@ Feature: Channel subscription via SSM
     And I wait until I do not see "Loading..." text
     And I should see "Fake-Child-Channel-SUSE-like" as checked
 
-@sle_minion
-@susemanager
+  @sle_minion
+  @susemanager
   Scenario: Check via API the new channels are enabled on the SLES minion
     When I refresh the metadata for "sle_minion"
     Then "2" channels should be enabled on "sle_minion"
     And channel "Fake-Base-Channel-SUSE-like" should be enabled on "sle_minion"
     And channel "Fake-Child-Channel-SUSE-like" should be enabled on "sle_minion"
 
-@uyuni
+  @uyuni
   Scenario: Check via API the new channels are enabled on the openSUSE minion
     When I refresh the metadata for "sle_minion"
     Then "2" channels should be enabled on "sle_minion"
     And channel "Fake-Base-Channel-SUSE-like" should be enabled on "sle_minion"
     And channel "Fake-Child-Channel-SUSE-like" should be enabled on "sle_minion"
 
-@rhlike_minion
+  @rhlike_minion
   Scenario: System default channel can't be determined on the Red Hat-like minion
     When I follow the left menu "Systems > System List > All"
     And I click on the clear SSM button
@@ -153,14 +153,14 @@ Feature: Channel subscription via SSM
     And a table line should contain system "rhlike_minion", "Could not determine system default channel"
     And I click on the clear SSM button
 
-@rhlike_minion
+  @rhlike_minion
   Scenario: Cleanup: make sure the Red Hat-like minion is still unchanged
     Given I am on the Systems overview page of this "rhlike_minion"
     When I follow "Software" in the content area
     And I follow "Software Channels" in the content area
     Then radio button "Fake-Base-Channel-RH-like" should be checked
 
-@deblike_minion
+  @deblike_minion
   Scenario: System default channel can't be determined on the Debian-like minion
     When I follow the left menu "Systems > System List > All"
     And I click on the clear SSM button
@@ -183,15 +183,15 @@ Feature: Channel subscription via SSM
     And a table line should contain system "deblike_minion", "Could not determine system default channel"
     And I click on the clear SSM button
 
-@deblike_minion
+  @deblike_minion
   Scenario: Cleanup: make sure the Debian-like minion is still unchanged
     Given I am on the Systems overview page of this "deblike_minion"
     When I follow "Software" in the content area
     And I follow "Software Channels" in the content area
     Then radio button "Fake-Base-Channel-Debian-like" should be checked
 
-@sle_minion
-@susemanager
+  @sle_minion
+  @susemanager
   Scenario: Cleanup: subscribe the SLES minion back to previous channels
     Given I am on the Systems overview page of this "sle_minion"
     When I follow "Software" in the content area
@@ -217,8 +217,8 @@ Feature: Channel subscription via SSM
     And I wait until I see "1 system successfully completed this action." text, refreshing the page
     Then channel "SLE15-SP4-Installer-Updates for x86_64" should be disabled on "sle_minion"
 
-@sle_minion
-@uyuni
+  @sle_minion
+  @uyuni
   Scenario: Cleanup: subscribe the openSUSE minion back to previous channels
     Given I am on the Systems overview page of this "sle_minion"
     When I follow "Software" in the content area

@@ -1,14 +1,26 @@
 import {Given, Then, When} from '@cucumber/cucumber';
+import crypto from 'crypto';
 import {
+    addContext,
+    countTableItems,
     envConfig,
+    generateRepositoryName,
+    getApiTest,
     getCurrentPage,
+    getCustomRepositoriesFromEnv,
     getSccCredentials,
     getSystemName,
     getTarget,
     globalVars,
+    isDebHost,
+    isRhHost,
+    isSuseHost,
     refreshPage,
     repeatUntilTimeout,
-    TIMEOUTS
+    repositoryExist,
+    serverSecret,
+    TIMEOUTS,
+    token
 } from '../helpers/index.js';
 import {expect} from "@playwright/test";
 import {followLinkInContentArea, shouldSeeText} from '../helpers/embedded_steps/navigation_helper.js';
@@ -315,33 +327,36 @@ Then(/^I should see "([^"]*)" at least (\d+) minutes after I scheduled an action
 });
 
 Given(/^I have a valid token for organization "([^"]*)"$/, async function (org) {
-    // This step relies on internal Ruby helpers that are not available.
-    throw new Error('This step relies on an internal token helper which cannot be ported.');
+    const secret = await serverSecret();
+    addContext('token', token(secret, {org: Number(org)}));
 });
 
 Given(/^I have an invalid token for organization "([^"]*)"$/, async function (org) {
-    // This step relies on internal Ruby helpers that are not available.
-    throw new Error('This step relies on an internal token helper which cannot be ported.');
+    const secret = crypto.randomBytes(64).toString('hex');
+    addContext('token', token(secret, {org: Number(org)}));
 });
 
 Given(/^I have an expired valid token for organization "([^"]*)"$/, async function (org) {
-    // This step relies on internal Ruby helpers that are not available.
-    throw new Error('This step relies on an internal token helper which cannot be ported.');
+    const secret = await serverSecret();
+    const yesterday = Math.floor(Date.now() / 1000) - 86400;
+    addContext('token', token(secret, {org: Number(org), exp: yesterday}));
 });
 
 Given(/^I have a valid token expiring tomorrow for organization "([^"]*)"$/, async function (org) {
-    // This step relies on internal Ruby helpers that are not available.
-    throw new Error('This step relies on an internal token helper which cannot be ported.');
+    const secret = await serverSecret();
+    const tomorrow = Math.floor(Date.now() / 1000) + 86400;
+    addContext('token', token(secret, {org: Number(org), exp: tomorrow}));
 });
 
 Given(/^I have a not yet usable valid token for organization "([^"]*)"$/, async function (org) {
-    // This step relies on internal Ruby helpers that are not available.
-    throw new Error('This step relies on an internal token helper which cannot be ported.');
+    const secret = await serverSecret();
+    const tomorrow = Math.floor(Date.now() / 1000) + 86400;
+    addContext('token', token(secret, {org: Number(org), nbf: tomorrow}));
 });
 
 Given(/^I have a valid token for organization "(.*?)" and channel "(.*?)"$/, async function (org, channel) {
-    // This step relies on internal Ruby helpers that are not available.
-    throw new Error('This step relies on an internal token helper which cannot be ported.');
+    const secret = await serverSecret();
+    addContext('token', token(secret, {org: org, onlyChannels: [channel]}));
 });
 
 Then(/^I should see the toggler "([^"]*)"$/, async function (targetStatus) {
@@ -442,8 +457,16 @@ Then(/^I should see "([^"]*)" "([^"]*)" for the "([^"]*)" channel$/, async funct
 
 Then(/^the notification badge and the table should count the same amount of messages$/, async function () {
     if (!getCurrentPage()) throw new Error('No page instance');
-    // This step relies on `count_table_items` which is not provided.
-    throw new Error('This step requires `count_table_items` helper which is not provided.');
+    const tableNotificationsCount = await countTableItems(getCurrentPage());
+    const badge = getCurrentPage().locator(`//i[contains(@class, 'fa-bell')]/following-sibling::*[text()='${tableNotificationsCount}']`);
+
+    if (tableNotificationsCount === '0') {
+        console.log('All notification-messages are read, I expect no notification badge');
+        await expect(badge).not.toBeVisible();
+    } else {
+        console.log(`Unread notification-messages count = ${tableNotificationsCount}`);
+        await expect(badge).toBeVisible();
+    }
 });
 
 When(/^I wait until radio button "([^"]*)" is checked, refreshing the page$/, async function (arg1) {
@@ -460,20 +483,33 @@ When(/^I wait until "([^"]*)" has been checked$/, async function (text) {
 
 Then(/^I check the first notification message$/, async function () {
     if (!getCurrentPage()) throw new Error('No page instance');
-    // This step relies on `count_table_items` which is not provided.
-    throw new Error('This step requires `count_table_items` helper which is not provided.');
+    const tableItems = await countTableItems(getCurrentPage());
+    if (tableItems === '0') {
+        console.log('There are no notification messages, nothing to do then');
+    } else {
+        const row = getCurrentPage().locator('//div[@class="table-responsive"]/table/tbody/tr[.//td]').first();
+        await row.locator('.//input[@type="checkbox"]').first().setChecked(true);
+    }
 });
 
 When(/^I delete it via the "([^"]*)" button$/, async function (targetButton) {
     if (!getCurrentPage()) throw new Error('No page instance');
-    // This step relies on `count_table_items` which is not provided.
-    throw new Error('This step requires `count_table_items` helper which is not provided.');
+    const tableItems = await countTableItems(getCurrentPage());
+    if (tableItems !== '0') {
+        const deleteButton = getCurrentPage().locator(`//button[@title='${targetButton}']`);
+        await deleteButton.click();
+        await shouldSeeText('1 message deleted successfully.');
+    }
 });
 
 When(/^I mark as read it via the "([^"]*)" button$/, async function (targetButton) {
     if (!getCurrentPage()) throw new Error('No page instance');
-    // This step relies on `count_table_items` which is not provided.
-    throw new Error('This step requires `count_table_items` helper which is not provided.');
+    const tableItems = await countTableItems(getCurrentPage());
+    if (tableItems !== '0') {
+        const readButton = getCurrentPage().locator(`//button[@title='${targetButton}']`);
+        await readButton.click();
+        await shouldSeeText('1 message read status updated successfully.');
+    }
 });
 
 When(/^I check for failed events on history event page$/, async function () {
@@ -508,16 +544,86 @@ Then(/^I should see a list item with text "([^"]*)" and a (success|failing|warni
 });
 
 When(/^I create the MU repositories for "([^"]*)"$/, async function (client) {
-    // This step relies on internal Ruby helpers and global state that cannot be ported.
-    throw new Error('This step relies on internal helpers which are not available.');
+    const customRepositories = getCustomRepositoriesFromEnv();
+    if (!customRepositories) return;
+
+    const repoList = customRepositories[client];
+    if (!repoList) return;
+
+    for (const repoUrl of Object.values(repoList)) {
+        const uniqueRepoName = generateRepositoryName(repoUrl as string);
+        if (await repositoryExist(uniqueRepoName)) {
+            console.log(`The MU repository ${uniqueRepoName} was already created, we will reuse it.`);
+        } else {
+            const contentType = await isDebHost(client) ? 'deb' : 'yum';
+            const node = await getTarget(client);
+            if (node.osFamily!.includes('sl-micro') && node.osVersion!.includes('6')) {
+                await this.steps(
+                    `When I follow the left menu "Software > Manage > Repositories"
+                    And I follow "Create Repository"
+                    And I enter "${uniqueRepoName}" as "label"
+                    And I enter "${(repoUrl as string).trim()}" as "url"
+                    And I select "${contentType}" from "contenttype"
+                    And I uncheck "metadataSigned"
+                    And I click on "Create Repository"
+                    Then I should see a "Repository created successfully" text or "The repository label '${uniqueRepoName}' is already in use" text
+                    And I should see "metadataSigned" as unchecked`
+                );
+            } else {
+                await this.steps(
+                    `When I follow the left menu "Software > Manage > Repositories"
+                    And I follow "Create Repository"
+                    And I enter "${uniqueRepoName}" as "label"
+                    And I enter "${(repoUrl as string).trim()}" as "url"
+                    And I select "${contentType}" from "contenttype"
+                    And I click on "Create Repository"
+                    Then I should see a "Repository created successfully" text or "The repository label '${uniqueRepoName}' is already in use" text
+                    And I should see "metadataSigned" as checked`
+                );
+            }
+        }
+    }
 });
 
 When(/^I select the MU repositories for "([^"]*)" from the list$/, async function (client) {
-    // This step relies on internal Ruby helpers and global state that cannot be ported.
-    throw new Error('This step relies on internal helpers which are not available.');
+    const customRepositories = getCustomRepositoriesFromEnv();
+    if (!customRepositories) return;
+
+    const repoList = customRepositories[client];
+    if (!repoList) return;
+
+    for (const repoUrl of Object.values(repoList)) {
+        const uniqueRepoName = generateRepositoryName(repoUrl as string);
+        await this.step(`I check "${uniqueRepoName}" in the list`);
+    }
 });
 
 When(/^I prepare the development repositories of "([^"]*)" as part of "([^"]*)" channel$/, async function (host, channelLabel) {
-    // This step relies on internal Ruby helpers and global state that cannot be ported.
-    throw new Error('This step relies on internal helpers which are not available.');
+    const target = await getTarget(host);
+    let repoUrls: string[] = [];
+    if (await isDebHost(host)) {
+        const {stdout} = await target.run('grep -rh ^deb /etc/apt/sources.list.d/');
+        repoUrls = stdout.split("\n").map(line => line.split(' ')[1].trim());
+    } else if (await isRhHost(host)) {
+        const {stdout} = await target.run('grep -rh ^baseurl /etc/yum.repos.d/');
+        repoUrls = stdout.split("\n").map(line => line.split('=')[1].trim());
+    } else if (await isSuseHost(host)) {
+        const {stdout} = await target.run('grep -rh ^baseurl /etc/zypp/repos.d/');
+        repoUrls = stdout.split("\n").map(line => line.split('=')[1].trim());
+    } else {
+        throw new Error(`OS family not supported: ${target.osFamily}`);
+    }
+
+    for (const repoUrl of repoUrls) {
+        if (repoUrl.includes('devel')) { // A simple check for devel repo
+            const uniqueRepoName = generateRepositoryName(repoUrl);
+            if (!await repositoryExist(uniqueRepoName)) {
+                const contentType = await isDebHost(host) ? 'deb' : 'yum';
+                const api = getApiTest();
+                await api.channel.software.createRepo(uniqueRepoName, repoUrl, contentType);
+            }
+            const api = getApiTest();
+            await api.channel.software.associateRepo(channelLabel, uniqueRepoName);
+        }
+    }
 });

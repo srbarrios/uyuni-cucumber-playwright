@@ -1,9 +1,6 @@
 import {Then, When} from '@cucumber/cucumber';
 
-import {fileDelete, getTarget, getSystemName, globalVars, fileInject, generateTempFile} from '../helpers/index.js';
-import {expect} from "@playwright/test";
-import {getCurrentPage} from "../helpers/index.js";
-import {writeFileSync} from "fs";
+import {fileDelete, fileInject, generateTempFile, getSystemName, getTarget} from '../helpers/index.js';
 
 When(/^I destroy "([^"]*)" directory on server$/, async function (directory) {
     await (await getTarget('server')).run(`rm -rf ${directory}`);

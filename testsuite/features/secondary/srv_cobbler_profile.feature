@@ -101,7 +101,7 @@ Feature: Edit Cobbler profiles
     And I should not see a "isedistro_ui" text
     And I should not see a "isedistro_api" text
 
-@flaky
+  @flaky
   Scenario: Check for errors in Cobbler monitoring
-  When I wait for "5" seconds
+    When I wait for "5" seconds
     Then the local logs for Cobbler should not contain errors

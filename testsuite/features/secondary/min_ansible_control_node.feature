@@ -25,8 +25,8 @@ Feature: Operate an Ansible control node in a normal minion
     And I wait until I see "1 system successfully completed this action" text, refreshing the page
 
 # TODO: Check why tools_update_repo is not available on the openSUSE minion
-@skip_if_github_validation
-@uyuni
+  @skip_if_github_validation
+  @uyuni
   Scenario: Pre-requisite: Enable OS pool repository
     When I enable repository "os_pool_repo" on this "sle_minion"
     And I refresh the metadata for "sle_minion"
@@ -112,8 +112,8 @@ Feature: Operate an Ansible control node in a normal minion
     And I follow "scheduled"
     And I wait until I see "1 system successfully completed this action" text, refreshing the page
 
-@skip_if_github_validation
-@uyuni
+  @skip_if_github_validation
+  @uyuni
   Scenario: Cleanup: Disable OS pool repository
     Given I am on the Systems overview page of this "sle_minion"
     When I disable repository "os_pool_repo" on this "sle_minion"

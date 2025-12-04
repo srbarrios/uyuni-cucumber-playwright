@@ -45,7 +45,7 @@ Feature: Salt SSH action chain
     And I wait until the table contains "FINISHED" or "SKIPPED" followed by "FINISHED" in its first rows
 
   Scenario: Create a custom action chain for the SSH minion
-    When I create an action chain with label "minssh_action_chain" via API  
+    When I create an action chain with label "minssh_action_chain" via API
     And I follow the left menu "Schedule > Action Chains"
     Then I should see a "minssh_action_chain" text
 
@@ -178,7 +178,7 @@ Feature: Salt SSH action chain
 
   # previous, completed, action chain will no longer be available
   Scenario: Create a custom action chain for the SSH minion
-    When I create an action chain with label "minssh_action_chain_to_delete" via API 
+    When I create an action chain with label "minssh_action_chain_to_delete" via API
     And I follow the left menu "Schedule > Action Chains"
     Then I should see a "minssh_action_chain_to_delete" text
 

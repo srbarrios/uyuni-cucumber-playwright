@@ -1,9 +1,5 @@
 import {getCurrentPage, refreshPage, repeatUntilTimeout, TIMEOUTS} from '../index.js';
 import {expect} from '@playwright/test';
-import {dirname} from 'path';
-import {fileURLToPath} from 'url';
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // Helper functions for common embedded_steps
 export async function waitForEventCompletion(event: string, timeout: number = TIMEOUTS.long) {

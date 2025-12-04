@@ -20,7 +20,7 @@ Feature: Run Cobbler Sync via WebUI
     And I should see a "For more information refer to the 'cobbler' man page. " text
     And I should see a "Run Cobbler Sync" text in the content area
     And I should see a "Update" button
-  
+
   @susemanager
   Scenario: Check that the Cobbler Settings Page exists
     When I follow the left menu "Admin > Manager Configuration > Cobbler"
@@ -43,6 +43,6 @@ Feature: Run Cobbler Sync via WebUI
     Then I should see the correct timestamp for task "Cobbler Sync:"
 
 # flaky test
-@skip_if_github_validation
+  @skip_if_github_validation
   Scenario: Check for errors in Cobbler monitoring
     Then the local logs for Cobbler should not contain errors

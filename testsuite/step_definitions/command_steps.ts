@@ -9,7 +9,8 @@ import {
     checkShutdown,
     ENV_VAR_BY_HOST,
     envConfig,
-    escapeRegex, extractLogsFromNode,
+    escapeRegex,
+    extractLogsFromNode,
     fileDelete,
     fileExists,
     fileExtract,
@@ -20,8 +21,10 @@ import {
     generateCertificate,
     generateTempFile,
     getAllNodes,
-    getApiTest, getAppHost,
-    getContext, getCurrentPage,
+    getApiTest,
+    getAppHost,
+    getContext,
+    getCurrentPage,
     getSystemName,
     getTarget,
     getVariableFromConfFile,
@@ -43,6 +46,7 @@ import {
 import {expect} from "@playwright/test";
 import {exec} from 'child_process';
 import * as path from 'path';
+import {Client} from 'pg'; // Import Client from pg
 import {
     installPackages,
     installSaltPillarTopFile,
@@ -1136,7 +1140,6 @@ When(/^I remove pattern "([^"]*)" from this "([^"]*)"$/, async function (pattern
 });
 
 When(/^I (install|remove) OpenSCAP dependencies (on|from) "([^"]*)"$/, async function (action: string, _where: string, host: string) {
-    const node = await getTarget(host);
     let pkgs: string;
     if (await isSuseHost(host)) {
         pkgs = 'openscap-utils openscap-content scap-security-guide';
@@ -1282,12 +1285,12 @@ When('I reset tftp defaults on the proxy', async function () {
     await (await getTarget('proxy')).run("echo 'TFTP_USER=\"tftp\"\nTFTP_OPTIONS=\"\"\nTFTP_DIRECTORY=\"/srv/tftpboot\"\n' > /etc/sysconfig/tftp");
 });
 
-When('I wait until the package "{string}" has been cached on this "{string}"', async function (pkg_name, host) {
+When('I wait until the package "([^"]*)" has been cached on this "([^"]*)"', async function (pkg_name, host) {
     const node = await getTarget(host);
     let cmd: string;
-    if ((await node.run('which zypper', { checkErrors: false })).returnCode === 0) {
+    if ((await node.run('which zypper', {checkErrors: false})).returnCode === 0) {
         cmd = `ls /var/cache/zypp/packages/susemanager:fake-rpm-suse-channel/getPackage/*/*/${pkg_name}*.rpm`;
-    } else if ((await node.run('which apt-get', { checkErrors: false })).returnCode === 0) {
+    } else if ((await node.run('which apt-get', {checkErrors: false})).returnCode === 0) {
         cmd = `ls /var/cache/apt/archives/${pkg_name}*.deb`;
     } else {
         throw new Error("Unsupported package manager");
@@ -1340,7 +1343,7 @@ When('I create the bootstrap repositories including custom channels', async func
     });
 });
 
-When('I install "{string}" product on the proxy', async function (product) {
+When('I install "([^"]*)" product on the proxy', async function (product) {
     const {stdout} = await (await getTarget('proxy')).run(`zypper ref && zypper --non-interactive install --auto-agree-with-licenses --force-resolution -t product ${product}`);
     console.log(`Installed ${product} product: ${stdout}`);
 });
@@ -1425,6 +1428,19 @@ When('I configure the proxy', async function () {
     await (await getTarget('proxy')).run(cmd, {timeout: proxy_timeout, verbose: true});
 });
 
+When('the server starts mocking an IPMI host', async function () {
+    const server = await getTarget('server');
+    await server.runLocal(
+        'podman run -d --rm --network uyuni -p [::]:623:623/udp -p [::]:9002:9002 --name fakeipmi ghcr.io/uyuni-project/uyuni/ci-fakeipmi:master',
+        {verbose: true, checkErrors: true}
+    );
+});
+
+When('the server stops mocking an IPMI host', async function () {
+    const server = await getTarget('server');
+    await server.runLocal('podman kill fakeipmi');
+});
+
 When('I allow all SSL protocols on the proxy\'s apache', async function () {
     const file = '/etc/apache2/ssl-global.conf';
     const key = 'SSLProtocol';
@@ -1438,12 +1454,12 @@ When('I restart squid service on the proxy', async function () {
     await (await getTarget('proxy')).run('systemctl restart squid.service');
 });
 
-When('I create channel "{string}" from spacecmd of type "{string}"', async function (name, type) {
+When('I create channel "([^"]*)" from spacecmd of type "([^"]*)"', async function (name, type) {
     const command = `spacecmd -u admin -p admin -- configchannel_create -n ${name} -t  ${type}`;
     await (await getTarget('server')).run(command);
 });
 
-When('I update init.sls from spacecmd with content "{string}" for channel "{string}"', async function (content, label) {
+When('I update init.sls from spacecmd with content "([^"]*)" for channel "([^"]*)"', async function (content, label) {
     const filepath = `/tmp/${label}`;
     await (await getTarget('server')).run(`echo -e "${content}" > ${filepath}`, {timeout: 600});
     const command = `spacecmd -u admin -p admin -- configchannel_updateinitsls -c ${label} -f  ${filepath} -y`;
@@ -1451,7 +1467,7 @@ When('I update init.sls from spacecmd with content "{string}" for channel "{stri
     await fileDelete(await getTarget('server'), filepath);
 });
 
-When('I update init.sls from spacecmd with content "{string}" for channel "{string}" and revision "{string}"', async function (content, label, revision) {
+When('I update init.sls from spacecmd with content "([^"]*)" for channel "([^"]*)" and revision "([^"]*)"', async function (content, label, revision) {
     const filepath = `/tmp/${label}`;
     await (await getTarget('server')).run(`echo -e "${content}" > ${filepath}`, {timeout: 600});
     const command = `spacecmd -u admin -p admin -- configchannel_updateinitsls -c ${label} -f ${filepath} -r ${revision} -y`;
@@ -1459,21 +1475,21 @@ When('I update init.sls from spacecmd with content "{string}" for channel "{stri
     await fileDelete(await getTarget('server'), filepath);
 });
 
-When('I schedule apply configchannels for "{string}"', async function (host) {
+When('I schedule apply configchannels for "([^"]*)"', async function (host) {
     const system_name = await getSystemName(host);
     await (await getTarget('server')).run('spacecmd -u admin -p admin clear_caches');
     const command = `spacecmd -y -u admin -p admin -- system_scheduleapplyconfigchannels  ${system_name}`;
     await (await getTarget('server')).run(command);
 });
 
-When('I refresh packages list via spacecmd on "{string}"', async function (client) {
+When('I refresh packages list via spacecmd on "([^"]*)"', async function (client) {
     const node = await getSystemName(client);
     await (await getTarget('server')).run('spacecmd -u admin -p admin clear_caches');
     const command = `spacecmd -u admin -p admin system_schedulepackagerefresh ${node}`;
     await (await getTarget('server')).run(command);
 });
 
-When('I refresh the packages list via package manager on "{string}"', async function (host) {
+When('I refresh the packages list via package manager on "([^"]*)"', async function (host) {
     const node = await getTarget(host);
     if (await node.run('which yum')) {
         await node.run('yum -y clean all');
@@ -1481,7 +1497,7 @@ When('I refresh the packages list via package manager on "{string}"', async func
     }
 });
 
-Then('I wait until refresh package list on "{string}" is finished', async function (client) {
+Then('I wait until refresh package list on "([^"]*)" is finished', async function (client) {
     const round_minute = 60; // spacecmd uses timestamps with precision to minutes only
     const long_wait_delay = 600;
     const current_time = new Date().toISOString().slice(0, 16).replace(/[-T:]/g, '');
@@ -1509,7 +1525,7 @@ Then('I wait until refresh package list on "{string}" is finished', async functi
     }, {timeout: long_wait_delay, message: '\'refresh package list\' did not finish'});
 });
 
-When('spacecmd should show packages "{string}" installed on "{string}"', async function (packages, client) {
+When('spacecmd should show packages "([^"]*)" installed on "([^"]*)"', async function (packages, client) {
     const node = await getSystemName(client);
     await (await getTarget('server')).run('spacecmd -u admin -p admin clear_caches');
     const command = `spacecmd -u admin -p admin system_listinstalledpackages ${node}`;
@@ -1521,7 +1537,7 @@ When('spacecmd should show packages "{string}" installed on "{string}"', async f
     }
 });
 
-When('I wait until package "{string}" is installed on "{string}" via spacecmd', async function (pkg, client) {
+When('I wait until package "([^"]*)" is installed on "([^"]*)" via spacecmd', async function (pkg, client) {
     const node = await getSystemName(client);
     await (await getTarget('server')).run('spacecmd -u admin -p admin clear_caches');
     const command = `spacecmd -u admin -p admin system_listinstalledpackages ${node}`;
@@ -1533,7 +1549,7 @@ When('I wait until package "{string}" is installed on "{string}" via spacecmd', 
     }, {timeout: 600, message: `package ${pkg} is not installed yet`});
 });
 
-When('I wait until package "{string}" is removed from "{string}" via spacecmd', async function (pkg, client) {
+When('I wait until package "([^"]*)" is removed from "([^"]*)" via spacecmd', async function (pkg, client) {
     const node = await getSystemName(client);
     await (await getTarget('server')).run('spacecmd -u admin -p admin clear_caches');
     const command = `spacecmd -u admin -p admin system_listinstalledpackages ${node}`;
@@ -1545,7 +1561,7 @@ When('I wait until package "{string}" is removed from "{string}" via spacecmd', 
     }, {timeout: 600, message: `package ${pkg} is still present`});
 });
 
-When('I apply "{string}" local salt state on "{string}"', async function (state, host) {
+When('I apply "([^"]*)" local salt state on "([^"]*)"', async function (state, host) {
     const node = await getTarget(host);
     const useSaltBundle = (await node.run('test -f /etc/venv-salt-minion/minion && echo true || echo false')).stdout.trim() === 'true';
     let salt_call = useSaltBundle ? 'venv-salt-call' : 'salt-call';
@@ -1560,7 +1576,7 @@ When('I apply "{string}" local salt state on "{string}"', async function (state,
     await node.run(`${salt_call} --local --file-root=/usr/share/susemanager/salt --module-dirs=/usr/share/susemanager/salt/ --log-level=info --retcode-passthrough state.apply ${state}`);
 });
 
-When('I copy unset package file on "{string}"', async function (minion) {
+When('I copy unset package file on "([^"]*)"', async function (minion) {
     const base_dir = "../upload_files/unset_package/";
     const success = await fileInject(await getTarget(minion), `${base_dir}subscription-tools-1.0-0.noarch.rpm`, '/root/subscription-tools-1.0-0.noarch.rpm');
     if (!success) throw new Error('File injection failed');
@@ -1577,27 +1593,27 @@ When('I copy vCenter configuration file on server', async function () {
     if (!success) throw new Error('File injection failed');
 });
 
-When('I export software channels "{string}" with ISS v2 to "{string}"', async function (channel, path) {
+When('I export software channels "([^"]*)" with ISS v2 to "([^"]*)"', async function (channel, path) {
     await (await getTarget('server')).run(`inter-server-sync export --channels=${channel} --outputDir=${path}`);
 });
 
-When('I export config channels "{string}" with ISS v2 to "{string}"', async function (channel, path) {
+When('I export config channels "([^"]*)" with ISS v2 to "([^"]*)"', async function (channel, path) {
     await (await getTarget('server')).run(`inter-server-sync export --configChannels=${channel} --outputDir=${path}`);
 });
 
-When('I import data with ISS v2 from "{string}"', async function (path) {
+When('I import data with ISS v2 from "([^"]*)"', async function (path) {
     // WORKAROUND for bsc#1249127
     // Remove "echo UglyWorkaround |" when the product issue is solved
     await (await getTarget('server')).run(`echo UglyWorkaround | inter-server-sync import --importDir=${path}`);
 });
 
-Then('"{string}" folder on server is ISS v2 export directory', async function (folder) {
+Then('"([^"]*)" folder on server is ISS v2 export directory', async function (folder) {
     if (!await fileExists(await getTarget('server'), `${folder}/sql_statements.sql.gz`)) {
         throw new Error(`Folder ${folder} not found`);
     }
 });
 
-When('I ensure folder "{string}" doesn\'t exist on "{string}"', async function (folder, host) {
+When('I ensure folder "([^"]*)" doesn\'t exist on "([^"]*)"', async function (folder, host) {
     const node = await getTarget(host);
     if (await folderExists(node, folder)) {
         const success = await folderDelete(node, folder);
@@ -1670,25 +1686,169 @@ Given('I know the ReportDB admin user credentials', async function () {
     addContext('reportdb_admin_password', reportdb_admin_password);
 });
 
-Given('I block connections from "{string}" on "{string}"', async function (blockhost, target) {
+When('I connect to the ReportDB with read-only user from external machine', async function () {
+    const server = await getTarget('server');
+    const {Client} = await import('pg');
+    const conn = new Client({
+        host: server.publicIp,
+        port: 5432,
+        database: 'reportdb',
+        user: 'test_user',
+        password: 'linux'
+    });
+    await conn.connect();
+    addContext('reportdb_ro_conn', conn);
+});
+
+Then('I should be able to query the ReportDB', async function () {
+    const conn = getContext('reportdb_ro_conn');
+    if (!conn) {
+        throw new Error('ReportDB read-only connection not initialized');
+    }
+    const result = await conn.query('select * from system;');
+    if (!result || !result.rowCount || result.rowCount <= 0) {
+        throw new Error('ReportDB System table is unexpectedly empty after query');
+    }
+});
+
+Then(
+    /^I should not be able to "([^"]*)" data in a ReportDB "([^"]*)" as a read-only user$/,
+    async function (action: string, target: 'table' | 'view') {
+        const conn = getContext('reportdb_ro_conn');
+        if (!conn) {
+            throw new Error('ReportDB read-only connection not initialized');
+        }
+        const tableAndViews: Record<string, string> = {
+            table: 'system',
+            view: 'systeminactivityreport'
+        };
+        const obj = tableAndViews[target];
+        if (!obj) {
+            throw new Error(`Unknown ReportDB target type: ${target}`);
+        }
+        const pgModule = await import('pg');
+        const InsufficientPrivilege =
+            (pgModule as any).InsufficientPrivilege ??
+            (pgModule as any).default?.errors?.InsufficientPrivilege;
+
+        await expect(async () => {
+            switch (action) {
+                case 'insert':
+                    await conn.query(
+                        `insert into ${obj} (mgm_id, system_id, synced_date)
+                         values (1, 1010101, current_timestamp);`
+                    );
+                    break;
+                case 'update':
+                    await conn.query(`update ${obj}
+                                      set mgm_id = 2
+                                      where mgm_id = 1;`);
+                    break;
+                case 'delete':
+                    await conn.query(`delete
+                                      from ${obj}
+                                      where mgm_id = 1;`);
+                    break;
+                default:
+                    throw new Error("Couldn't find command to manipulate the database");
+            }
+        }).rejects.toThrow(InsufficientPrivilege);
+    }
+);
+
+Then('I should find the systems from the UI in the ReportDB', async function () {
+    const conn = getContext('reportdb_ro_conn');
+    if (!conn) {
+        throw new Error('ReportDB read-only connection not initialized');
+    }
+    const uiSystems: string[] = getContext('systems_list') || [];
+    const result = await conn.query('select hostname from system;');
+    const dbSystems = (result.rows as any[]).map((r: any) => r.hostname as string);
+    const allMatch = uiSystems.every((uiSystem) => dbSystems.includes(uiSystem));
+    if (!allMatch) {
+        throw new Error(
+            `Listed systems from the UI ${JSON.stringify(
+                uiSystems
+            )} don't match the ones from the ReportDB System table ${JSON.stringify(dbSystems)}`
+        );
+    }
+});
+
+Given('I know the current synced_date for "([^"]*)"', async function (host: string) {
+    const conn = getContext('reportdb_ro_conn');
+    if (!conn) {
+        throw new Error('ReportDB read-only connection not initialized');
+    }
+    const node = await getTarget(host);
+    const systemHostname = node.fullHostname;
+    const result = await conn.query(
+        'select synced_date from system where hostname = $1',
+        [systemHostname]
+    );
+    if (!result.rows.length) {
+        throw new Error(`No synced_date found in ReportDB for host ${systemHostname}`);
+    }
+    const initialSyncedDate = new Date(result.rows[0].synced_date);
+    addContext('initial_synced_date', initialSyncedDate);
+});
+
+Then(
+    /^I should find the updated "([^"]*)" property as "([^"]*)" on the "([^"]*)", on ReportDB$/,
+    async function (propertyName: string, propertyValue: string, host: string) {
+        const conn = getContext('reportdb_ro_conn');
+        if (!conn) {
+            throw new Error('ReportDB read-only connection not initialized');
+        }
+        const node = await getTarget(host);
+        const systemHostname = node.fullHostname;
+        const property = propertyName.split('/')[0].replace(/\s+/g, '').toLowerCase();
+        const result = await conn.query(
+            `select ${property} as prop, synced_date
+             from system
+             where hostname = $1`,
+            [systemHostname]
+        );
+        if (!result.rows.length) {
+            throw new Error(`No data found in ReportDB for host ${systemHostname}`);
+        }
+        const dbValue = (result.rows[0] as any).prop as string;
+        if (dbValue !== propertyValue) {
+            throw new Error(
+                `${propertyName}'s value not updated - database still presents ${dbValue} instead of ${propertyValue}`
+            );
+        }
+        const finalSyncedDate = new Date((result.rows[0] as any).synced_date as string);
+        const initialSyncedDate = getContext('initial_synced_date') as Date | undefined;
+        if (!initialSyncedDate) {
+            throw new Error('Initial synced_date was not recorded in context');
+        }
+        if (!(finalSyncedDate > initialSyncedDate)) {
+            throw new Error(
+                `Column synced_date not updated. Initial synced_date was ${initialSyncedDate} while current synced_date is ${finalSyncedDate}`
+            );
+        }
+    }
+);
+
+Given('I block connections from "([^"]*)" on "([^"]*)"', async function (blockhost, target) {
     const blkhost = await getTarget(blockhost);
     const node = await getTarget(target);
     await node.run(`iptables -A INPUT -s ${blkhost.publicIp} -j LOG`);
     await node.run(`iptables -A INPUT -s ${blkhost.publicIp} -j DROP`);
 });
 
-Then('I flush firewall on "{string}"', async function (target) {
+Then('I flush firewall on "([^"]*)"', async function (target) {
     const node = await getTarget(target);
     await node.run('iptables -F INPUT');
 });
 
-When('I remove offending SSH key of "{string}" at port "{string}" for "{string}" on "{string}"', async function (key_host, key_port, known_hosts_path, host) {
+When('I remove offending SSH key of "([^"]*)" at port "([^"]*)" for "([^"]*)" on "([^"]*)"', async function (key_host, key_port, known_hosts_path, host) {
     const system_name = await getSystemName(key_host);
     const node = await getTarget(host);
     await node.run(`ssh-keygen -R [${system_name}]:${key_port} -f ${known_hosts_path}`);
 });
 
-Then('port "{string}" should be {string}', async function (port, selection) {
+Then('port "([^"]*)" should be ([^"]*)', async function (port, selection) {
     const {returnCode} = await (await getTarget('server')).run(`ss --listening --numeric | grep :${port}`, {
         checkErrors: false,
         verbose: true
@@ -1724,7 +1884,7 @@ When('I reboot the server through SSH', async function () {
 });
 
 //TODO: Refactor this step to don't use embedded steps
-When('I reboot the "{string}" minion through the web UI', async function (host) {
+When('I reboot the "([^"]*)" minion through the web UI', async function (host) {
     // await this.step(`Given I am on the Systems overview page of this "${host}"`);
     // await this.step('When I follow first "Schedule System Reboot"');
     // await this.step('Then I should see a "System Reboot Confirmation" text');
@@ -1736,7 +1896,7 @@ When('I reboot the "{string}" minion through the web UI', async function (host) 
 });
 
 //TODO: Refactor this step to don't use embedded steps
-When('I reboot the "{string}" if it is a transactional system', async function (host) {
+When('I reboot the "([^"]*)" if it is a transactional system', async function (host) {
     if (await isTransactionalSystem(host)) {
         // await this.step(`I reboot the "${host}" minion through the web UI`);
         // await this.step('I should not see a "There is a pending transaction for this system, please reboot it to activate the changes." text');
@@ -1854,7 +2014,7 @@ When('I change back the server\'s hostname', async function () {
     exec('sed -i \'$d\' /etc/hosts');
 });
 
-When('I enable firewall ports for monitoring on this "{string}"', async function (host) {
+When('I enable firewall ports for monitoring on this "([^"]*)"', async function (host) {
     let add_ports = '';
     for (const port of [9100, 9117, 9187]) {
         add_ports += `firewall-cmd --add-port=${port}/tcp --permanent && `;
@@ -1868,13 +2028,13 @@ When('I enable firewall ports for monitoring on this "{string}"', async function
     }
 });
 
-When('I delete the system "{string}" via spacecmd', async function (minion) {
+When('I delete the system "([^"]*)" via spacecmd', async function (minion) {
     const node = await getSystemName(minion);
     const command = `spacecmd -u admin -p admin -y system_delete ${node}`;
     await (await getTarget('server')).run(command, {checkErrors: true, verbose: true});
 });
 
-When('I execute "{string}" on the "{string}"', async function (command, host) {
+When('I execute "([^"]*)" on the "([^"]*)"', async function (command, host) {
     const node = await getTarget(host);
     await node.run(command, {checkErrors: true, verbose: true});
 });
@@ -2080,7 +2240,7 @@ When(/^I visit "([^"]*)" endpoint of this "([^"]*)"$/, async function (service: 
     }
 });
 
-Then('the clock from {string} should be exact', async function (host: string) {
+Then('the clock from "([^"]*)" should be exact', async function (host: string) {
     const node = await getTarget(host);
     const {stdout: clockNode} = await node.run("date +'%s'");
     const controller = Math.floor(Date.now() / 1000);
@@ -2129,4 +2289,159 @@ Then(/^I check that the health check tool (is|is not) running on "([^"]*)"$/, as
 Then(/^I remove test supportconfig on "([^"]*)"$/, async function (host: string) {
     const node = await getTarget(host);
     await node.run('rm -rf /root/server-supportconfig');
+});
+
+When(/^the controller starts mocking a Redfish host$/, async function () {
+    const controllerNode = await getTarget('controller');
+    const hostname = controllerNode.fullHostname;
+
+    let crt_path: string;
+    let key_path: string;
+
+    if (await runningK3s()) {
+        // On kubernetes, the server has no clue about certificates
+        const paths = await generateCertificate('controller', hostname);
+        crt_path = paths[0];
+        key_path = paths[1];
+    } else {
+        const serverNode = await getTarget('server');
+        await serverNode.run(`mgr-ssl-tool --gen-server -d /root/ssl-build -p spacewalk --set-hostname ${hostname} --server-cert=controller.crt --server-key=controller.key`);
+        const {stdout: keyPathOutput} = await serverNode.run('ls /root/ssl-build/*/controller.key');
+        key_path = keyPathOutput.trim();
+        const {stdout: crtPathOutput} = await serverNode.run('ls /root/ssl-build/*/controller.crt');
+        crt_path = crtPathOutput.trim();
+    }
+
+    await fileExtract(await getTarget('server'), key_path, '/root/controller.key');
+    await fileExtract(await getTarget('server'), crt_path, '/root/controller.crt');
+
+    await new Promise((resolve, reject) => {
+        exec('curl --output /root/DSP2043_2019.1.zip https://www.dmtf.org/sites/default/files/standards/documents/DSP2043_2019.1.zip', (error, stdout, stderr) => {
+            if (error) {
+                console.error(`curl error: ${error.message}`);
+                reject(error);
+                return;
+            }
+            console.log(`curl stdout: ${stdout}`);
+            console.error(`curl stderr: ${stderr}`);
+            resolve(null);
+        });
+    });
+
+    await new Promise((resolve, reject) => {
+        exec('unzip /root/DSP2043_2019.1.zip -d /root/', (error, stdout, stderr) => {
+            if (error) {
+                console.error(`unzip error: ${error.message}`);
+                reject(error);
+                return;
+            }
+            console.log(`unzip stdout: ${stdout}`);
+            console.error(`unzip stderr: ${stderr}`);
+            resolve(null);
+        });
+    });
+
+    const redfishMockupServerPath = path.join(__dirname, '../upload_files/Redfish-Mockup-Server/redfishMockupServer.py');
+    const cmd = `/usr/bin/python3 ${redfishMockupServerPath} ` +
+        `-H ${hostname} -p 8443 ` +
+        `-S -D /root/DSP2043_2019.1/public-catfish/ ` +
+        `--ssl --cert /root/controller.crt --key /root/controller.key ` +
+        `< /dev/null > /dev/null 2>&1 &`;
+
+    await new Promise((resolve, reject) => {
+        exec(cmd, (error, stdout, stderr) => {
+            if (error) {
+                console.error(`redfishMockupServer.py start error: ${error.message}`);
+                reject(error);
+                return;
+            }
+            console.log(`redfishMockupServer.py start stdout: ${stdout}`);
+            console.error(`redfishMockupServer.py start stderr: ${stderr}`);
+            resolve(null);
+        });
+    });
+});
+
+When(/^the controller stops mocking a Redfish host$/, async function () {
+    const redfishMockupServerPath = path.join(__dirname, '../upload_files/Redfish-Mockup-Server/redfishMockupServer.py');
+    await new Promise((resolve, reject) => {
+        exec(`pkill -e -f ${redfishMockupServerPath}`, (error, stdout, stderr) => {
+            if (error) {
+                console.error(`pkill error: ${error.message}`);
+                reject(error);
+                return;
+            }
+            console.log(`pkill stdout: ${stdout}`);
+            console.error(`pkill stderr: ${stderr}`);
+            resolve(null);
+        });
+    });
+    await new Promise((resolve, reject) => {
+        exec('rm -rf /root/DSP2043_2019.1*', (error, stdout, stderr) => {
+            if (error) {
+                console.error(`rm error: ${error.message}`);
+                reject(error);
+                return;
+            }
+            console.log(`rm stdout: ${stdout}`);
+            console.error(`rm stderr: ${stderr}`);
+            resolve(null);
+        });
+    });
+});
+
+Then(/^I should be able to connect to the ReportDB with the ReportDB admin user$/, async function () {
+    const node = await getTarget('server');
+    const reportdb_admin_user = getContext('reportdb_admin_user');
+    const reportdb_admin_password = getContext('reportdb_admin_password');
+
+    if (!reportdb_admin_user || !reportdb_admin_password) {
+        throw new Error('ReportDB admin credentials not found in context.');
+    }
+
+    const conn = new Client({
+        host: node.publicIp,
+        port: 5432,
+        database: 'reportdb',
+        user: reportdb_admin_user,
+        password: reportdb_admin_password,
+    });
+
+    try {
+        await conn.connect();
+        await conn.end();
+    } catch (error: any) {
+        throw new Error(`Couldn't connect to ReportDB with admin from external machine: ${error.message}`);
+    }
+});
+
+Then(/^I should not be able to connect to product database with the ReportDB admin user$/, async function () {
+    const node = await getTarget('server');
+    const reportdb_admin_user = getContext('reportdb_admin_user');
+    const reportdb_admin_password = getContext('reportdb_admin_password');
+
+    if (!reportdb_admin_user || !reportdb_admin_password) {
+        throw new Error('ReportDB admin credentials not found in context.');
+    }
+
+    const dbname = 'susemanager';
+    const conn = new Client({
+        host: node.publicIp,
+        port: 5432,
+        database: dbname,
+        user: reportdb_admin_user,
+        password: reportdb_admin_password,
+    });
+
+    const pgModule = await import('pg');
+    const InsufficientPrivilege =
+        (pgModule as any).InsufficientPrivilege ??
+        (pgModule as any).default?.errors?.InsufficientPrivilege;
+
+    await expect(async () => {
+        await conn.connect();
+        await conn.query('select * from rhnserver;');
+    }).rejects.toThrow(InsufficientPrivilege);
+
+    await conn.end();
 });

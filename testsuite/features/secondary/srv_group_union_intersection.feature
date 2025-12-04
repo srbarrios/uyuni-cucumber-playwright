@@ -26,7 +26,7 @@ Feature: Work with Union and Intersection buttons in the group list
     And I click on "Add Systems"
     Then I should see a "added to sles server group." text
 
-@rhlike_minion
+  @rhlike_minion
   Scenario: Create a rhlike group
     When I follow the left menu "Systems > System Groups"
     When I follow "Create Group"
@@ -35,7 +35,7 @@ Feature: Work with Union and Intersection buttons in the group list
     And I click on "Create Group"
     Then I should see a "System group rhlike created." text
 
-@rhlike_minion
+  @rhlike_minion
   Scenario: Add systems to the rhlike group
     When I follow the left menu "Systems > System Groups"
     When I follow "rhlike"
@@ -44,8 +44,8 @@ Feature: Work with Union and Intersection buttons in the group list
     And I click on "Add Systems"
     Then I should see a "1 systems were added to rhlike server group." text
 
-@deblike_minion
-   Scenario: Create a deblike group
+  @deblike_minion
+  Scenario: Create a deblike group
     When I follow the left menu "Systems > System Groups"
     When I follow "Create Group"
     And I enter "deblike" as "name"
@@ -53,7 +53,7 @@ Feature: Work with Union and Intersection buttons in the group list
     And I click on "Create Group"
     Then I should see a "System group deblike created." text
 
-@deblike_minion
+  @deblike_minion
   Scenario: Add systems to the deblike group
     When I follow the left menu "Systems > System Groups"
     When I follow "deblike"
@@ -68,7 +68,7 @@ Feature: Work with Union and Intersection buttons in the group list
     And I should see a "Selected Systems List" text
     And I should see "sle_minion" as link
 
-@rhlike_minion
+  @rhlike_minion
   Scenario: Add a union of 2 groups to SSM - Red Hat-like
     When I follow the left menu "Systems > System Groups"
     When I check "sles" in the list
@@ -77,7 +77,7 @@ Feature: Work with Union and Intersection buttons in the group list
     And I should see "sle_minion" as link
     And I should see "rhlike_minion" as link
 
-@rhlike_minion
+  @rhlike_minion
   Scenario: Add an intersection of 2 groups to SSM - Red Hat-like
     When I follow the left menu "Systems > System Groups"
     When I check "sles" in the list
@@ -86,7 +86,7 @@ Feature: Work with Union and Intersection buttons in the group list
     And I should not see a "sle_minion" link
     And I should not see a "rhlike_minion" link
 
-@deblike_minion
+  @deblike_minion
   Scenario: Add a union of 2 groups to SSM - Debian-like
     When I follow the left menu "Systems > System Groups"
     When I check "sles" in the list
@@ -95,7 +95,7 @@ Feature: Work with Union and Intersection buttons in the group list
     And I should see "sle_minion" as link
     And I should see "deblike_minion" as link
 
-@deblike_minion
+  @deblike_minion
   Scenario: Add an intersection of 2 groups to SSM - Debian-like
     When I follow the left menu "Systems > System Groups"
     When I check "sles" in the list
@@ -111,7 +111,7 @@ Feature: Work with Union and Intersection buttons in the group list
     And I click on "Confirm Deletion"
     Then I should see a "deleted" text
 
-@rhlike_minion
+  @rhlike_minion
   Scenario: Cleanup: remove the rhlike group
     When I follow the left menu "Systems > System Groups"
     When I follow "rhlike" in the content area
@@ -119,7 +119,7 @@ Feature: Work with Union and Intersection buttons in the group list
     And I click on "Confirm Deletion"
     Then I should see a "deleted" text
 
-@deblike_minion
+  @deblike_minion
   Scenario: Cleanup: remove the deblike group
     When I follow the left menu "Systems > System Groups"
     When I follow "deblike" in the content area
