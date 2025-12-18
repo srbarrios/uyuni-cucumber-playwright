@@ -7,6 +7,7 @@
   "main": "index.js",
   "scripts": {
     "cucumber": "NODE_OPTIONS=\"--disable-warning=DEP0180\" npx cucumber-js --loader ts-node/esm --config cucumber.cjs",
+    "cucumber:sanity_check": "npm run cucumber -- --profile sanity_check",
     "cucumber:core": "npm run cucumber -- --profile core",
     "cucumber:reposync": "npm run cucumber -- --profile reposync",
     "cucumber:init_clients": "npm run cucumber -- --profile init_clients",

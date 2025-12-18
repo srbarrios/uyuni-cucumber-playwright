@@ -30,13 +30,16 @@ Playwright (TypeScript) with CucumberJS as the test runner.
 
 To execute the tests, use the following commands in your terminal:
 
+* `npm run cucumber:sanity_check`
 * `npm run cucumber:core`
+* `npm run cucumber:reposync`
 * `npm run cucumber:init_clients`
 * `npm run cucumber:proxy`
 
 These scripts are defined in the `scripts` section of `package.json` and provide a convenient way to execute tests for
 specific profiles:
 
+* `npm run cucumber:sanity_check`: Runs tests defined in the `sanity_check` profile.
 * `npm run cucumber:core`: Runs tests defined in the `core` profile.
 * `npm run cucumber:reposync`: Runs tests defined in the `reposync` profile.
 * `npm run cucumber:init_clients`: Runs tests defined in the `init_clients` profile.
@@ -84,14 +87,14 @@ listed.
 
 ```
 "scripts": {
-    "cucumber:sanity_checks": "cucumber-js --profile sanity_checks"
+    "cucumber:sanity_check": "cucumber-js --profile sanity_check"
 }
 ```
 
     Then you can run it with:
 
     ```bash
-    npm run cucumber:sanity_checks
+    npm run cucumber:sanity_check
     ```
 
 This approach provides flexibility to define various test stages, which can be integrated into CI/CD pipelines like

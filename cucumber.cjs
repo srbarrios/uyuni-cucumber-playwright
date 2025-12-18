@@ -18,6 +18,26 @@ module.exports = {
     },
 
     // A profile to run only core features
+    sanity_check: {
+        paths: [
+            "testsuite/features/core/allcli_sanity.feature"
+        ],
+        format: [
+            "pretty",
+            "json:reports/cucumber-sanity-check-report.json",
+            "html:reports/cucumber-sanity-check-report.html"
+        ],
+        formatOptions: {
+            colorsEnabled: true,
+            snippetInterface: "async-await"
+        },
+        import: ["testsuite/step_definitions/*.ts"],
+        timeout: 60000,
+        dryRun: false,
+        publish: false
+    },
+
+    // A profile to run only core features
     core: {
         paths: [
             "testsuite/features/core/srv_first_settings.feature",
@@ -98,8 +118,8 @@ module.exports = {
         ],
         format: [
             "pretty",
-            "json:reports/cucumber-core-report.json",
-            "html:reports/cucumber-core-report.html"
+            "json:reports/cucumber-proxy-report.json",
+            "html:reports/cucumber-proxy-report.html"
         ],
         formatOptions: {
             colorsEnabled: true,
