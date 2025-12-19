@@ -18,15 +18,9 @@ import {envConfig} from '../helpers/core/env.js';
 import {getTarget} from '../helpers/system/remote_nodes_env.js';
 import {authorizeUser, createUser} from "../helpers/embedded_steps/navigation_helper.js";
 
-class SkipScenarioError extends Error {
-    constructor(message?: string) {
-        super(message);
-        this.name = 'SkipScenarioError';
-    }
-}
 
-function skipThisScenario(): void {
-    throw new SkipScenarioError('Scenario skipped intentionally.');
+function skipThisScenario(): string {
+    return 'skipped';
 }
 
 setDefaultTimeout(TIMEOUTS.web * 1000);
