@@ -2,8 +2,8 @@ module.exports = {
     default: {
         format: [
             "pretty",
-            "json:reports/cucumber-report.json",
-            "html:reports/cucumber-report.html"
+            "json:cucumber_report/cucumber-report.json",
+            "html:cucumber_report/cucumber-report.html"
         ],
         formatOptions: {
             colorsEnabled: true,
@@ -24,8 +24,8 @@ module.exports = {
         ],
         format: [
             "pretty",
-            "json:reports/cucumber-sanity-check-report.json",
-            "html:reports/cucumber-sanity-check-report.html"
+            "json:cucumber_report/cucumber-sanity-check-report.json",
+            "html:cucumber_report/cucumber-sanity-check-report.html"
         ],
         formatOptions: {
             colorsEnabled: true,
@@ -49,8 +49,8 @@ module.exports = {
         ],
         format: [
             "pretty",
-            "json:reports/cucumber-core-report.json",
-            "html:reports/cucumber-core-report.html"
+            "json:cucumber_report/cucumber-core-report.json",
+            "html:cucumber_report/cucumber-core-report.html"
         ],
         formatOptions: {
             colorsEnabled: true,
@@ -79,8 +79,8 @@ module.exports = {
         ],
         format: [
             "pretty",
-            "json:reports/cucumber-reposync-report.json",
-            "html:reports/cucumber-reposync-report.html"
+            "json:cucumber_report/cucumber-reposync-report.json",
+            "html:cucumber_report/cucumber-reposync-report.html"
         ],
         formatOptions: {
             colorsEnabled: true,
@@ -97,8 +97,8 @@ module.exports = {
         paths: ["testsuite/features/init_clients/**/*.feature"], // This one is already correct
         format: [
             "pretty",
-            "json:reports/cucumber-init-clients-report.json",
-            "html:reports/cucumber-init-clients-report.html"
+            "json:cucumber_report/cucumber-init-clients-report.json",
+            "html:cucumber_report/cucumber-init-clients-report.html"
         ],
         formatOptions: {
             colorsEnabled: true,
@@ -118,8 +118,8 @@ module.exports = {
         ],
         format: [
             "pretty",
-            "json:reports/cucumber-proxy-report.json",
-            "html:reports/cucumber-proxy-report.html"
+            "json:cucumber_report/cucumber-proxy-report.json",
+            "html:cucumber_report/cucumber-proxy-report.html"
         ],
         formatOptions: {
             colorsEnabled: true,
@@ -142,8 +142,8 @@ module.exports = {
         ],
         format: [
             "pretty",
-            "json:reports/cucumber-finishing-report.json",
-            "html:reports/cucumber-finishing-report.html"
+            "json:cucumber_report/cucumber-finishing-report.json",
+            "html:cucumber_report/cucumber-finishing-report.html"
         ],
         formatOptions: {
             colorsEnabled: true,

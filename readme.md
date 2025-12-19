@@ -111,8 +111,8 @@ module.exports = {
     default: {
         // ... other configurations
         format: [
-            "json:reports/cucumber-report.json",
-            "html:reports/cucumber-report.html"
+            "json:cucumber_report/cucumber-report.json",
+            "html:cucumber_report/cucumber-report.html"
         ]
     }
 };
