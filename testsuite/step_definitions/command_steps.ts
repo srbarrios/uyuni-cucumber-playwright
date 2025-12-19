@@ -1010,7 +1010,7 @@ Then(/^it should be possible to reach the test packages$/, async function () {
 
 Then(/^it should be possible to use the HTTP proxy$/, async function () {
     const server = await getTarget('server');
-    const proxy = `suma3:P4%24%24w%2Ford%20With%and%26@${server.fullHostname}`;
+    const proxy = `suma3:P4%24%24w%2Ford%20With%and%26@${globalVars.serverHttpProxy}`;
     const url = 'https://www.suse.com';
     await server.run(`curl --insecure --proxy '${proxy}' --proxy-anyauth --location '${url}' --output /dev/null`);
 });
