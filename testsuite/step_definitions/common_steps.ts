@@ -326,7 +326,7 @@ When(/^I schedule a task to update ReportDB$/, async function () {
 });
 
 // Remote/system helpers
-Then('service "([^"]*)" is enabled on "([^"]*)"', async function (service: string, host: string) {
+Then(/^service "([^"]*)" is enabled on "([^"]*)"$/, async function (service: string, host: string) {
     const node = await getTarget(host);
     const {stdout} = await node.run(`systemctl is-enabled '${service}'`, {checkErrors: false});
     const status = (stdout || '').trim().split(/\n+/).pop();
@@ -337,28 +337,28 @@ When(/^I check the first row in the list$/, async function () {
     await getCurrentPage().locator('tbody tr:first-child input[type="checkbox"]').check();
 });
 
-Then('service "([^"]*)" is active on "([^"]*)"', async function (service: string, host: string) {
+Then(/^service "([^"]*)" is active on "([^"]*)"$/, async function (service: string, host: string) {
     const node = await getTarget(host);
     const {stdout} = await node.run(`systemctl is-active '${service}'`, {checkErrors: false});
     const status = (stdout || '').trim().split(/\n+/).pop();
     if (status !== 'active') throw new Error(`Service ${service} not active on ${host} (got: ${status})`);
 });
 
-Then('socket "([^"]*)" is enabled on "([^"]*)"', async function (socket: string, host: string) {
+Then(/^socket "([^"]*)" is enabled on "([^"]*)"$/, async function (socket: string, host: string) {
     const node = await getTarget(host);
     const {stdout} = await node.run(`systemctl is-enabled '${socket}.socket'`, {checkErrors: false});
     const status = (stdout || '').trim().split(/\n+/).pop();
     if (status !== 'enabled') throw new Error(`Socket ${socket} not enabled on ${host} (got: ${status})`);
 });
 
-Then('socket "([^"]*)" is active on "([^"]*)"', async function (socket: string, host: string) {
+Then(/^socket "([^"]*)" is active on "([^"]*)"$/, async function (socket: string, host: string) {
     const node = await getTarget(host);
     const {stdout} = await node.run(`systemctl is-active '${socket}.socket'`, {checkErrors: false});
     const status = (stdout || '').trim().split(/\n+/).pop();
     if (status !== 'active') throw new Error(`Socket ${socket} not active on ${host} (got: ${status})`);
 });
 
-Then('reverse resolution should work for "([^"]*)"', async function (host: string) {
+Then(/^reverse resolution should work for "([^"]*)"$/, async function (host: string) {
     const node = await getTarget(host);
     const {
         stdout: result,
@@ -373,7 +373,6 @@ Then('reverse resolution should work for "([^"]*)"', async function (host: strin
     if (elapsed > 2) throw new Error(`reverse resolution took too long (${elapsed} seconds)`);
     if (!out.includes(node.fullHostname)) throw new Error(`reverse resolution returned ${out}, expected to see ${node.fullHostname}`);
 });
-
 
 When(/^I save a screenshot as "([^"]+)"$/, async function (filename: string) {
     const screenshotPath = path.join(__dirname, '../screenshots/', filename);

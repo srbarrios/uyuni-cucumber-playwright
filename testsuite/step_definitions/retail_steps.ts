@@ -83,7 +83,7 @@ When(/^I set up the private network on the terminals$/, async function () {
     }
 
     if (globalVars.pxebootMac) {
-        await this.When('I restart the network on the PXE boot minion');
+        await this.When(/^I restart the network on the PXE boot minion');
     }
 });
 

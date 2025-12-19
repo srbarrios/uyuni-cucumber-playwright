@@ -674,7 +674,7 @@ Then(/^I should see "([^"]*)" or "([^"]*)" in the ([^ ]+) textarea$/, async func
     expect(value.includes(text1) || value.includes(text2)).toBeTruthy();
 });
 
-Then('the "([^"]*)" checkbox should be disabled', async function (arg1: string) {
+Then(/^the "([^"]*)" checkbox should be disabled$/, async function (arg1: string) {
     const checkbox = getCurrentPage().locator(`#${arg1}`);
     await expect(checkbox).toBeDisabled();
 });
@@ -1040,7 +1040,7 @@ Given(/^I have a combobox property "([^"]*)" with value "([^"]*)" on "([^"]*)"$/
     await shouldSeeSystemPropertiesChangedText();
     // Call the step to clean the search index on the server
     // This step is defined in command_steps.ts, so we need to ensure it's loaded
-    await this.When('I clean the search index on the server');
+    await this.When(/^I clean the search index on the server');
 });
 
 

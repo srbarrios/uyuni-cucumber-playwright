@@ -55,28 +55,19 @@ import {
     waitUntilFileExists,
     waitUntilServiceInactive
 } from '../helpers/embedded_steps/command_helper.js';
+import validator from 'validator';
 
 Then(/^"([^"]*)" should have a FQDN$/, async function (host) {
     const node = await getTarget(host);
-    const {stdout, stderr, returnCode} = await node.run(
-        'date +%s; hostname -f; date +%s',
-        {runsInContainer: false, checkErrors: false, timeout: TIMEOUTS.ssh}
-    );
-    const lines = stdout.split('\n');
-    const initial_time = parseInt(lines[0], 10);
-    const result = lines[1];
-    const end_time = parseInt(lines[2], 10);
-    const resolution_time = end_time - initial_time;
-    if (returnCode !== 0) {
-        throw new Error(`cannot determine hostname. Stderr: ${stderr}`);
-    }
-    if (resolution_time > 2) {
-        throw new Error(
-            `name resolution for ${node.fullHostname} took too long (${resolution_time} seconds)`
-        );
-    }
-    if (result !== node.fullHostname) {
-        throw new Error('hostname is not fully qualified');
+    const hostname = node.fullHostname;
+    const fqdnOptions = {
+        require_tld: true,       // Ensures it has a TLD (e.g., .com, .net)
+        allow_underscores: false, // Disallows underscores in hostnames by default
+        allow_trailing_dot: false // Disallows the trailing root dot by default
+    };
+
+    if (!validator.isFQDN(hostname, fqdnOptions)){
+        throw new Error(`Hostname '${hostname}' for host '${host}' is NOT a Fully Qualified Domain Name.`);
     }
 });
 
@@ -1252,18 +1243,18 @@ When(/I copy "([^"]*)" from "([^"]*)" to "([^"]*)" via scp in the path "([^"]*)"
     }
 });
 
-When('I copy the distribution inside the container on the server', async function () {
+When(/^I copy the distribution inside the container on the server$/, async function () {
     const node = await getTarget('server');
     await node.run('mgradm distro copy /tmp/tftpboot-installation/SLE-15-SP-4-x86_64 SLE-15-SP4-TFTP', {runsInContainer: false});
 });
 
-When('I generate a supportconfig for the server', async function () {
+When(/^I generate a supportconfig for the server$/, async function () {
     const node = await getTarget('server');
     await node.run('mgradm support config', {timeout: 600, runsInContainer: false});
     await node.run('mv /root/scc_*.tar.gz /root/server-supportconfig.tar.gz', {runsInContainer: false});
 });
 
-When('I obtain and extract the supportconfig from the server', async function () {
+When(/^I obtain and extract the supportconfig from the server$/, async function () {
     const supportconfig_path = '/root/server-supportconfig.tar.gz';
     const test_runner_file = '/root/server-supportconfig.tar.gz';
     await (await getTarget('server')).scpDownload(supportconfig_path, test_runner_file);
@@ -1275,17 +1266,17 @@ When('I obtain and extract the supportconfig from the server', async function ()
     exec('mv /root/server-supportconfig/scc_suse_*/ /root/server-supportconfig/uyuni-server-supportconfig/');
 });
 
-When('I remove the autoinstallation files from the server', async function () {
+When(/^I remove the autoinstallation files from the server$/, async function () {
     const node = await getTarget('server');
     await node.run('rm -r /tmp/tftpboot-installation', {runsInContainer: false});
     await node.run('rm -r /srv/www/distributions/SLE-15-SP4-TFTP');
 });
 
-When('I reset tftp defaults on the proxy', async function () {
+When(/^I reset tftp defaults on the proxy$/, async function () {
     await (await getTarget('proxy')).run("echo 'TFTP_USER=\"tftp\"\nTFTP_OPTIONS=\"\"\nTFTP_DIRECTORY=\"/srv/tftpboot\"\n' > /etc/sysconfig/tftp");
 });
 
-When('I wait until the package "([^"]*)" has been cached on this "([^"]*)"', async function (pkg_name, host) {
+When(/^I wait until the package "([^"]*)" has been cached on this "([^"]*)"$/, async function (pkg_name, host) {
     const node = await getTarget(host);
     let cmd: string;
     if ((await node.run('which zypper', {checkErrors: false})).returnCode === 0) {
@@ -1335,7 +1326,7 @@ When(/^I create the bootstrap repository for "([^"]*)" on the server((?: without
     await server.run(cmd, {execOption: '-it'});
 });
 
-When('I create the bootstrap repositories including custom channels', async function () {
+When(/^I create the bootstrap repositories including custom channels$/, async function () {
     await (await getTarget('server')).waitWhileProcessRunning('mgr-create-bootstrap-repo');
     await (await getTarget('server')).run('mgr-create-bootstrap-repo --auto --force --with-custom-channels', {
         checkErrors: false,
@@ -1343,18 +1334,18 @@ When('I create the bootstrap repositories including custom channels', async func
     });
 });
 
-When('I install "([^"]*)" product on the proxy', async function (product) {
+When(/^I install "([^"]*)" product on the proxy$/, async function (product) {
     const {stdout} = await (await getTarget('proxy')).run(`zypper ref && zypper --non-interactive install --auto-agree-with-licenses --force-resolution -t product ${product}`);
     console.log(`Installed ${product} product: ${stdout}`);
 });
 
-When('I install proxy pattern on the proxy', async function () {
+When(/^I install proxy pattern on the proxy$/, async function () {
     const pattern = globalVars.product === 'Uyuni' ? 'uyuni_proxy' : 'suma_proxy';
     const cmd = `zypper --non-interactive install -t pattern ${pattern}`;
     await (await getTarget('proxy')).run(cmd, {timeout: 600, successCodes: [0, 100, 101, 102, 103, 106]});
 });
 
-When('I let squid use avahi on the proxy', async function () {
+When(/^I let squid use avahi on the proxy$/, async function () {
     const file = '/usr/share/rhn/proxy-template/squid.conf';
     let key = 'dns_multicast_local';
     let val = 'on';
@@ -1364,11 +1355,11 @@ When('I let squid use avahi on the proxy', async function () {
     await (await getTarget('proxy')).run(`grep '^${key}' ${file} && sed -i -e 's/^${key}.*$/${key} ${val}/' ${file} || echo '${key} ${val}' >> ${file}`);
 });
 
-When('I open avahi port on the proxy', async function () {
+When(/^I open avahi port on the proxy$/, async function () {
     await (await getTarget('proxy')).run('firewall-offline-cmd --zone=public --add-service=mdns');
 });
 
-When('I copy server\'s keys to the proxy', async function () {
+When(/^I copy server\'s keys to the proxy$/, async function () {
     if (await runningK3s()) {
         // Server running in Kubernetes doesn't know anything about SSL CA
         await generateCertificate('proxy', (await getTarget('proxy')).fullHostname);
@@ -1392,7 +1383,7 @@ When('I copy server\'s keys to the proxy', async function () {
     }
 });
 
-When('I configure the proxy', async function () {
+When(/^I configure the proxy$/, async function () {
     // prepare the settings file
     let settings = `RHN_PARENT=${(await getTarget('server')).fullHostname}\n` +
         `HTTP_PROXY=''\n` +
@@ -1428,7 +1419,7 @@ When('I configure the proxy', async function () {
     await (await getTarget('proxy')).run(cmd, {timeout: proxy_timeout, verbose: true});
 });
 
-When('the server starts mocking an IPMI host', async function () {
+When(/^the server starts mocking an IPMI host$/, async function () {
     const server = await getTarget('server');
     await server.runLocal(
         'podman run -d --rm --network uyuni -p [::]:623:623/udp -p [::]:9002:9002 --name fakeipmi ghcr.io/uyuni-project/uyuni/ci-fakeipmi:master',
@@ -1436,12 +1427,12 @@ When('the server starts mocking an IPMI host', async function () {
     );
 });
 
-When('the server stops mocking an IPMI host', async function () {
+When(/^the server stops mocking an IPMI host$/, async function () {
     const server = await getTarget('server');
     await server.runLocal('podman kill fakeipmi');
 });
 
-When('I allow all SSL protocols on the proxy\'s apache', async function () {
+When(/^I allow all SSL protocols on the proxy\'s apache$/, async function () {
     const file = '/etc/apache2/ssl-global.conf';
     const key = 'SSLProtocol';
     const val = 'all -SSLv2 -SSLv3';
@@ -1449,17 +1440,17 @@ When('I allow all SSL protocols on the proxy\'s apache', async function () {
     await (await getTarget('proxy')).run('systemctl reload apache2.service', {verbose: true});
 });
 
-When('I restart squid service on the proxy', async function () {
+When(/^I restart squid service on the proxy$/, async function () {
     // We need to restart squid when we add a CNAME to the certificate
     await (await getTarget('proxy')).run('systemctl restart squid.service');
 });
 
-When('I create channel "([^"]*)" from spacecmd of type "([^"]*)"', async function (name, type) {
+When(/^I create channel "([^"]*)" from spacecmd of type "([^"]*)"$/, async function (name, type) {
     const command = `spacecmd -u admin -p admin -- configchannel_create -n ${name} -t  ${type}`;
     await (await getTarget('server')).run(command);
 });
 
-When('I update init.sls from spacecmd with content "([^"]*)" for channel "([^"]*)"', async function (content, label) {
+When(/^I update init.sls from spacecmd with content "([^"]*)" for channel "([^"]*)"$/, async function (content, label) {
     const filepath = `/tmp/${label}`;
     await (await getTarget('server')).run(`echo -e "${content}" > ${filepath}`, {timeout: 600});
     const command = `spacecmd -u admin -p admin -- configchannel_updateinitsls -c ${label} -f  ${filepath} -y`;
@@ -1467,7 +1458,7 @@ When('I update init.sls from spacecmd with content "([^"]*)" for channel "([^"]*
     await fileDelete(await getTarget('server'), filepath);
 });
 
-When('I update init.sls from spacecmd with content "([^"]*)" for channel "([^"]*)" and revision "([^"]*)"', async function (content, label, revision) {
+When(/^I update init.sls from spacecmd with content "([^"]*)" for channel "([^"]*)" and revision "([^"]*)"$/, async function (content, label, revision) {
     const filepath = `/tmp/${label}`;
     await (await getTarget('server')).run(`echo -e "${content}" > ${filepath}`, {timeout: 600});
     const command = `spacecmd -u admin -p admin -- configchannel_updateinitsls -c ${label} -f ${filepath} -r ${revision} -y`;
@@ -1475,21 +1466,21 @@ When('I update init.sls from spacecmd with content "([^"]*)" for channel "([^"]*
     await fileDelete(await getTarget('server'), filepath);
 });
 
-When('I schedule apply configchannels for "([^"]*)"', async function (host) {
+When(/^I schedule apply configchannels for "([^"]*)"$/, async function (host) {
     const system_name = await getSystemName(host);
     await (await getTarget('server')).run('spacecmd -u admin -p admin clear_caches');
     const command = `spacecmd -y -u admin -p admin -- system_scheduleapplyconfigchannels  ${system_name}`;
     await (await getTarget('server')).run(command);
 });
 
-When('I refresh packages list via spacecmd on "([^"]*)"', async function (client) {
+When(/^I refresh packages list via spacecmd on "([^"]*)"$/, async function (client) {
     const node = await getSystemName(client);
     await (await getTarget('server')).run('spacecmd -u admin -p admin clear_caches');
     const command = `spacecmd -u admin -p admin system_schedulepackagerefresh ${node}`;
     await (await getTarget('server')).run(command);
 });
 
-When('I refresh the packages list via package manager on "([^"]*)"', async function (host) {
+When(/^I refresh the packages list via package manager on "([^"]*)"$/, async function (host) {
     const node = await getTarget(host);
     if (await node.run('which yum')) {
         await node.run('yum -y clean all');
@@ -1497,7 +1488,7 @@ When('I refresh the packages list via package manager on "([^"]*)"', async funct
     }
 });
 
-Then('I wait until refresh package list on "([^"]*)" is finished', async function (client) {
+Then(/^I wait until refresh package list on "([^"]*)" is finished$/, async function (client) {
     const round_minute = 60; // spacecmd uses timestamps with precision to minutes only
     const long_wait_delay = 600;
     const current_time = new Date().toISOString().slice(0, 16).replace(/[-T:]/g, '');
@@ -1525,7 +1516,7 @@ Then('I wait until refresh package list on "([^"]*)" is finished', async functio
     }, {timeout: long_wait_delay, message: '\'refresh package list\' did not finish'});
 });
 
-When('spacecmd should show packages "([^"]*)" installed on "([^"]*)"', async function (packages, client) {
+When(/^spacecmd should show packages "([^"]*)" installed on "([^"]*)"$/, async function (packages, client) {
     const node = await getSystemName(client);
     await (await getTarget('server')).run('spacecmd -u admin -p admin clear_caches');
     const command = `spacecmd -u admin -p admin system_listinstalledpackages ${node}`;
@@ -1537,7 +1528,7 @@ When('spacecmd should show packages "([^"]*)" installed on "([^"]*)"', async fun
     }
 });
 
-When('I wait until package "([^"]*)" is installed on "([^"]*)" via spacecmd', async function (pkg, client) {
+When(/^I wait until package "([^"]*)" is installed on "([^"]*)" via spacecmd$/, async function (pkg, client) {
     const node = await getSystemName(client);
     await (await getTarget('server')).run('spacecmd -u admin -p admin clear_caches');
     const command = `spacecmd -u admin -p admin system_listinstalledpackages ${node}`;
@@ -1549,7 +1540,7 @@ When('I wait until package "([^"]*)" is installed on "([^"]*)" via spacecmd', as
     }, {timeout: 600, message: `package ${pkg} is not installed yet`});
 });
 
-When('I wait until package "([^"]*)" is removed from "([^"]*)" via spacecmd', async function (pkg, client) {
+When(/^I wait until package "([^"]*)" is removed from "([^"]*)" via spacecmd$/, async function (pkg, client) {
     const node = await getSystemName(client);
     await (await getTarget('server')).run('spacecmd -u admin -p admin clear_caches');
     const command = `spacecmd -u admin -p admin system_listinstalledpackages ${node}`;
@@ -1561,7 +1552,7 @@ When('I wait until package "([^"]*)" is removed from "([^"]*)" via spacecmd', as
     }, {timeout: 600, message: `package ${pkg} is still present`});
 });
 
-When('I apply "([^"]*)" local salt state on "([^"]*)"', async function (state, host) {
+When(/^I apply "([^"]*)" local salt state on "([^"]*)"$/, async function (state, host) {
     const node = await getTarget(host);
     const useSaltBundle = (await node.run('test -f /etc/venv-salt-minion/minion && echo true || echo false')).stdout.trim() === 'true';
     let salt_call = useSaltBundle ? 'venv-salt-call' : 'salt-call';
@@ -1576,7 +1567,7 @@ When('I apply "([^"]*)" local salt state on "([^"]*)"', async function (state, h
     await node.run(`${salt_call} --local --file-root=/usr/share/susemanager/salt --module-dirs=/usr/share/susemanager/salt/ --log-level=info --retcode-passthrough state.apply ${state}`);
 });
 
-When('I copy unset package file on "([^"]*)"', async function (minion) {
+When(/^I copy unset package file on "([^"]*)"$/, async function (minion) {
     const base_dir = "../upload_files/unset_package/";
     const success = await fileInject(await getTarget(minion), `${base_dir}subscription-tools-1.0-0.noarch.rpm`, '/root/subscription-tools-1.0-0.noarch.rpm');
     if (!success) throw new Error('File injection failed');
@@ -1587,33 +1578,33 @@ When(/^I restart the "([^"]*)" service on "([^"]*)"$/, async function (service: 
     await node.run(`systemctl restart ${service}.service`);
 });
 
-When('I copy vCenter configuration file on server', async function () {
+When(/^I copy vCenter configuration file on server$/, async function () {
     const base_dir = "../upload_files/virtualization/";
     const success = await fileInject(await getTarget('server'), `${base_dir}vCenter.json`, '/var/tmp/vCenter.json');
     if (!success) throw new Error('File injection failed');
 });
 
-When('I export software channels "([^"]*)" with ISS v2 to "([^"]*)"', async function (channel, path) {
+When(/^I export software channels "([^"]*)" with ISS v2 to "([^"]*)"$/, async function (channel, path) {
     await (await getTarget('server')).run(`inter-server-sync export --channels=${channel} --outputDir=${path}`);
 });
 
-When('I export config channels "([^"]*)" with ISS v2 to "([^"]*)"', async function (channel, path) {
+When(/^I export config channels "([^"]*)" with ISS v2 to "([^"]*)"$/, async function (channel, path) {
     await (await getTarget('server')).run(`inter-server-sync export --configChannels=${channel} --outputDir=${path}`);
 });
 
-When('I import data with ISS v2 from "([^"]*)"', async function (path) {
+When(/^I import data with ISS v2 from "([^"]*)"$/, async function (path) {
     // WORKAROUND for bsc#1249127
     // Remove "echo UglyWorkaround |" when the product issue is solved
     await (await getTarget('server')).run(`echo UglyWorkaround | inter-server-sync import --importDir=${path}`);
 });
 
-Then('"([^"]*)" folder on server is ISS v2 export directory', async function (folder) {
+Then(/^"([^"]*)" folder on server is ISS v2 export directory$/, async function (folder) {
     if (!await fileExists(await getTarget('server'), `${folder}/sql_statements.sql.gz`)) {
         throw new Error(`Folder ${folder} not found`);
     }
 });
 
-When('I ensure folder "([^"]*)" doesn\'t exist on "([^"]*)"', async function (folder, host) {
+When(/^I ensure folder "([^"]*)" doesn\'t exist on "([^"]*)"$/, async function (folder, host) {
     const node = await getTarget(host);
     if (await folderExists(node, folder)) {
         const success = await folderDelete(node, folder);
@@ -1625,13 +1616,13 @@ When('I ensure folder "([^"]*)" doesn\'t exist on "([^"]*)"', async function (fo
 
 // ReportDB
 
-Then('I should be able to connect to the ReportDB on the server', async function () {
+Then(/^I should be able to connect to the ReportDB on the server$/, async function () {
     // connect and quit database
     const {returnCode} = await (await getTarget('server')).run(reportdbServerQuery('\\q'));
     if (returnCode !== 0) throw new Error('Couldn\'t connect to the ReportDB on the server');
 });
 
-Then('there should be a user allowed to create roles on the ReportDB', async function () {
+Then(/^there should be a user allowed to create roles on the ReportDB$/, async function () {
     const {
         stdout: users_and_permissions,
         returnCode
@@ -1657,7 +1648,7 @@ When(/^I create a read-only user for the ReportDB$/, async function () {
     await node.runLocal(`expect -f /tmp/${file} ${reportdb_ro_user} ${await node.run('test -f /usr/bin/mgrctl && echo true || echo false').then(r => r.stdout.trim() === 'true')}`);
 });
 
-Then('I should see the read-only user listed on the ReportDB user accounts', async function () {
+Then(/^I should see the read-only user listed on the ReportDB user accounts$/, async function () {
     const {stdout: users_and_permissions} = await (await getTarget('server')).run(reportdbServerQuery('\\du'));
     if (!users_and_permissions.includes('test_user')) throw new Error('Couldn\'t find the newly created user on the ReportDB');
 });
@@ -1673,12 +1664,12 @@ When(/^I delete the read-only user for the ReportDB$/, async function () {
     await node.runLocal(`expect -f /tmp/${file} test_user ${await node.run('test -f /usr/bin/mgrctl && echo true || echo false').then(r => r.stdout.trim() === 'true')}`);
 });
 
-Then('I shouldn\'t see the read-only user listed on the ReportDB user accounts', async function () {
+Then(/^I shouldn\'t see the read-only user listed on the ReportDB user accounts$/, async function () {
     const {stdout: users_and_permissions} = await (await getTarget('server')).run(reportdbServerQuery('\\du'));
     if (users_and_permissions.includes('test_user')) throw new Error('Created read-only user on the ReportDB remains listed');
 });
 
-Given('I know the ReportDB admin user credentials', async function () {
+Given(/^I know the ReportDB admin user credentials$/, async function () {
     const reportdb_admin_user = await getVariableFromConfFile('server', '/etc/rhn/rhn.conf', 'report_db_user');
     const reportdb_admin_password = await getVariableFromConfFile('server', '/etc/rhn/rhn.conf', 'report_db_password');
     // Store these in context for later steps
@@ -1686,7 +1677,7 @@ Given('I know the ReportDB admin user credentials', async function () {
     addContext('reportdb_admin_password', reportdb_admin_password);
 });
 
-When('I connect to the ReportDB with read-only user from external machine', async function () {
+When(/^I connect to the ReportDB with read-only user from external machine$/, async function () {
     const server = await getTarget('server');
     const {Client} = await import('pg');
     const conn = new Client({
@@ -1700,7 +1691,7 @@ When('I connect to the ReportDB with read-only user from external machine', asyn
     addContext('reportdb_ro_conn', conn);
 });
 
-Then('I should be able to query the ReportDB', async function () {
+Then(/^I should be able to query the ReportDB$/, async function () {
     const conn = getContext('reportdb_ro_conn');
     if (!conn) {
         throw new Error('ReportDB read-only connection not initialized');
@@ -1756,7 +1747,7 @@ Then(
     }
 );
 
-Then('I should find the systems from the UI in the ReportDB', async function () {
+Then(/^I should find the systems from the UI in the ReportDB$/, async function () {
     const conn = getContext('reportdb_ro_conn');
     if (!conn) {
         throw new Error('ReportDB read-only connection not initialized');
@@ -1774,7 +1765,7 @@ Then('I should find the systems from the UI in the ReportDB', async function () 
     }
 });
 
-Given('I know the current synced_date for "([^"]*)"', async function (host: string) {
+Given(/^I know the current synced_date for "([^"]*)"$/, async function (host: string) {
     const conn = getContext('reportdb_ro_conn');
     if (!conn) {
         throw new Error('ReportDB read-only connection not initialized');
@@ -1830,25 +1821,25 @@ Then(
     }
 );
 
-Given('I block connections from "([^"]*)" on "([^"]*)"', async function (blockhost, target) {
+Given(/^I block connections from "([^"]*)" on "([^"]*)"$/, async function (blockhost, target) {
     const blkhost = await getTarget(blockhost);
     const node = await getTarget(target);
     await node.run(`iptables -A INPUT -s ${blkhost.publicIp} -j LOG`);
     await node.run(`iptables -A INPUT -s ${blkhost.publicIp} -j DROP`);
 });
 
-Then('I flush firewall on "([^"]*)"', async function (target) {
+Then(/^I flush firewall on "([^"]*)"$/, async function (target) {
     const node = await getTarget(target);
     await node.run('iptables -F INPUT');
 });
 
-When('I remove offending SSH key of "([^"]*)" at port "([^"]*)" for "([^"]*)" on "([^"]*)"', async function (key_host, key_port, known_hosts_path, host) {
+When(/^I remove offending SSH key of "([^"]*)" at port "([^"]*)" for "([^"]*)" on "([^"]*)"$/, async function (key_host, key_port, known_hosts_path, host) {
     const system_name = await getSystemName(key_host);
     const node = await getTarget(host);
     await node.run(`ssh-keygen -R [${system_name}]:${key_port} -f ${known_hosts_path}`);
 });
 
-Then('port "([^"]*)" should be ([^"]*)', async function (port, selection) {
+Then(/^port "([^"]*)" should be ([^"]*)$/, async function (port, selection) {
     const {returnCode} = await (await getTarget('server')).run(`ss --listening --numeric | grep :${port}`, {
         checkErrors: false,
         verbose: true
@@ -1862,7 +1853,7 @@ Then('port "([^"]*)" should be ([^"]*)', async function (port, selection) {
 });
 
 // rebooting via SSH
-When('I reboot the server through SSH', async function () {
+When(/^I reboot the server through SSH$/, async function () {
     const temp_server = new RemoteNode('server');
     await temp_server.run('reboot > /dev/null 2> /dev/null &');
     const default_timeout = 300;
@@ -1884,7 +1875,7 @@ When('I reboot the server through SSH', async function () {
 });
 
 //TODO: Refactor this step to don't use embedded steps
-When('I reboot the "([^"]*)" minion through the web UI', async function (host) {
+When(/^I reboot the "([^"]*)" minion through the web UI$/, async function (host) {
     // await this.step(`Given I am on the Systems overview page of this "${host}"`);
     // await this.step('When I follow first "Schedule System Reboot"');
     // await this.step('Then I should see a "System Reboot Confirmation" text');
@@ -1896,7 +1887,7 @@ When('I reboot the "([^"]*)" minion through the web UI', async function (host) {
 });
 
 //TODO: Refactor this step to don't use embedded steps
-When('I reboot the "([^"]*)" if it is a transactional system', async function (host) {
+When(/^I reboot the "([^"]*)" if it is a transactional system$/, async function (host) {
     if (await isTransactionalSystem(host)) {
         // await this.step(`I reboot the "${host}" minion through the web UI`);
         // await this.step('I should not see a "There is a pending transaction for this system, please reboot it to activate the changes." text');
@@ -1904,7 +1895,7 @@ When('I reboot the "([^"]*)" if it is a transactional system', async function (h
 });
 
 // changing hostname
-When('I change the server\'s short hostname from hosts and hostname files', async function () {
+When(/^I change the server\'s short hostname from hosts and hostname files$/, async function () {
     const server_node = await getTarget('server');
     const old_hostname = server_node.hostname;
     const new_hostname = `${old_hostname}-renamed`;
@@ -1919,7 +1910,7 @@ When('I change the server\'s short hostname from hosts and hostname files', asyn
     exec(`echo '${server_node.publicIp} ${new_hostname}${server_node.fullHostname.substring(server_node.hostname.length)} ${new_hostname}' >> /etc/hosts`);
 });
 
-When('I run spacewalk-hostname-rename command on the server', async function () {
+When(/^I run spacewalk-hostname-rename command on the server$/, async function () {
     const server_node = await getTarget('server');
     const command = 'spacecmd --nossl -q api api.getVersion -u admin -p admin; ' +
         `spacewalk-hostname-rename ${server_node.publicIp} ` +
@@ -1956,7 +1947,7 @@ When('I run spacewalk-hostname-rename command on the server', async function () 
     if (out_spacewalk.includes('No such file or directory')) throw new Error('Error in the output logs - see logs above');
 });
 
-When('I check all certificates after renaming the server hostname', async function () {
+When(/^I check all certificates after renaming the server hostname$/, async function () {
     // get server certificate serial to compare it with the other minions
     const command_server = "openssl x509 -noout -text -in /etc/pki/trust/anchors/LOCAL-RHN-ORG-TRUSTED-SSL-CERT | grep -A1 'Serial' | grep -v 'Serial'";
     const {stdout: server_cert_serial, returnCode} = await (await getTarget('server')).run(command_server);
@@ -2000,7 +1991,7 @@ When('I check all certificates after renaming the server hostname', async functi
     }
 });
 
-When('I change back the server\'s hostname', async function () {
+When(/^I change back the server\'s hostname$/, async function () {
     const server_node = await getTarget('server');
     const old_hostname = server_node.hostname;
     const new_hostname = old_hostname.replace('-renamed', '');
@@ -2014,7 +2005,7 @@ When('I change back the server\'s hostname', async function () {
     exec('sed -i \'$d\' /etc/hosts');
 });
 
-When('I enable firewall ports for monitoring on this "([^"]*)"', async function (host) {
+When(/^I enable firewall ports for monitoring on this "([^"]*)"$/, async function (host) {
     let add_ports = '';
     for (const port of [9100, 9117, 9187]) {
         add_ports += `firewall-cmd --add-port=${port}/tcp --permanent && `;
@@ -2028,13 +2019,13 @@ When('I enable firewall ports for monitoring on this "([^"]*)"', async function 
     }
 });
 
-When('I delete the system "([^"]*)" via spacecmd', async function (minion) {
+When(/^I delete the system "([^"]*)" via spacecmd$/, async function (minion) {
     const node = await getSystemName(minion);
     const command = `spacecmd -u admin -p admin -y system_delete ${node}`;
     await (await getTarget('server')).run(command, {checkErrors: true, verbose: true});
 });
 
-When('I execute "([^"]*)" on the "([^"]*)"', async function (command, host) {
+When(/^I execute "([^"]*)" on the "([^"]*)"$/, async function (command, host) {
     const node = await getTarget(host);
     await node.run(command, {checkErrors: true, verbose: true});
 });
@@ -2240,7 +2231,7 @@ When(/^I visit "([^"]*)" endpoint of this "([^"]*)"$/, async function (service: 
     }
 });
 
-Then('the clock from "([^"]*)" should be exact', async function (host: string) {
+Then(/^the clock from "([^"]*)" should be exact$/, async function (host: string) {
     const node = await getTarget(host);
     const {stdout: clockNode} = await node.run("date +'%s'");
     const controller = Math.floor(Date.now() / 1000);
