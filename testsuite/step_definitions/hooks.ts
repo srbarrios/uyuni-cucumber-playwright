@@ -147,7 +147,8 @@ Before(async function (scenario) {
 // Embed a screenshot after each failed scenario
 After(async function (scenario) {
     const currentEpoch = Date.now();
-    logScenarioTiming(currentEpoch);
+    const startTime = Number(getContext('scenarioStartTime'));
+    logScenarioTiming(startTime);
     if (scenario.result?.status === Status.FAILED) {
         try {
             if (!getContext('browserDisconnected')) {
