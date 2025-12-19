@@ -1040,7 +1040,7 @@ Given(/^I have a combobox property "([^"]*)" with value "([^"]*)" on "([^"]*)"$/
     await shouldSeeSystemPropertiesChangedText();
     // Call the step to clean the search index on the server
     // This step is defined in command_steps.ts, so we need to ensure it's loaded
-    await this.When(/^I clean the search index on the server');
+    await this.When(/^I clean the search index on the server$/);
 });
 
 
