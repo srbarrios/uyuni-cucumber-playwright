@@ -11,7 +11,8 @@
     "cucumber:core": "npm run cucumber -- --profile core",
     "cucumber:reposync": "npm run cucumber -- --profile reposync",
     "cucumber:init_clients": "npm run cucumber -- --profile init_clients",
-    "cucumber:proxy": "npm run cucumber -- --profile proxy"
+    "cucumber:proxy": "npm run cucumber -- --profile proxy",
+    "cucumber:finishing": "npm run cucumber -- --profile finishing"
   },
   "type": "module",
   "keywords": [],

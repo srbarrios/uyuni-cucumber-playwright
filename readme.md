@@ -35,6 +35,7 @@ To execute the tests, use the following commands in your terminal:
 * `npm run cucumber:reposync`
 * `npm run cucumber:init_clients`
 * `npm run cucumber:proxy`
+* `npm run cucumber:finishing`
 
 These scripts are defined in the `scripts` section of `package.json` and provide a convenient way to execute tests for
 specific profiles:
@@ -44,6 +45,7 @@ specific profiles:
 * `npm run cucumber:reposync`: Runs tests defined in the `reposync` profile.
 * `npm run cucumber:init_clients`: Runs tests defined in the `init_clients` profile.
 * `npm run cucumber:proxy`: Runs tests defined in the `proxy` profile.
+* `npm run cucumber:finishing`: Runs tests defined in the `finishing` profile.
 
 Each of these commands internally calls `npm run cucumber` with the `--profile` flag, specifying which Cucumber profile
 to use.

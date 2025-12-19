@@ -129,5 +129,29 @@ module.exports = {
         timeout: 60000,
         dryRun: false,
         publish: false
+    },
+
+
+    // A profile to run only finishing features
+    finishing: {
+        paths: [
+            "testsuite/features/finishing/srv_selinux.feature",
+            "testsuite/features/finishing/srv_debug.feature",
+            "testsuite/features/finishing/allcli_debug.feature",
+            "testsuite/features/finishing/srv_count_scc_access.feature"
+        ],
+        format: [
+            "pretty",
+            "json:reports/cucumber-finishing-report.json",
+            "html:reports/cucumber-finishing-report.html"
+        ],
+        formatOptions: {
+            colorsEnabled: true,
+            snippetInterface: "async-await"
+        },
+        import: ["testsuite/step_definitions/*.ts"],
+        timeout: 60000,
+        dryRun: false,
+        publish: false
     }
 }
