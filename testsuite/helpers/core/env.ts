@@ -129,16 +129,14 @@ let featureScope: string | undefined;
 let customRepositories: any | undefined;
 let buildValidation: boolean = false;
 
-// Log configuration status
-if (ENV_CONFIG.debug) {
-    console.log('DEBUG MODE ENABLED.');
-}
+// Log environment configuration
+console.log('Environment Configuration:\n' , ENV_CONFIG);
+
+// Initialize Handlers
 if (ENV_CONFIG.codeCoverageMode) {
-    console.log('CODE COVERAGE MODE ENABLED.');
     GLOBAL_VARS.codeCoverage = new CodeCoverage();
 }
 if (ENV_CONFIG.qualityIntelligenceMode) {
-    console.log('QUALITY INTELLIGENCE MODE ENABLED.');
     GLOBAL_VARS.qualityIntelligence = new QualityIntelligence();
 }
 
