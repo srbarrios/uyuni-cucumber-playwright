@@ -18,11 +18,6 @@ import {envConfig} from '../helpers/core/env.js';
 import {getTarget} from '../helpers/system/remote_nodes_env.js';
 import {authorizeUser, createUser} from "../helpers/embedded_steps/navigation_helper.js";
 
-
-function skipThisScenario(): string {
-    return 'skipped';
-}
-
 setDefaultTimeout(TIMEOUTS.web * 1000);
 
 BeforeAll(async function () {
@@ -126,9 +121,9 @@ async function sccAccessLoggingGrain(): Promise<boolean> {
 }
 
 // Helper to skip scenario if condition is false
-function skipThisScenarioUnless(condition: any): void {
+function skipThisScenarioUnless(condition: boolean): string | void {
     if (!condition) {
-        skipThisScenario();
+        return 'skipped';
     }
 }
 
@@ -202,7 +197,7 @@ Before(async function () {
 });
 
 Before('@skip', async function () {
-    skipThisScenario();
+    return 'skipped';
 });
 
 Before('@skip_known_issue', async function () {
@@ -225,211 +220,211 @@ Before(async function (scenario) {
 
 // do some tests only if the corresponding node exists
 Before('@proxy', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['proxy']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['proxy'] in process.env);
 });
 
 Before('@run_if_proxy_transactional_or_slmicro61_minion', async function () {
-    skipThisScenarioUnless(await suseProxyTransactional() || process.env[ENV_VAR_BY_HOST['slmicro61_minion']]);
+    skipThisScenarioUnless(await suseProxyTransactional() || ENV_VAR_BY_HOST['slmicro61_minion'] in process.env);
 });
 
 Before('@run_if_proxy_not_transactional_or_sles15sp7_minion', async function () {
-    skipThisScenarioUnless(await suseProxyNonTransactional() || process.env[ENV_VAR_BY_HOST['sle15sp7_minion']]);
+    skipThisScenarioUnless(await suseProxyNonTransactional() || ENV_VAR_BY_HOST['sle15sp7_minion'] in process.env);
 });
 
 Before('@sle_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['sle_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['sle_minion'] in process.env);
 });
 
 Before('@rhlike_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['rhlike_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['rhlike_minion'] in process.env);
 });
 
 Before('@deblike_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['deblike_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['deblike_minion'] in process.env);
 });
 
 Before('@pxeboot_minion', async function () {
-    skipThisScenarioUnless(getContext('pxebootMac'));
+    skipThisScenarioUnless(!!getContext('pxebootMac'));
 });
 
 Before('@ssh_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['ssh_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['ssh_minion'] in process.env);
 });
 
 Before('@build_host', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['build_host']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['build_host'] in process.env);
 });
 
 Before('@alma8_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['alma8_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['alma8_minion'] in process.env);
 });
 
 Before('@alma8_ssh_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['alma8_ssh_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['alma8_ssh_minion'] in process.env);
 });
 
 Before('@alma9_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['alma9_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['alma9_minion'] in process.env);
 });
 
 Before('@alma9_ssh_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['alma9_ssh_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['alma9_ssh_minion'] in process.env);
 });
 
 Before('@amazon2023_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['amazon2023_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['amazon2023_minion'] in process.env);
 });
 
 Before('@amazon2023_ssh_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['amazon2023_ssh_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['amazon2023_ssh_minion'] in process.env);
 });
 
 Before('@centos7_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['centos7_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['centos7_minion'] in process.env);
 });
 
 Before('@centos7_ssh_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['centos7_ssh_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['centos7_ssh_minion'] in process.env);
 });
 
 Before('@liberty9_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['liberty9_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['liberty9_minion'] in process.env);
 });
 
 Before('@liberty9_ssh_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['liberty9_ssh_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['liberty9_ssh_minion'] in process.env);
 });
 
 Before('@oracle9_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['oracle9_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['oracle9_minion'] in process.env);
 });
 
 Before('@oracle9_ssh_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['oracle9_ssh_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['oracle9_ssh_minion'] in process.env);
 });
 
 Before('@rhel9_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['rhel9_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['rhel9_minion'] in process.env);
 });
 
 Before('@rhel9_ssh_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['rhel9_ssh_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['rhel9_ssh_minion'] in process.env);
 });
 
 Before('@rocky8_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['rocky8_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['rocky8_minion'] in process.env);
 });
 
 Before('@rocky8_ssh_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['rocky8_ssh_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['rocky8_ssh_minion'] in process.env);
 });
 
 Before('@rocky9_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['rocky9_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['rocky9_minion'] in process.env);
 });
 
 Before('@rocky9_ssh_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['rocky9_ssh_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['rocky9_ssh_minion'] in process.env);
 });
 
 Before('@ubuntu2004_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['ubuntu2004_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['ubuntu2004_minion'] in process.env);
 });
 
 Before('@ubuntu2004_ssh_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['ubuntu2004_ssh_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['ubuntu2004_ssh_minion'] in process.env);
 });
 
 Before('@ubuntu2204_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['ubuntu2204_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['ubuntu2204_minion'] in process.env);
 });
 
 Before('@ubuntu2204_ssh_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['ubuntu2204_ssh_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['ubuntu2204_ssh_minion'] in process.env);
 });
 
 Before('@ubuntu2404_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['ubuntu2404_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['ubuntu2404_minion'] in process.env);
 });
 
 Before('@ubuntu2404_ssh_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['ubuntu2404_ssh_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['ubuntu2404_ssh_minion'] in process.env);
 });
 
 Before('@debian12_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['debian12_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['debian12_minion'] in process.env);
 });
 
 Before('@debian12_ssh_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['debian12_ssh_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['debian12_ssh_minion'] in process.env);
 });
 
 Before('@sle12sp5_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['sle12sp5_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['sle12sp5_minion'] in process.env);
 });
 
 Before('@sle12sp5_ssh_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['sle12sp5_ssh_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['sle12sp5_ssh_minion'] in process.env);
 });
 
 Before('@sle15sp3_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['sle15sp3_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['sle15sp3_minion'] in process.env);
 });
 
 Before('@sle15sp3_ssh_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['sle15sp3_ssh_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['sle15sp3_ssh_minion'] in process.env);
 });
 
 Before('@sle15sp4_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['sle15sp4_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['sle15sp4_minion'] in process.env);
 });
 
 Before('@sle15sp4_ssh_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['sle15sp4_ssh_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['sle15sp4_ssh_minion'] in process.env);
 });
 
 Before('@sle15sp5_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['sle15sp5_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['sle15sp5_minion'] in process.env);
 });
 
 Before('@sle15sp5_ssh_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['sle15sp5_ssh_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['sle15sp5_ssh_minion'] in process.env);
 });
 
 Before('@sle15sp6_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['sle15sp6_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['sle15sp6_minion'] in process.env);
 });
 
 Before('@sle15sp6_ssh_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['sle15sp6_ssh_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['sle15sp6_ssh_minion'] in process.env);
 });
 
 Before('@sle15sp7_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['sle15sp7_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['sle15sp7_minion'] in process.env);
 });
 
 Before('@sle15sp7_ssh_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['sle15sp7_ssh_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['sle15sp7_ssh_minion'] in process.env);
 });
 
 Before('@opensuse156arm_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['opensuse156arm_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['opensuse156arm_minion'] in process.env);
 });
 
 Before('@opensuse156arm_ssh_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['opensuse156arm_ssh_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['opensuse156arm_ssh_minion'] in process.env);
 });
 
 Before('@sle15sp5s390_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['sle15sp5s390_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['sle15sp5s390_minion'] in process.env);
 });
 
 Before('@sle15sp5s390_ssh_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['sle15sp5s390_ssh_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['sle15sp5s390_ssh_minion'] in process.env);
 });
 
 Before('@salt_migration_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['salt_migration_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['salt_migration_minion'] in process.env);
 });
 
 Before('@slemicro', async function (scenario) {
@@ -437,79 +432,79 @@ Before('@slemicro', async function (scenario) {
 });
 
 Before('@slemicro51_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['slemicro51_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['slemicro51_minion'] in process.env);
 });
 
 Before('@slemicro51_ssh_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['slemicro51_ssh_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['slemicro51_ssh_minion'] in process.env);
 });
 
 Before('@slemicro52_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['slemicro52_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['slemicro52_minion'] in process.env);
 });
 
 Before('@slemicro52_ssh_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['slemicro52_ssh_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['slemicro52_ssh_minion'] in process.env);
 });
 
 Before('@slemicro53_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['slemicro53_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['slemicro53_minion'] in process.env);
 });
 
 Before('@slemicro53_ssh_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['slemicro53_ssh_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['slemicro53_ssh_minion'] in process.env);
 });
 
 Before('@slemicro54_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['slemicro54_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['slemicro54_minion'] in process.env);
 });
 
 Before('@slemicro54_ssh_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['slemicro54_ssh_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['slemicro54_ssh_minion'] in process.env);
 });
 
 Before('@slemicro55_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['slemicro55_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['slemicro55_minion'] in process.env);
 });
 
 Before('@slemicro55_ssh_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['slemicro55_ssh_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['slemicro55_ssh_minion'] in process.env);
 });
 
 Before('@slmicro60_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['slmicro60_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['slmicro60_minion'] in process.env);
 });
 
 Before('@slmicro60_ssh_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['slmicro60_ssh_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['slmicro60_ssh_minion'] in process.env);
 });
 
 Before('@slmicro61_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['slmicro61_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['slmicro61_minion'] in process.env);
 });
 
 Before('@slmicro61_ssh_minion', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['slmicro61_ssh_minion']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['slmicro61_ssh_minion'] in process.env);
 });
 
 Before('@sle12sp5_buildhost', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['sle12sp5_buildhost']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['sle12sp5_buildhost'] in process.env);
 });
 
 Before('@sle12sp5_terminal', async function () {
-    skipThisScenarioUnless(getContext('sle12sp5TerminalMac'));
+    skipThisScenarioUnless(!!getContext('sle12sp5TerminalMac'));
 });
 
 Before('@sle15sp4_buildhost', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['sle15sp4_buildhost']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['sle15sp4_buildhost'] in process.env);
 });
 
 Before('@monitoring_server', async function () {
-    skipThisScenarioUnless(process.env[ENV_VAR_BY_HOST['monitoring_server']]);
+    skipThisScenarioUnless(ENV_VAR_BY_HOST['monitoring_server'] in process.env);
 });
 
 Before('@sle15sp4_terminal', async function () {
-    skipThisScenarioUnless(getContext('sle15sp4TerminalMac'));
+    skipThisScenarioUnless(!!getContext('sle15sp4TerminalMac'));
 });
 
 Before('@suse_minion', async function (scenario) {
@@ -524,31 +519,31 @@ Before('@sle_micro_minion', async function (scenario) {
 Before('@skip_for_debianlike', async function (scenario) {
     const filename = scenario.pickle.uri;
     if (filename.includes('ubuntu') || filename.includes('debian')) {
-        skipThisScenario();
+        return 'skipped';
     }
 });
 
 Before('@skip_for_rocky9', async function (scenario) {
     if (scenario.pickle.uri.includes('rocky9')) {
-        skipThisScenario();
+        return 'skipped';
     }
 });
 
 Before('@skip_for_alma9', async function (scenario) {
     if (scenario.pickle.uri.includes('alma9')) {
-        skipThisScenario();
+        return 'skipped';
     }
 });
 
 Before('@skip_for_minion', async function (scenario) {
     if (scenario.pickle.uri.includes('minion')) {
-        skipThisScenario();
+        return 'skipped';
     }
 });
 
 Before('@skip_for_sle_micro', async function (scenario) {
     if (scenario.pickle.uri.includes('slemicro')) {
-        skipThisScenario();
+        return 'skipped';
     }
 });
 
@@ -556,30 +551,30 @@ Before('@skip_for_sle_micro_ssh_minion', async function (scenario) {
     const sleMicroSshNodes = ['slemicro51_ssh_minion', 'slemicro52_ssh_minion', 'slemicro53_ssh_minion', 'slemicro54_ssh_minion', 'slemicro55_ssh_minion', 'slmicro60_ssh_minion', 'slmicro61_ssh_minion'];
     const currentFeatureNode = scenario.pickle.uri.split(/(_smoke_tests.feature|\/)/)[scenario.pickle.uri.split(/(_smoke_tests.feature|\/)/).length - 2];
     if (sleMicroSshNodes.includes(currentFeatureNode)) {
-        skipThisScenario();
+        return 'skipped';
     }
 });
 
 Before('@skip_for_sl_micro', async function (scenario) {
     if (scenario.pickle.uri.includes('slmicro')) {
-        skipThisScenario();
+        return 'skipped';
     }
 });
 
 // do some tests only if we have SCC credentials
 Before('@scc_credentials', async function () {
-    skipThisScenarioUnless(getSccCredentials());
+    skipThisScenarioUnless(!!getSccCredentials());
 });
 
 // do some tests only if there is a private network
 Before('@private_net', async function () {
-    skipThisScenarioUnless(getContext('privateNet'));
+    skipThisScenarioUnless(!!getContext('privateNet'));
 });
 
 // do some tests only if we don't use a mirror
 Before('@no_mirror', async function () {
     if (getContext('mirror')) {
-        skipThisScenario();
+        return 'skipped';
     }
 });
 
@@ -595,40 +590,40 @@ Before('@uyuni', async function () {
 
 // do some tests only if we are using salt bundle
 Before('@salt_bundle', async function () {
-    skipThisScenarioUnless(getContext('useSaltBundle'));
+    skipThisScenarioUnless(!!getContext('useSaltBundle'));
 });
 
 // do some tests only if we are using salt bundle
 Before('@skip_if_salt_bundle', async function () {
     if (getContext('useSaltBundle')) {
-        skipThisScenario();
+        return 'skipped';
     }
 });
 
 // do test only if HTTP proxy for Uyuni is defined
 Before('@server_http_proxy', async function () {
-    skipThisScenarioUnless(getContext('serverHttpProxy'));
+    skipThisScenarioUnless(!!getContext('serverHttpProxy'));
 });
 
 // do test only if custom downlad endpoint for packages is defined
 Before('@custom_download_endpoint', async function () {
-    skipThisScenarioUnless(getContext('customDownloadEndpoint'));
+    skipThisScenarioUnless(!!getContext('customDownloadEndpoint'));
 });
 
 // do test only if the registry is available
 Before('@no_auth_registry', async function () {
-    skipThisScenarioUnless(getContext('noAuthRegistry'));
+    skipThisScenarioUnless(!!getContext('noAuthRegistry'));
 });
 
 // do test only if the registry with authentication is available
 Before('@auth_registry', async function () {
-    skipThisScenarioUnless(getContext('authRegistry'));
+    skipThisScenarioUnless(!!getContext('authRegistry'));
 });
 
 // skip tests if executed in cloud environment
 Before('@skip_if_cloud', async function () {
     if (envConfig.isCloudProvider) {
-        skipThisScenario();
+        return 'skipped';
     }
 });
 
@@ -640,14 +635,14 @@ Before('@cloud', async function () {
 // skip tests if executed in containers for the GitHub validation
 Before('@skip_if_github_validation', async function () {
     if (envConfig.isGhValidation) {
-        skipThisScenario();
+        return 'skipped';
     }
 });
 
 // skip tests if the server runs in a container
 Before('@skip_if_containerized_server', async function () {
     if (envConfig.isContainerizedServer) {
-        skipThisScenario();
+        return 'skipped';
     }
 });
 
@@ -659,7 +654,7 @@ Before('@containerized_server', async function () {
 // skip tests if the server runs on a transactional base OS
 Before('@skip_if_transactional_server', async function () {
     if (envConfig.isTransactionalServer) {
-        skipThisScenario();
+        return 'skipped';
     }
 });
 
