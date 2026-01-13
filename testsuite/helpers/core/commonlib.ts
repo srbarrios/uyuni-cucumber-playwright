@@ -244,7 +244,7 @@ export function getClientType(name: string): 'traditional' | 'salt' {
 export async function isSuseHost(name: string, runsInContainer = true): Promise<boolean> {
     const node = await getTarget(name);
     const osFamily = (runsInContainer ? node.osFamily : node.localOsFamily) ?? '';
-    const suseFamilies = ['sles', 'opensuse', 'opensuse-leap', 'sle-micro', 'suse-microos', 'opensuse-leap-micro'];
+    const suseFamilies = ['sles', 'opensuse', 'opensuse-leap', 'sle-micro', 'suse-microos', 'opensuse-leap-micro', 'opensuse-tumbleweed'];
     return suseFamilies.includes(osFamily);
 }
 
