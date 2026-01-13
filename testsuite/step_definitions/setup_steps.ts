@@ -551,35 +551,39 @@ When(/^I create the MU repositories for "([^"]*)"$/, async function (client) {
     if (!repoList) return;
 
     for (const repoUrl of Object.values(repoList)) {
-        const uniqueRepoName = generateRepositoryName(repoUrl as string);
-        if (await repositoryExist(uniqueRepoName)) {
-            console.log(`The MU repository ${uniqueRepoName} was already created, we will reuse it.`);
+        if ((repoUrl as string) == undefined){
+            console.warn(`WARNING: There are undefined values in the custom repositories list.`)
         } else {
-            const contentType = await isDebHost(client) ? 'deb' : 'yum';
-            const node = await getTarget(client);
-            if (node.osFamily!.includes('sl-micro') && node.osVersion!.includes('6')) {
-                await this.steps(
-                    `When I follow the left menu "Software > Manage > Repositories"
-                    And I follow "Create Repository"
-                    And I enter "${uniqueRepoName}" as "label"
-                    And I enter "${(repoUrl as string).trim()}" as "url"
-                    And I select "${contentType}" from "contenttype"
-                    And I uncheck "metadataSigned"
-                    And I click on "Create Repository"
-                    Then I should see a "Repository created successfully" text or "The repository label '${uniqueRepoName}' is already in use" text
-                    And I should see "metadataSigned" as unchecked`
-                );
+            const uniqueRepoName = generateRepositoryName(repoUrl as string);
+            if (await repositoryExist(uniqueRepoName)) {
+                console.log(`The MU repository ${uniqueRepoName} was already created, we will reuse it.`);
             } else {
-                await this.steps(
-                    `When I follow the left menu "Software > Manage > Repositories"
-                    And I follow "Create Repository"
-                    And I enter "${uniqueRepoName}" as "label"
-                    And I enter "${(repoUrl as string).trim()}" as "url"
-                    And I select "${contentType}" from "contenttype"
-                    And I click on "Create Repository"
-                    Then I should see a "Repository created successfully" text or "The repository label '${uniqueRepoName}' is already in use" text
-                    And I should see "metadataSigned" as checked`
-                );
+                const contentType = await isDebHost(client) ? 'deb' : 'yum';
+                const node = await getTarget(client);
+                if (node.osFamily!.includes('sl-micro') && node.osVersion!.includes('6')) {
+                    await this.steps(
+                        `When I follow the left menu "Software > Manage > Repositories"
+                        And I follow "Create Repository"
+                        And I enter "${uniqueRepoName}" as "label"
+                        And I enter "${(repoUrl as string).trim()}" as "url"
+                        And I select "${contentType}" from "contenttype"
+                        And I uncheck "metadataSigned"
+                        And I click on "Create Repository"
+                        Then I should see a "Repository created successfully" text or "The repository label '${uniqueRepoName}' is already in use" text
+                        And I should see "metadataSigned" as unchecked`
+                    );
+                } else {
+                    await this.steps(
+                        `When I follow the left menu "Software > Manage > Repositories"
+                        And I follow "Create Repository"
+                        And I enter "${uniqueRepoName}" as "label"
+                        And I enter "${(repoUrl as string).trim()}" as "url"
+                        And I select "${contentType}" from "contenttype"
+                        And I click on "Create Repository"
+                        Then I should see a "Repository created successfully" text or "The repository label '${uniqueRepoName}' is already in use" text
+                        And I should see "metadataSigned" as checked`
+                    );
+                }
             }
         }
     }
