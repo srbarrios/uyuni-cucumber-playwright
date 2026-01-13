@@ -42,6 +42,7 @@ Feature: Create activation keys
     And I enter "SUSE Test Key x86_64" as "description"
     And I enter "SUSE-KEY-x86_64" as "key"
     And I enter "20" as "usageLimit"
+    And I select "Fake-Base-Channel-SUSE-like" from "selectedBaseChannel"
     And I click on "Create Activation Key"
     Then I should see a "Activation key SUSE Test Key x86_64 has been created" text
     And I should see a "Details" link
@@ -79,6 +80,7 @@ Feature: Create activation keys
     And I enter "SUSE SSH Test Key x86_64" as "description"
     And I enter "SUSE-SSH-KEY-x86_64" as "key"
     And I enter "20" as "usageLimit"
+    And I select "Fake-Base-Channel-SUSE-like" from "selectedBaseChannel"
     And I select "Push via SSH" from "contact-method"
     And I click on "Create Activation Key"
     Then I should see a "Activation key SUSE SSH Test Key x86_64 has been created" text
@@ -90,6 +92,7 @@ Feature: Create activation keys
     And I enter "SUSE SSH Tunnel Test Key x86_64" as "description"
     And I enter "SUSE-SSH-TUNNEL-KEY-x86_64" as "key"
     And I enter "20" as "usageLimit"
+    And I select "Fake-Base-Channel-SUSE-like" from "selectedBaseChannel"
     And I select "Push via SSH tunnel" from "contact-method"
     And I click on "Create Activation Key"
 
@@ -99,6 +102,7 @@ Feature: Create activation keys
     And I wait until I do not see "Loading..." text
     And I enter "Proxy Key x86_64" as "description"
     And I enter "PROXY-KEY-x86_64" as "key"
+    And I select "openSUSE Tumbleweed (x86_64)" from "selectedBaseChannel"
     And I click on "Create Activation Key"
     Then I wait until I see "Activation key Proxy Key x86_64 has been created" text
 
@@ -108,6 +112,7 @@ Feature: Create activation keys
     And I wait for child channels to appear
     And I enter "Build host Key x86_64" as "description"
     And I enter "BUILD-HOST-KEY-x86_64" as "key"
+    And I select "Test-Base-Channel-x86_64" from "selectedBaseChannel"
     And I check "Container Build Host"
     And I check "OS Image Build Host"
     And I click on "Create Activation Key"
@@ -120,5 +125,6 @@ Feature: Create activation keys
     And I wait for child channels to appear
     And I enter "Terminal Key x86_64" as "description"
     And I enter "TERMINAL-KEY-x86_64" as "key"
+    And I select "Test-Base-Channel-x86_64" from "selectedBaseChannel"
     And I click on "Create Activation Key"
     Then I should see a "Activation key Terminal Key x86_64 has been created" text
