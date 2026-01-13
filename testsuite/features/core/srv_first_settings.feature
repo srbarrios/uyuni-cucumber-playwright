@@ -75,7 +75,6 @@ Feature: Very first settings
     Then I should see a "HTTP Proxy Hostname" text
     And I should see a "HTTP Proxy Username" text
     And I should see a "HTTP Proxy Password" text
-    When I click on "Edit"
     When I enter the address of the HTTP proxy as "HTTP Proxy Hostname"
     And I enter "suma3" as "HTTP Proxy Username"
     And I enter "P4$$w/ord With%and&" as "HTTP Proxy Password"
