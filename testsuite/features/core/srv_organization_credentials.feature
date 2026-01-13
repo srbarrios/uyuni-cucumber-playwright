@@ -3,10 +3,14 @@
 #
 # This feature is a dependency for all features and scenarios that include the @scc_credentials tag
 
+@skip_if_containerized_server
+@scc_credentials
+@no_mirror
 Feature: Organization credentials in the Setup Wizard
+    In order to access SUSE Customer Center resources
+    As an admin user
+    I want to enter valid SCC credentials in the Setup Wizard
 
-  @scc_credentials
-  @no_mirror
   Scenario: Enter valid SCC credentials
     Given I am authorized for the "Admin" section
     When I follow the left menu "Admin > Setup Wizard > Organization Credentials"
