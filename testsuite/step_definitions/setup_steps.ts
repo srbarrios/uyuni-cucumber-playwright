@@ -606,12 +606,15 @@ When(/^I prepare the development repositories of "([^"]*)" as part of "([^"]*)" 
     const target = await getTarget(host);
     let repoUrls: string[] = [];
     if (await isDebHost(host)) {
+        console.debug(`Find repositories of a Debian-Like host`)
         const {stdout} = await target.run('grep -rh ^deb /etc/apt/sources.list.d/');
         repoUrls = stdout.split("\n").map(line => line.split(' ')[1].trim());
     } else if (await isRhHost(host)) {
+        console.debug(`Find repositories of a RH-Like host`)
         const {stdout} = await target.run('grep -rh ^baseurl /etc/yum.repos.d/');
         repoUrls = stdout.split("\n").map(line => line.split('=')[1].trim());
     } else if (await isSuseHost(host)) {
+        console.debug(`Find repositories of a Suse-Like host`)
         const {stdout} = await target.run('grep -rh ^baseurl /etc/zypp/repos.d/');
         repoUrls = stdout.split("\n").map(line => line.split('=')[1].trim());
     } else {
