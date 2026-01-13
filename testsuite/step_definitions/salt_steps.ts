@@ -23,6 +23,7 @@ import {
 } from '../helpers/embedded_steps/command_helper.js';
 import {waitUntilDoNotSeeText} from '../helpers/embedded_steps/common_helper.js';
 import {
+    selectOptionFromField,
     waitUntilDoNotSeeTextRefreshingPage,
     waitUntilSeeSystemRefreshingPage
 } from '../helpers/embedded_steps/navigation_helper.js';
@@ -330,7 +331,7 @@ Then(/^the "([^"]*)" formula should be ([^ ]*)$/, async function (formula, state
 
 When(/^I select "([^"]*)" in (.*) field$/, async function (value, box) {
     const fieldId = FIELD_IDS[box];
-    await getCurrentPage().locator(`select#${fieldId}`).selectOption({value});
+    await selectOptionFromField(value, box);
 });
 
 Then(/^the timezone on "([^"]*)" should be "([^"]*)"$/, async function (minion, timezone) {
