@@ -354,7 +354,7 @@ When(/^I go back$/, async function () {
 });
 
 When(/^I click on "([^"]*)"$/, async function (text) {
-    await getCurrentPage().getByText(text).first().click();
+    await getCurrentPage().locator(`:is(button, a):has-text("${text}"), input[value="${text}"]`).first().click();
 });
 
 When(/^I click on a button within the item containing "([^"]*)"$/, async function (textInItem) {

@@ -18,7 +18,7 @@ Feature: Build image with authenticated registry
     And I enter "auth_registry" as "label"
     And I check "useCredentials"
     And I enter URI, username and password for registry
-    And I click on "create-btn"
+    And I click on "Create"
     Then I wait until I see "registry" text
 
   @scc_credentials
@@ -29,7 +29,7 @@ Feature: Build image with authenticated registry
     And I select "auth_registry" from "imageStore"
     And I select "1-SUSE-KEY-x86_64" from "activationKey"
     And I enter "Docker/authprofile" relative to profiles as "path"
-    And I click on "create-btn"
+    And I click on "Create"
     Then I wait until I see "auth_registry_profile" text
 
   @scc_credentials

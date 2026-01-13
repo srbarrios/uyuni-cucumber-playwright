@@ -33,7 +33,7 @@ Feature: Build OS images
     And I select "Kiwi" from "imageType"
     And I select "1-TERMINAL-KEY-x86_64" from "activationKey"
     And I enter the image filename for "pxeboot_minion" relative to profiles as "path"
-    And I click on "create-btn"
+    And I click on "Create"
     And I wait until no Salt job is running on "build_host"
 
   Scenario: Login as Kiwi image administrator and build an image

@@ -13,7 +13,7 @@ Feature: Advanced content management
     And I follow "Create"
     And I enter "docker_admin" as "label"
     And I enter the URI of the registry as "uri"
-    And I click on "create-btn"
+    And I click on "Create"
     Then I wait until table row contains a "galaxy-registry" text
 
   @scc_credentials
@@ -24,7 +24,7 @@ Feature: Advanced content management
     And I select "galaxy-registry" from "imageStore"
     And I select "1-SUSE-KEY-x86_64" from "activationKey"
     And I enter "Docker/serverhost" relative to profiles as "path"
-    And I click on "create-btn"
+    And I click on "Create"
 
   Scenario: Create a user without rights nor roles
     Given I am authorized for the "Admin" section

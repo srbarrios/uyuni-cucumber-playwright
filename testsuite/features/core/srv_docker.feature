@@ -30,9 +30,9 @@ Feature: Prepare server for using Docker
   @no_auth_registry
   Scenario: Create an image store without credentials
     When I follow the left menu "Images > Stores"
-    And I follow "Create"
+    And I follow "Create Store Profile"
     And I enter "galaxy-registry" as "label"
     And I enter the URI of the registry as "uri"
-    And I click on "create-btn"
+    And I click on "Create"
     Then I wait until table row contains a "galaxy-registry" text
     And I should see a "Items 1 - 1 of 1" text

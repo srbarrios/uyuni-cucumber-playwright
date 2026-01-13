@@ -27,7 +27,7 @@ Feature: Build container images and CVE audit them
     And I enter "suse_simple" as "label"
     And I select "galaxy-registry" from "imageStore"
     And I enter "Docker" relative to profiles as "path"
-    And I click on "create-btn"
+    And I click on "Create"
 
   Scenario: Create a simple real image profile without activation key
     When I follow the left menu "Images > Profiles"
@@ -35,7 +35,7 @@ Feature: Build container images and CVE audit them
     And I enter "suse_real_simple" as "label"
     And I select "galaxy-registry" from "imageStore"
     And I enter "Docker/serverhost" relative to profiles as "path"
-    And I click on "create-btn"
+    And I click on "Create"
 
   @scc_credentials
   Scenario: Create an image profile with activation key
@@ -45,7 +45,7 @@ Feature: Build container images and CVE audit them
     And I select "galaxy-registry" from "imageStore"
     And I select "1-SUSE-KEY-x86_64" from "activationKey"
     And I enter "Docker" relative to profiles as "path"
-    And I click on "create-btn"
+    And I click on "Create"
 
   @scc_credentials
   Scenario: Create a simple real image profile with activation key
@@ -55,7 +55,7 @@ Feature: Build container images and CVE audit them
     And I select "galaxy-registry" from "imageStore"
     And I select "1-SUSE-KEY-x86_64" from "activationKey"
     And I enter "Docker/serverhost" relative to profiles as "path"
-    And I click on "create-btn"
+    And I click on "Create"
 
   @scc_credentials
   Scenario: Build the suse_key image with and without activation key
