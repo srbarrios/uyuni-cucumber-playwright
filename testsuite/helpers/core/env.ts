@@ -130,8 +130,8 @@ let customRepositories: any | undefined;
 let buildValidation: boolean = false;
 
 // Log environment configuration and global variables
-console.log('Environment Configuration:\n' , ENV_CONFIG);
-console.log('Global Variables:\n' , GLOBAL_VARS);
+console.debug('Environment Configuration:\n' , ENV_CONFIG);
+console.debug('Global Variables:\n' , GLOBAL_VARS);
 
 // Initialize Handlers
 if (ENV_CONFIG.codeCoverageMode) {

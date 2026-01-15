@@ -23,7 +23,7 @@ export class MetricsCollectorHandler {
             const body = `# TYPE ${metricName} gauge\n${metricName}${labelBlock} ${metricValue}\n`;
             const url = `${this.gatewayUrl.replace(/\/$/, '')}/metrics/job/${encodeURIComponent(jobName)}`;
             await axios.put(url, body, {headers: {'Content-Type': 'text/plain'}});
-            console.log(`Pushed metric ${metricName}=${metricValue} to ${url}`);
+            console.debug(`Pushed metric ${metricName}=${metricValue} to ${url}`);
         } catch (e: any) {
             console.error(`Error pushing metric ${metricName}=${metricValue}:`, e?.message || e);
             throw e;

@@ -30,7 +30,7 @@ export class HttpClient {
      * @param sslVerify Whether to verify SSL certificates (default is true)
      */
     constructor(host: string, sslVerify: boolean = true) {
-        console.log('Activating HTTP API');
+        console.debug('Activating HTTP API');
 
         this.httpClient = axios.create({
             baseURL: `https://${host}`,
@@ -125,7 +125,7 @@ export class HttpClient {
      */
     close(): void {
         // Axios doesn't need explicit cleanup, but this method provides consistency
-        console.log('HTTP client closed');
+        console.debug('HTTP client closed');
     }
 
     /**

@@ -743,7 +743,7 @@ When(
                         return true;
                     }
                     if ((time_spent += checking_rate) % 60 === 0) {
-                        console.log(
+                        console.error(
                             `${
                                 time_spent / 60
                             } minutes out of ${timeout / 60} waiting for '${os_product_version}' channels to be synchronized`
@@ -755,7 +755,7 @@ When(
                 {message: 'Product not fully synced', timeout}
             );
         } catch (e: Error | any) {
-            console.log(
+            console.error(
                 `These channels were not fully synced:\n ${channels_to_wait}. \n${e.message}`
             );
             throw e;
@@ -882,8 +882,8 @@ When(/^I extract the log files from all our active nodes$/, async function () {
         ) {
             continue;
         }
-        console.log(`Host: ${host}`);
-        console.log(`Node: ${node.fullHostname}`);
+        console.debug(`Host: ${host}`);
+        console.debug(`Node: ${node.fullHostname}`);
         await extractLogsFromNode(node, host);
     }
 });

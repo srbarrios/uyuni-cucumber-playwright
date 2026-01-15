@@ -137,7 +137,7 @@ export async function getProductSynchronizationDuration(osProductVersion: string
         channelsToEvaluate = filterChannels(channelsToEvaluate, ['beta']);
     }
 
-    console.log(`Channels to evaluate:\n${channelsToEvaluate.join('\n')}`);
+    console.debug(`Channels to evaluate:\n${channelsToEvaluate.join('\n')}`);
 
     const logFilePath = '/tmp/reposync.log';
     const server = await getTarget('server');
@@ -170,7 +170,7 @@ export async function getProductSynchronizationDuration(osProductVersion: string
             if (match) {
                 const [, hours, minutes, seconds] = match.map(Number);
                 const totalSeconds = (hours * 3600) + (minutes * 60) + seconds;
-                console.log(`Channel ${channelName} synchronization duration: ${totalSeconds} seconds`);
+                console.debug(`Channel ${channelName} synchronization duration: ${totalSeconds} seconds`);
                 duration += totalSeconds;
                 matches += 1;
                 channelToEvaluate = false;
@@ -179,7 +179,7 @@ export async function getProductSynchronizationDuration(osProductVersion: string
     }
 
     if (matches < channelsToEvaluate.length) {
-        console.log(`Error extracting the synchronization duration of ${osProductVersion}`);
+        console.error(`Error extracting the synchronization duration of ${osProductVersion}`);
         console.log(`Content of reposync.log:\n${logContent.join('\n')}`);
     }
 

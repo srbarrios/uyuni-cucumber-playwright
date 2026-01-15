@@ -68,7 +68,7 @@ Then(/^I should see a link to download the image for "([^"]*)"$/, async function
     expect(exists).toBeTruthy();
     // In a real UI, this would involve checking for a visible download link.
     // For now, we'll assume the presence of the file implies a downloadable link.
-    console.log(`Download link for image ${minion}.iso is available.`);
+    console.debug(`Download link for image ${minion}.iso is available.`);
 });
 
 When(/^I set the default PXE menu entry to the target profile on the "([^"]*)"$/, async function (serverHost: string) {
@@ -445,7 +445,7 @@ Then(/^the local logs for Cobbler should not contain errors$/, async function ()
         .filter((line: string) => line.includes('ERROR'));
     if (output.length > 0) {
         await node.run(`cp ${remoteFile} ${cobblerLogFile}-$(date +"%Y_%m_%d_%I_%M_%p")`);
-        console.log(`Error in Cobbler log:\n${output.join('\n')}`);
+        console.error(`Error in Cobbler log:\n${output.join('\n')}`);
     }
 
     // Archivo de log de depuración
@@ -468,7 +468,7 @@ Then(/^the local logs for Cobbler should not contain errors$/, async function ()
     let outputDebug = dataHash.filter((item: any) => item['levelname'] === 'ERROR');
     if (outputDebug.length > 0) {
         await node.run(`cp ${remoteFile} ${cobblerLogFile}-$(date +"%Y_%m_%d_%I_%M_%p")`);
-        console.log(`Error in Cobbler debug log:\n${JSON.stringify(outputDebug, null, 2)}`);
+        console.error(`Error in Cobbler debug log:\n${JSON.stringify(outputDebug, null, 2)}`);
     }
 
     if (output.length > 0 || outputDebug.length > 0) {

@@ -73,7 +73,7 @@ export async function authorizeUser(user: string, password_str: string) {
     try {
         await getCurrentPage().goto(getAppHost(), {waitUntil: "domcontentloaded"});
     } catch (e: Error | any) {
-        console.log(`The browser session could not be cleaned because there is no browser available: ${e.message}`);
+        console.error(`The browser session could not be cleaned because there is no browser available: ${e.message}`);
     }
 
     try {

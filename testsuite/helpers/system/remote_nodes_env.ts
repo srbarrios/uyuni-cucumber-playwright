@@ -80,7 +80,7 @@ function initializeSccCredentials(): void {
             isValid: !!(username?.trim() && password?.trim())
         };
         if (sccCredentials.isValid) {
-            console.log('SCC credentials loaded successfully');
+            console.debug('SCC credentials loaded successfully');
         } else {
             console.warn('SCC credentials provided but invalid');
         }

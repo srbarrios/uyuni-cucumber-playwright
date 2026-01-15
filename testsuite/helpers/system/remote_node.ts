@@ -464,7 +464,7 @@ export class RemoteNode {
         while (!(await this.isNodeOffline())) {
             await new Promise(resolve => setTimeout(resolve, 1000));
         }
-        console.log(`Node ${this.hostname} is offline.`);
+        console.debug(`Node ${this.hostname} is offline.`);
     }
 
     /**
@@ -483,7 +483,7 @@ export class RemoteNode {
             reportResult: true,
             message: `${this.hostname} did not come back online within ${timeout} seconds.`
         });
-        console.log(`Node ${this.hostname} is online.`);
+        console.debug(`Node ${this.hostname} is online.`);
     }
 
     /**

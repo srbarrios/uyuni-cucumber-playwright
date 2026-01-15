@@ -46,12 +46,12 @@ export class KeyValueStore {
             });
 
             this.client.on('connect', () => {
-                console.log('Connected to Redis');
+                console.debug('Connected to Redis');
                 this.isConnected = true;
             });
 
             this.client.on('disconnect', () => {
-                console.log('Disconnected from Redis');
+                console.debug('Disconnected from Redis');
                 this.isConnected = false;
             });
 

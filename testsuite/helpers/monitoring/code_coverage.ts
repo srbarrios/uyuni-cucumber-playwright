@@ -30,7 +30,7 @@ export class CodeCoverage {
      * @param featureName - The name of the feature
      */
     async pushFeatureCoverage(featureName: string): Promise<void> {
-        console.log(`Pushing coverage for ${featureName} into Redis`);
+        console.debug(`Pushing coverage for ${featureName} into Redis`);
         const filename = `/tmp/jacoco-${featureName}.xml`;
 
         try {

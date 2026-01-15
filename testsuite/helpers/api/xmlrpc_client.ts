@@ -19,7 +19,7 @@ export class XmlrpcClient {
      * @param host The hostname of the Spacewalk server
      */
     constructor(host: string) {
-        console.log('Activating XML-RPC API');
+        console.debug('Activating XML-RPC API');
 
         const protocol = ENV_CONFIG.debug ? 'http' : 'https';
         const port = ENV_CONFIG.debug ? 80 : 443;
@@ -67,6 +67,6 @@ export class XmlrpcClient {
      */
     close(): void {
         // The xmlrpc client doesn't have an explicit close method
-        console.log('XML-RPC client closed');
+        console.debug('XML-RPC client closed');
     }
 }

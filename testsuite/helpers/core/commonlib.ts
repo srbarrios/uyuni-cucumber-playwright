@@ -692,7 +692,7 @@ export async function checkShutdown(host: string, timeoutSec: number): Promise<v
     await repeatUntilTimeout(async () => {
         const res = await ctl.runLocal(`ping -c1 ${host}`, {checkErrors: false});
         if (res.returnCode !== 0) {
-            console.log(`machine: ${host} went down`);
+            console.debug(`machine: ${host} went down`);
             return true;
         }
         await new Promise((r) => setTimeout(r, 1000));
@@ -706,7 +706,7 @@ export async function checkRestart(host: string, node: RemoteNode, timeoutSec: n
     await repeatUntilTimeout(async () => {
         const res = await ctl.runLocal(`ping -c1 ${host}`, {checkErrors: false});
         if (res.returnCode === 0) {
-            console.log(`machine: ${host} network is up`);
+            console.debug(`machine: ${host} network is up`);
             return true;
         }
         await new Promise((r) => setTimeout(r, 1000));
@@ -716,7 +716,7 @@ export async function checkRestart(host: string, node: RemoteNode, timeoutSec: n
     await repeatUntilTimeout(async () => {
         const res = await node.run('ls', {checkErrors: false, timeout: 10});
         if (res.returnCode === 0) {
-            console.log(`machine: ${host} ssh is up`);
+            console.debug(`machine: ${host} ssh is up`);
             return true;
         }
         await new Promise((r) => setTimeout(r, 1000));
