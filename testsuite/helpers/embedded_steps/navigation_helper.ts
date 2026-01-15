@@ -50,9 +50,9 @@ export async function selectOptionFromField(option: string, field: string) {
 }
 
 export async function waitUntilDoNotSeeLoadingTexts() {
-    await expect(getCurrentPage().getByText('Loading...')).not.toBeVisible();
-    await expect(getCurrentPage().getByText('Loading child channels..')).not.toBeVisible();
-    await expect(getCurrentPage().getByText('Loading dependencies..')).not.toBeVisible();
+    await expect(getCurrentPage().getByText('Loading')).not.toBeVisible();
+    await expect(getCurrentPage().getByText('Loading child channels')).not.toBeVisible();
+    await expect(getCurrentPage().getByText('Loading dependencies')).not.toBeVisible();
 }
 
 export async function enterTextAsField(text: string, field: string) {

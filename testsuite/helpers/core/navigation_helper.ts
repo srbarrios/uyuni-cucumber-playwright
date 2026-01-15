@@ -101,7 +101,7 @@ export async function filterByPackageName(page: Page, packageName: string): Prom
  * if necessary (e.g., when current and desired states differ).
  */
 export async function toggleCheckbox(page: Page, action: 'check' | 'uncheck', id: string): Promise<void> {
-    const checkbox = getCurrentPage().locator(`#${id}, [name="${id}"]`);
+    const checkbox = getCurrentPage().locator(`id=${id}, [name="${id}"]`);
     const shouldCheck = action === 'check';
     const isChecked = await checkbox.isChecked();
 
@@ -122,7 +122,7 @@ export async function toggleCheckbox(page: Page, action: 'check' | 'uncheck', id
  * @returns "checked" if the box is selected, "unchecked" otherwise
  */
 export async function getCheckboxState(page: Page, id: string): Promise<'checked' | 'unchecked'> {
-    const checkbox = getCurrentPage().locator(`#${id}, [name="${id}"]`);
+    const checkbox = getCurrentPage().locator(`id=${id}, [name="${id}"]`);
     const isChecked = await checkbox.isChecked();
     return isChecked ? 'checked' : 'unchecked';
 }
