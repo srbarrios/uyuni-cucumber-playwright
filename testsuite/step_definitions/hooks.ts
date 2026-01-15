@@ -6,7 +6,7 @@ import {
     closeBrowser,
     getContext,
     getCurrentPage,
-    getSccCredentials,
+    getSccCredentials, globalVars,
     initializeBrowser,
     logScenarioTiming,
     setFeatureScope,
@@ -580,12 +580,12 @@ Before('@no_mirror', async function () {
 
 // do some tests only if the server is using SUSE Manager
 Before('@susemanager', async function () {
-    skipThisScenarioUnless(getContext('product') == 'SUSE Multi-Linux Manager');
+    skipThisScenarioUnless(globalVars.product != 'Uyuni' );
 });
 
 // do some tests only if the server is using Uyuni
 Before('@uyuni', async function () {
-    skipThisScenarioUnless(getContext('product') == 'Uyuni');
+    skipThisScenarioUnless(globalVars.product == 'Uyuni');
 });
 
 // do some tests only if we are using salt bundle
