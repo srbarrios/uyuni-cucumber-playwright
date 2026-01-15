@@ -580,7 +580,7 @@ Before('@no_mirror', async function () {
 
 // do some tests only if the server is using SUSE Manager
 Before('@susemanager', async function () {
-    skipThisScenarioUnless(globalVars.product != 'Uyuni' );
+    skipThisScenarioUnless(globalVars.product == 'SUSE Multi-Linux Manager' );
 });
 
 // do some tests only if the server is using Uyuni

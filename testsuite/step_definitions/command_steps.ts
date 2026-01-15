@@ -204,6 +204,9 @@ When(
 When(
     /^I use spacewalk-common-channel to add all "([^"]*)" channels with arch "([^"]*)"$/,
     async function (channel: string, architecture: string) {
+        if (globalVars.product == undefined) {
+            throw new Error('Product not set');
+        }
         let channels_to_synchronize =
             CHANNEL_TO_SYNC_BY_OS_PRODUCT_VERSION[globalVars.product]?.[channel]?.slice() ||
             CHANNEL_TO_SYNC_BY_OS_PRODUCT_VERSION[globalVars.product]?.[
@@ -479,6 +482,9 @@ When(/^I execute mgr-sync refresh$/, async function () {
 When(
     /^I kill running spacewalk-repo-sync for "([^"]*)"$/,
     async function (os_product_version: string) {
+        if (globalVars.product == undefined) {
+            throw new Error('Product not set');
+        }
         if (
             !CHANNEL_TO_SYNC_BY_OS_PRODUCT_VERSION[globalVars.product]?.[os_product_version]
         ) {
@@ -516,6 +522,9 @@ When(
                 const channel = process.split(' ')[5].trim();
                 if (new Date().getSeconds() % 5 === 0) {
                     console.log(`Repo-sync process for channel '${channel}' running.`);
+                }
+                if (globalVars.product == undefined) {
+                    throw new Error('Product not set');
                 }
                 if (
                     !CHANNEL_TO_SYNC_BY_OS_PRODUCT_VERSION[globalVars.product][
@@ -694,6 +703,9 @@ When(
 When(
     /^I wait until all synchronized channels for "([^"]*)" have finished$/,
     async function (os_product_version: string) {
+        if (globalVars.product == undefined) {
+            throw new Error('Product not set');
+        }
         let channels_to_wait =
             CHANNEL_TO_SYNC_BY_OS_PRODUCT_VERSION[globalVars.product]?.[
                 os_product_version
@@ -1296,6 +1308,9 @@ When(/^I create the bootstrap repository for "([^"]*)" on the server((?: without
     const isTransactional = await (await getTarget('server')).run('test -f /etc/transactional-update.conf').then(r => r.returnCode === 0);
     if (host === 'proxy' && !isTransactional) {
         host = 'proxy_nontransactional';
+    }
+    if (globalVars.product == undefined) {
+        throw new Error('Product not set');
     }
     const base_channel = BASE_CHANNEL_BY_CLIENT[globalVars.product][host];
     const productKey = globalVars.product as keyof typeof CHANNEL_LABEL_TO_SYNC_BY_BASE_CHANNEL;

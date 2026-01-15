@@ -120,6 +120,9 @@ function filterChannels(channels: string[], filterKeywords: string[]): string[] 
  * @throws {Error} If channels are not found or the log file is inaccessible.
  */
 export async function getProductSynchronizationDuration(osProductVersion: string): Promise<number> {
+    if (globalVars.product == undefined) {
+        throw new Error('Product not set');
+    }
     let channelsToEvaluate: string[] | undefined = CHANNEL_TO_SYNC_BY_OS_PRODUCT_VERSION[globalVars.product]?.[osProductVersion];
 
     if (!channelsToEvaluate) {

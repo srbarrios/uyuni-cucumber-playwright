@@ -201,6 +201,9 @@ When(/^I select "([^"]*)" from "([^"]*)"$/, async function (option, field) {
 
 When(/^I select the parent channel for the "([^"]*)" from "([^"]*)"$/, async function (client, from) {
     const clientName = client === 'proxy' && !envConfig.isTransactionalServer ? 'proxy_nontransactional' : client;
+    if (globalVars.product == undefined) {
+        throw new Error('Product not set');
+    }
     const channel = BASE_CHANNEL_BY_CLIENT[globalVars.product][clientName];
     await selectOptionFromField(channel, from);
 });

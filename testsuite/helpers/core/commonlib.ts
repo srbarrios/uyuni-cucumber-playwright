@@ -70,13 +70,13 @@ export async function getProduct(serverNode: RemoteNode): Promise<string> {
         const {returnCode: uyuniCode} = await serverNode.run('rpm -q patterns-uyuni_server', {checkErrors: false});
         if (uyuniCode === 0) {
             globalVars.product = 'Uyuni';
-            return 'Uyuni';
+            return globalVars.product;
         }
 
         const {returnCode: sumaCode} = await serverNode.run('rpm -q patterns-suma_server', {checkErrors: false});
         if (sumaCode === 0) {
-            globalVars.product = 'SUSE Manager';
-            return 'SUSE Manager';
+            globalVars.product = 'SUSE Multi-Linux Manager';
+            return globalVars.product;
         }
     } catch (error) {
         // Handle error

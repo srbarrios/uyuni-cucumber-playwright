@@ -443,6 +443,9 @@ When(
         if (client === 'proxy' && !envConfig.isTransactionalServer) {
             clientName = 'proxy_nontransactional';
         }
+        if (globalVars.product == undefined) {
+            throw new Error('Product not set');
+        }
         const baseChannel = BASE_CHANNEL_BY_CLIENT[globalVars.product][clientName];
         const baseChannelLabel = LABEL_BY_BASE_CHANNEL[globalVars.product][baseChannel];
         const key = await getApiTest().activationkey.create(

@@ -66,7 +66,7 @@ export interface GlobalVariables {
     useSaltBundle: boolean;
     qualityIntelligence: QualityIntelligence | null;
     codeCoverage: CodeCoverage | null;
-    product: string;
+    product: string | undefined;
     apiTest: ApiTest;
     cobblerTest: CobblerTest;
     context: Record<string, any>;
@@ -114,7 +114,7 @@ export const GLOBAL_VARS: GlobalVariables = {
     useSaltBundle: process.env.USE_SALT_BUNDLE !== 'false',
     qualityIntelligence: undefined as unknown as QualityIntelligence,
     codeCoverage: undefined as unknown as CodeCoverage,
-    product: 'SUSE Multi-Linux Manager',
+    product: process.env.PRODUCT || undefined,
     apiTest: undefined as unknown as ApiTest,
     cobblerTest: undefined as unknown as Cobbler_test,
     context: {},
@@ -129,8 +129,9 @@ let featureScope: string | undefined;
 let customRepositories: any | undefined;
 let buildValidation: boolean = false;
 
-// Log environment configuration
+// Log environment configuration and global variables
 console.log('Environment Configuration:\n' , ENV_CONFIG);
+console.log('Global Variables:\n' , GLOBAL_VARS);
 
 // Initialize Handlers
 if (ENV_CONFIG.codeCoverageMode) {

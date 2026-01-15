@@ -203,6 +203,9 @@ Then(
 When(
     /^I check default base channel radio button of this "([^"]*)"$/,
     async function (host: string) {
+        if (globalVars.product == undefined) {
+            throw new Error('Product not set');
+        }
         const default_base_channel = BASE_CHANNEL_BY_CLIENT[globalVars.product][host];
         if (!default_base_channel) {
             throw new Error(`${default_base_channel} can't be checked`);
