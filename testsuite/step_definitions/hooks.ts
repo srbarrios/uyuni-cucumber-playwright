@@ -106,7 +106,7 @@ async function printServerLogs() {
     const logs = ['/var/log/rhn/rhn_web_ui.log', '/var/log/rhn/rhn_web_api.log'];
     for (const log of logs) {
         console.log(`=> ${log}`);
-        const { stdout } = await server.run(`tail -n20 ${log} | awk -v limit="$(date --date="5 minutes ago" "+%Y-%m-%d %H:%M:%S")" 'substr($0, ${log.includes('api') ? 2 : 1}, 19) > limit'`, {checkErrors: false});
+        const { stdout } = await server.run(`tail -n10 ${log} | awk -v limit="$(date --date="2 minutes ago" "+%Y-%m-%d %H:%M:%S")" 'substr($0, ${log.includes('api') ? 2 : 1}, 19) > limit'`, {checkErrors: false});
         console.log(stdout);
     }
 }
