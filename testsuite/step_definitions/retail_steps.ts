@@ -331,7 +331,7 @@ When(/^I enter the local IP address of "([^"]*)" in (.*) field$/, async function
     if (!fieldId) {
         throw new Error(`Field ID for "${field}" not found.`);
     }
-    await getCurrentPage().locator(`id=${fieldId}`).fill(getNetPrefix() + PRIVATE_ADDRESSES[host]);
+    await getCurrentPage().locator(`id=${fieldId}, #${fieldId}`).fill(getNetPrefix() + PRIVATE_ADDRESSES[host]);
 });
 
 When(/^I enter "([^"]*)" in (.*) field$/, async function (value, field) {
@@ -339,7 +339,7 @@ When(/^I enter "([^"]*)" in (.*) field$/, async function (value, field) {
     if (!fieldId) {
         throw new Error(`Field ID for "${field}" not found.`);
     }
-    await getCurrentPage().locator(`id=${fieldId}`).fill(value);
+    await getCurrentPage().locator(`id=${fieldId}, #${fieldId}`).fill(value);
 });
 
 When(/^I enter "([^"]*)" in (.*) field of (.*) zone$/, async function (value, field, zone) {
@@ -383,7 +383,7 @@ When(/^I enter the MAC address of "([^"]*)" in (.*) field$/, async function (hos
     if (!fieldId) {
         throw new Error(`Field ID for "${field}" not found.`);
     }
-    await getCurrentPage().locator(`id=${fieldId}`).fill(`ethernet ${mac}`);
+    await getCurrentPage().locator(`id=${fieldId}, #${fieldId}`).fill(`ethernet ${mac}`);
 });
 
 When(/^I enter the local zone name in (.*) field$/, async function (field) {
@@ -421,7 +421,7 @@ Then(/^I should see a link to download the image for "([^"]*)"$/, async function
 
 When(/^I enter the image name for "([^"]*)" in (.*) field$/, async function (host, field) {
     const name = computeKiwiProfileName(host);
-    await getCurrentPage().locator(`id=${field}`).fill(name);
+    await getCurrentPage().locator(`#${field}, id=${field}`).fill(name);
 });
 
 When(/^I press "Add Item" in (.*) section$/, async function (section) {
@@ -474,7 +474,7 @@ When(/^I check (.*) box$/, async function (checkboxName) {
     if (!boxId) {
         throw new Error(`Box ID for "${checkboxName}" not found.`);
     }
-    await getCurrentPage().locator(`id=${boxId}`).check();
+    await getCurrentPage().locator(`#${boxId}, id=${boxId}`).check();
 });
 
 When(/^I uncheck (.*) box$/, async function (checkboxName) {
@@ -482,7 +482,7 @@ When(/^I uncheck (.*) box$/, async function (checkboxName) {
     if (!boxId) {
         throw new Error(`Box ID for "${checkboxName}" not found.`);
     }
-    await getCurrentPage().locator(`id=${boxId}`).uncheck();
+    await getCurrentPage().locator(`#${boxId}, id=${boxId}`).uncheck();
 });
 
 When(/^I enter the image filename for "([^"]*)" relative to profiles as "([^"]*)"$/, async function (host, field) {

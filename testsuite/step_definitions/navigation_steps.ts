@@ -173,13 +173,13 @@ When(/^I close the last opened window$/, async function () {
 });
 
 When(/^I check "([^"]*)"$/, async function (identifier) {
-    const checkbox = getCurrentPage().locator(`id=${identifier}, [name="${identifier}"]`);
+    const checkbox = getCurrentPage().locator(`#${identifier}, id=${identifier}, [name="${identifier}"]`);
     await checkbox.check();
     await expect(checkbox).toBeChecked();
 });
 
 When(/^I uncheck "([^"]*)"$/, async function (identifier) {
-    const checkbox = getCurrentPage().locator(`id=${identifier}, [name="${identifier}"]`);
+    const checkbox = getCurrentPage().locator(`#${identifier}, id=${identifier}, [name="${identifier}"]`);
     await checkbox.uncheck();
     await expect(checkbox).not.toBeChecked();
 });
@@ -244,7 +244,7 @@ When(/^I choose "([^"]*)"$/, async function (value) {
 
 When(/^I enter "([^"]*)" as "([^"]*)"$/, async function (text: string, field: string) {
     const locators = [
-        getCurrentPage().locator(`id=${field}, [name="${field}"]`),
+        getCurrentPage().locator(`id=${field}, #${field}, [name="${field}"]`),
         getCurrentPage().getByRole('textbox', {name: field}),
         getCurrentPage().getByLabel(field),
     ];
@@ -267,7 +267,7 @@ When(/^I enter "([^"]*)" as "([^"]*)"$/, async function (text: string, field: st
 
 
 When(/^I fill the field with ID "([^"]*)" with "([^"]*)"$/, async function (fieldId: string, text: string) {
-    const locator = getCurrentPage().locator(`id=${fieldId}`);
+    const locator = getCurrentPage().locator(`id=${fieldId}, #${fieldId}`);
     await locator.fill(text);
 });
 
@@ -365,7 +365,7 @@ When(/^I click on a button within the item containing "([^"]*)"$/, async functio
 });
 
 When(/^I click on "([^"]*)" in element "([^"]*)"$/, async function (text, elementId) {
-    await getCurrentPage().locator(`id=${elementId}`).getByText(text).first().click();
+    await getCurrentPage().locator(`id=${elementId}, #${elementId}`).getByText(text).first().click();
 });
 
 When(/^I click on "([^"]*)" and confirm$/, async function (text) {
@@ -684,7 +684,7 @@ Then(/^I should see "([^"]*)" or "([^"]*)" in the ([^ ]+) textarea$/, async func
 });
 
 Then(/^the "([^"]*)" checkbox should be disabled$/, async function (arg1: string) {
-    const checkbox = getCurrentPage().locator(`id=${arg1}`);
+    const checkbox = getCurrentPage().locator(`#${arg1}, id=${arg1}`);
     await expect(checkbox).toBeDisabled();
 });
 
@@ -761,7 +761,7 @@ Then(/^radio button "([^"]*)" should be checked$/, async function (label) {
 
 Then(/^I should see "([^"]*)" as checked$/, async function (identifier) {
     // Try by ID first, then by label
-    const locatorById = getCurrentPage().locator(`id=${identifier}, [name="${identifier}"]`);
+    const locatorById = getCurrentPage().locator(`#${identifier}, id=${identifier}, [name="${identifier}"]`);
     if (await locatorById.count() > 0) {
         await expect(locatorById).toBeChecked();
     } else {
@@ -770,7 +770,7 @@ Then(/^I should see "([^"]*)" as checked$/, async function (identifier) {
 });
 
 Then(/^I should see "([^"]*)" as unchecked$/, async function (identifier) {
-    const locatorById = getCurrentPage().locator(`id=${identifier}, [name="${identifier}"]`);
+    const locatorById = getCurrentPage().locator(`#${identifier}, id=${identifier}, [name="${identifier}"]`);
     if (await locatorById.count() > 0) {
         await expect(locatorById).not.toBeChecked();
     } else {
@@ -779,7 +779,7 @@ Then(/^I should see "([^"]*)" as unchecked$/, async function (identifier) {
 });
 
 Then(/^the "([^"]*)" field should be disabled$/, async function (identifier) {
-    await expect(getCurrentPage().locator(`id=${identifier}, [name="${identifier}"]`)).toBeDisabled();
+    await expect(getCurrentPage().locator(`#${identifier}, id=${identifier}, [name="${identifier}"]`)).toBeDisabled();
 });
 
 Then(/^I should land on system's overview page$/, async function () {
@@ -1125,7 +1125,7 @@ When(/^I (enable|disable) the following restrictions:$/, async function (action,
     for (const restriction of restrictions) {
         const checkboxId = restrictionMap[restriction as keyof typeof restrictionMap];
         if (!checkboxId) throw new Error(`Unknown restriction: ${restriction}`);
-        const checkbox = getCurrentPage().locator(`id=${checkboxId}, [name="${checkboxId}"]`);
+        const checkbox = getCurrentPage().locator(`#${checkboxId}, id=${checkboxId}, [name="${checkboxId}"]`);
         if (shouldCheck) {
             await checkbox.check();
         } else {
@@ -1150,7 +1150,7 @@ Then(/^the following restrictions should be (enabled|disabled):$/, async functio
     for (const restriction of restrictions) {
         const checkboxId = restrictionMap[restriction as keyof typeof restrictionMap];
         if (!checkboxId) throw new Error(`Unknown restriction: ${restriction}`);
-        const checkbox = getCurrentPage().locator(`id=${checkboxId}`);
+        const checkbox = getCurrentPage().locator(`#${checkboxId}, id=${checkboxId}`);
         if (shouldBeChecked) {
             await expect(checkbox).toBeChecked();
         } else {
