@@ -624,7 +624,13 @@ Then(/^I should see "([^"]*)" systems selected for SSM$/, async function (count)
 });
 
 Then(/^I should see a "([^"]*)" text$/, async function (text) {
-    await expect(getCurrentPage().getByText(text).first()).toBeVisible();
+    const visibleElements = getCurrentPage()
+        .getByText(text, { exact: true })
+        .filter({ visible: true });
+    const count = await visibleElements.count();
+    if (count === 0) {
+        throw new Error(`Exact match for the text '${text}' not found on the page.`);
+    }
 });
 
 Then(/^I should see a "([^"]*)" text or "([^"]*)" text$/, async function (text1, text2) {
