@@ -463,7 +463,7 @@ When(/^I remove the mgr-sync cache file$/, async function () {
     addContext('commandOutput', stdout);
 });
 
-When(/^I refresh SCC$/, async function () {
+When(/^I refresh SCC$/, {timeout: 900000} ,async function () {
     const refresh_timeout = 600;
     const server = await getTarget('server');
     await server.run('echo -e "admin\\nadmin\\n" | mgr-sync refresh', {
@@ -471,7 +471,7 @@ When(/^I refresh SCC$/, async function () {
     });
 });
 
-When(/^I execute mgr-sync refresh$/, async function () {
+When(/^I execute mgr-sync refresh$/, {timeout: 900000} , async function () {
     const server = await getTarget('server');
     const {stdout} = await server.run('mgr-sync refresh', {
         checkErrors: false
@@ -662,7 +662,7 @@ Then(
 );
 
 When(
-    /^I wait until the channel "([^"]*)" has been synced$/,
+    /^I wait until the channel "([^"]*)" has been synced$/, {timeout: 2000000},
     async function (channel: string) {
         let time_spent = 0;
         const checking_rate = 10;
@@ -701,7 +701,7 @@ When(
 );
 
 When(
-    /^I wait until all synchronized channels for "([^"]*)" have finished$/,
+    /^I wait until all synchronized channels for "([^"]*)" have finished$/, {timeout: 1200000},
     async function (os_product_version: string) {
         if (globalVars.product == undefined) {
             throw new Error('Product not set');
@@ -950,7 +950,7 @@ When(/^I wait until file "(.*)" exists on server$/, async function (file: string
 });
 
 Then(
-    /^I wait and check that "([^"]*)" has rebooted$/,
+    /^I wait and check that "([^"]*)" has rebooted$/, {timeout: 900000},
     async function (host: string) {
         const reboot_timeout = 800;
         const system_name = await getSystemName(host);
@@ -1398,7 +1398,7 @@ When(/^I copy server\'s keys to the proxy$/, async function () {
     }
 });
 
-When(/^I configure the proxy$/, async function () {
+When(/^I configure the proxy$/, {timeout: 900000}, async function () {
     // prepare the settings file
     let settings = `RHN_PARENT=${(await getTarget('server')).fullHostname}\n` +
         `HTTP_PROXY=''\n` +
@@ -1868,7 +1868,7 @@ Then(/^port "([^"]*)" should be ([^"]*)$/, async function (port, selection) {
 });
 
 // rebooting via SSH
-When(/^I reboot the server through SSH$/, async function () {
+When(/^I reboot the server through SSH$/, {timeout: 600000}, async function () {
     const temp_server = new RemoteNode('server');
     await temp_server.run('reboot > /dev/null 2> /dev/null &');
     const default_timeout = 300;
@@ -1925,7 +1925,7 @@ When(/^I change the server\'s short hostname from hosts and hostname files$/, as
     exec(`echo '${server_node.publicIp} ${new_hostname}${server_node.fullHostname.substring(server_node.hostname.length)} ${new_hostname}' >> /etc/hosts`);
 });
 
-When(/^I run spacewalk-hostname-rename command on the server$/, async function () {
+When(/^I run spacewalk-hostname-rename command on the server$/, {timeout: 600000}, async function () {
     const server_node = await getTarget('server');
     const command = 'spacecmd --nossl -q api api.getVersion -u admin -p admin; ' +
         `spacewalk-hostname-rename ${server_node.publicIp} ` +
@@ -2123,7 +2123,7 @@ When(/^I reboot the "([^"]*)" host through SSH, waiting until it comes back$/, a
     await node.waitUntilOnline();
 });
 
-When(/^I wait until mgr-sync refresh is finished$/, async function () {
+When(/^I wait until mgr-sync refresh is finished$/, {timeout: 2000000}, async function () {
     const server = await getTarget('server');
     const cmd = 'spacecmd -u admin -p admin api sync.content.listProducts | grep SLES';
     const refreshTimeout = 1800;

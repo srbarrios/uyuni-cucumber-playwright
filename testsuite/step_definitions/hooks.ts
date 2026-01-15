@@ -18,7 +18,7 @@ import {envConfig} from '../helpers/core/env.js';
 import {getTarget} from '../helpers/system/remote_nodes_env.js';
 import {authorizeUser, createUser} from "../helpers/embedded_steps/navigation_helper.js";
 
-setDefaultTimeout(TIMEOUTS.long * 1000);
+setDefaultTimeout(TIMEOUTS.web * 1000);
 
 BeforeAll(async function () {
     await initializeBrowser();
