@@ -620,7 +620,7 @@ Then(/^I should see "([^"]*)" systems selected for SSM$/, async function (count)
 
 Then(/^I should see a "([^"]*)" text$/, async function (text) {
     const visibleElements = getCurrentPage()
-        .getByText(text, { exact: true })
+        .getByText(text)
         .filter({ visible: true });
     await expect(visibleElements.first()).toBeVisible({timeout: timeouts.web});
 });

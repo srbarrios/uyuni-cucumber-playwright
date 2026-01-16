@@ -20,7 +20,7 @@ Feature: Prepare server for using Docker
     And I enter "TestDocky" as "lastName"
     And I enter "gino-ginae@susy.de" as "email"
     And I click on "Create Login"
-    Then I should see a "Account docker created" text
+    Then I should see a "Account docker created, login information sent to gino-ginae@susy.de" text
     And I should see a "docker" link
     And I should see a "normal user" text
     And I follow "docker"

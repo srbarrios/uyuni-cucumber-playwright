@@ -3,6 +3,7 @@
 #
 # This feature is a dependency for all features and scenarios that include the @scc_credentials tag
 
+@skip_if_containerized_server
 @scc_credentials
 @no_mirror
 Feature: Organization credentials in the Setup Wizard

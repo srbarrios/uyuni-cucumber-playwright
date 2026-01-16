@@ -22,7 +22,7 @@ Feature: Prepare server for using Kiwi
     And I enter "TestKiwi" as "lastName"
     And I enter "kiwi@susy.de" as "email"
     And I click on "Create Login"
-    Then I should see a "Account kiwikiwi created" text
+    Then I should see a "Account kiwikiwi created, login information sent to kiwi@susy.de" text
     And I should see a "kiwikiwi" link
     And I should see a "normal user" text
     And I follow "kiwikiwi"
