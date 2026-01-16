@@ -89,11 +89,12 @@ export const ENV_CONFIG: EnvironmentConfig = {
     betaEnabled: process.env.BETA_ENABLED === 'True'
 };
 
+// Initialize test timeouts in milliseconds
 export const TIMEOUTS: TestTimeout = {
-    ssh: parseInt(process.env.SSH_TIMEOUT || '30', 10),
-    web: parseInt(process.env.WEB_TIMEOUT || '5', 10),
-    scenario: parseInt(process.env.SCENARIO_TIMEOUT || '60', 10),
-    long: parseInt(process.env.DEFAULT_TIMEOUT || '250', 10)
+    ssh: parseInt(process.env.SSH_TIMEOUT || '30000', 10),
+    web: parseInt(process.env.WEB_TIMEOUT || '5000', 10),
+    scenario: parseInt(process.env.SCENARIO_TIMEOUT || '60000', 10),
+    long: parseInt(process.env.DEFAULT_TIMEOUT || '250000', 10)
 };
 
 export const GLOBAL_VARS: GlobalVariables = {
