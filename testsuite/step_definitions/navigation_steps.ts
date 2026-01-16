@@ -173,26 +173,21 @@ When(/^I close the last opened window$/, async function () {
 });
 
 When(/^I check "([^"]*)"$/, async function (identifier) {
-    const checkbox = getCurrentPage().locator(`#${identifier}, id=${identifier}, [name="${identifier}"]`);
+    const page = getCurrentPage();
+    const checkbox = page.getByLabel(identifier, { exact: true })
+        .or(page.locator(`#${identifier}`))
+        .or(page.locator(`[name="${identifier}"]`));
     await checkbox.check();
     await expect(checkbox).toBeChecked();
 });
 
 When(/^I uncheck "([^"]*)"$/, async function (identifier) {
-    const checkbox = getCurrentPage().locator(`#${identifier}, id=${identifier}, [name="${identifier}"]`);
+    const page = getCurrentPage();
+    const checkbox = page.getByLabel(identifier, { exact: true })
+        .or(page.locator(`#${identifier}`))
+        .or(page.locator(`[name="${identifier}"]`));
     await checkbox.uncheck();
     await expect(checkbox).not.toBeChecked();
-});
-
-When(/^I (check|uncheck) "([^"]*)" by label$/, async function (action, label) {
-    const checkbox = getCurrentPage().getByLabel(label);
-    if (action === 'check') {
-        await checkbox.check();
-        await expect(checkbox).toBeChecked();
-    } else {
-        await checkbox.uncheck();
-        await expect(checkbox).not.toBeChecked();
-    }
 });
 
 When(/^I select "([^"]*)" from "([^"]*)"$/, async function (option, field) {
@@ -244,7 +239,7 @@ When(/^I choose "([^"]*)"$/, async function (value) {
 
 When(/^I enter "([^"]*)" as "([^"]*)"$/, async function (text: string, field: string) {
     const locators = [
-        getCurrentPage().locator(`id=${field}, #${field}, [name="${field}"]`),
+        getCurrentPage().locator(`#${field}, [name="${field}"]`),
         getCurrentPage().getByRole('textbox', {name: field}),
         getCurrentPage().getByLabel(field),
     ];
@@ -267,7 +262,7 @@ When(/^I enter "([^"]*)" as "([^"]*)"$/, async function (text: string, field: st
 
 
 When(/^I fill the field with ID "([^"]*)" with "([^"]*)"$/, async function (fieldId: string, text: string) {
-    const locator = getCurrentPage().locator(`id=${fieldId}, #${fieldId}`);
+    const locator = getCurrentPage().locator(`#${fieldId}`);
     await locator.fill(text);
 });
 
@@ -365,7 +360,7 @@ When(/^I click on a button within the item containing "([^"]*)"$/, async functio
 });
 
 When(/^I click on "([^"]*)" in element "([^"]*)"$/, async function (text, elementId) {
-    await getCurrentPage().locator(`id=${elementId}, #${elementId}`).getByText(text).first().click();
+    await getCurrentPage().locator(`#${elementId}`).getByText(text).first().click();
 });
 
 When(/^I click on "([^"]*)" and confirm$/, async function (text) {
@@ -627,16 +622,13 @@ Then(/^I should see a "([^"]*)" text$/, async function (text) {
     const visibleElements = getCurrentPage()
         .getByText(text, { exact: true })
         .filter({ visible: true });
-    const count = await visibleElements.count();
-    if (count === 0) {
-        throw new Error(`Exact match for the text '${text}' not found on the page.`);
-    }
+    await expect(visibleElements.first()).toBeVisible({timeout: timeouts.web});
 });
 
 Then(/^I should see a "([^"]*)" text or "([^"]*)" text$/, async function (text1, text2) {
     const locator1 = getCurrentPage().getByText(text1).first();
     const locator2 = getCurrentPage().getByText(text2).first();
-    await expect(locator1.or(locator2)).toBeVisible();
+    await expect(locator1.or(locator2)).toBeVisible({timeout: timeouts.web});
 });
 
 Then(/^I should see "([^"]*)" short hostname$/, async function (host) {
@@ -684,7 +676,7 @@ Then(/^I should see "([^"]*)" or "([^"]*)" in the ([^ ]+) textarea$/, async func
 });
 
 Then(/^the "([^"]*)" checkbox should be disabled$/, async function (arg1: string) {
-    const checkbox = getCurrentPage().locator(`#${arg1}, id=${arg1}`);
+    const checkbox = getCurrentPage().locator(`#${arg1}`);
     await expect(checkbox).toBeDisabled();
 });
 
@@ -693,34 +685,34 @@ Then(/^I should see a text like "([^"]*)"$/, async function (text) {
 });
 
 Then(/^I should not see a "([^"]*)" text$/, async function (text) {
-    await expect(getCurrentPage().getByText(text)).not.toBeVisible();
+    await expect(getCurrentPage().getByText(text)).not.toBeVisible({timeout: timeouts.web});
 });
 
 Then(/^I should see a "([^"]*)" link$/, async function (text) {
-    await expect(getCurrentPage().getByRole('link', {name: text, exact: false})).toBeVisible();
+    await expect(getCurrentPage().getByRole('link', {name: text, exact: false})).toBeVisible({timeout: timeouts.web});
 });
 
 Then(/^I should not see a "([^"]*)" link$/, async function (text) {
-    await expect(getCurrentPage().getByRole('link', {name: text, exact: false})).not.toBeVisible();
+    await expect(getCurrentPage().getByRole('link', {name: text, exact: false})).not.toBeVisible({timeout: timeouts.web});
 });
 
 Then(/^I should see a Sign Out link$/, async function () {
     const logoutLink = getCurrentPage().locator('a[href="/rhn/Logout.do"]');
-    await expect(logoutLink).toBeVisible();
+    await expect(logoutLink).toBeVisible({timeout: timeouts.web});
 });
 
 Then(/^I should see a "([^"]*)" button$/, async function (text) {
-    await expect(getCurrentPage().getByRole('button', {name: text, exact: false})).toBeVisible();
+    await expect(getCurrentPage().getByRole('button', {name: text, exact: false})).toBeVisible({timeout: timeouts.web});
 });
 
 Then(/^I should see a "([^"]*)" text in element "([^"]*)"$/, async function (text, element) {
     const elementLocator = getCurrentPage().locator(`div#${element}, div.${element}, span#${element}, span.${element}`);
-    await expect(elementLocator.getByText(text)).toBeVisible();
+    await expect(elementLocator.getByText(text)).toBeVisible({timeout: timeouts.web});
 });
 
 Then(/^I should not see a "([^"]*)" text in element "([^"]*)"$/, async function (text, element) {
     const elementLocator = getCurrentPage().locator(`div#${element}, div.${element}`);
-    await expect(elementLocator.getByText(text)).not.toBeVisible();
+    await expect(elementLocator.getByText(text)).not.toBeVisible({timeout: timeouts.web});
 });
 
 Then(/^I should see a "([^"]*)" link in the (left menu|tab bar|tabs|content area)$/, async function (link, area) {
@@ -740,7 +732,7 @@ Then(/^I should see a "([^"]*)" link in the (left menu|tab bar|tabs|content area
             throw new Error(`Unknown element with description: ${area}`);
     }
     const contextLocator = getCurrentPage().locator(selector);
-    await expect(contextLocator.getByRole('link', {name: link})).toBeVisible();
+    await expect(contextLocator.getByRole('link', {name: link})).toBeVisible({timeout: timeouts.web});
 });
 
 Then(/^option "([^"]*)" is selected as "([^"]*)"$/, async function (option, field) {
@@ -761,7 +753,7 @@ Then(/^radio button "([^"]*)" should be checked$/, async function (label) {
 
 Then(/^I should see "([^"]*)" as checked$/, async function (identifier) {
     // Try by ID first, then by label
-    const locatorById = getCurrentPage().locator(`#${identifier}, id=${identifier}, [name="${identifier}"]`);
+    const locatorById = getCurrentPage().locator(`#${identifier}, [name="${identifier}"]`);
     if (await locatorById.count() > 0) {
         await expect(locatorById).toBeChecked();
     } else {
@@ -770,7 +762,7 @@ Then(/^I should see "([^"]*)" as checked$/, async function (identifier) {
 });
 
 Then(/^I should see "([^"]*)" as unchecked$/, async function (identifier) {
-    const locatorById = getCurrentPage().locator(`#${identifier}, id=${identifier}, [name="${identifier}"]`);
+    const locatorById = getCurrentPage().locator(`#${identifier}, [name="${identifier}"]`);
     if (await locatorById.count() > 0) {
         await expect(locatorById).not.toBeChecked();
     } else {
@@ -779,7 +771,7 @@ Then(/^I should see "([^"]*)" as unchecked$/, async function (identifier) {
 });
 
 Then(/^the "([^"]*)" field should be disabled$/, async function (identifier) {
-    await expect(getCurrentPage().locator(`#${identifier}, id=${identifier}, [name="${identifier}"]`)).toBeDisabled();
+    await expect(getCurrentPage().locator(`#${identifier}, [name="${identifier}"]`)).toBeDisabled();
 });
 
 Then(/^I should land on system's overview page$/, async function () {
@@ -1018,9 +1010,9 @@ When(/^I uncheck row with "([^"]*)" and arch of "([^"]*)"$/, async function (tex
 
 When(/^I click on "([^"]*)" in "([^"]*)" modal$/, async function (button, title) {
     const modal = getCurrentPage().getByRole('dialog', {name: title});
-    await expect(modal).toBeVisible();
+    await expect(modal).toBeVisible({timeout: timeouts.web});
     await modal.getByRole('button', {name: button}).click();
-    await expect(modal).not.toBeVisible();
+    await expect(modal).not.toBeVisible({timeout: timeouts.web});
 });
 
 When(/^I wait at most (\d+) seconds until I see modal containing "([^"]*)" text$/, async function (timeout, text) {
@@ -1125,7 +1117,7 @@ When(/^I (enable|disable) the following restrictions:$/, async function (action,
     for (const restriction of restrictions) {
         const checkboxId = restrictionMap[restriction as keyof typeof restrictionMap];
         if (!checkboxId) throw new Error(`Unknown restriction: ${restriction}`);
-        const checkbox = getCurrentPage().locator(`#${checkboxId}, id=${checkboxId}, [name="${checkboxId}"]`);
+        const checkbox = getCurrentPage().locator(`#${checkboxId}, [name="${checkboxId}"]`);
         if (shouldCheck) {
             await checkbox.check();
         } else {
@@ -1150,7 +1142,7 @@ Then(/^the following restrictions should be (enabled|disabled):$/, async functio
     for (const restriction of restrictions) {
         const checkboxId = restrictionMap[restriction as keyof typeof restrictionMap];
         if (!checkboxId) throw new Error(`Unknown restriction: ${restriction}`);
-        const checkbox = getCurrentPage().locator(`#${checkboxId}, id=${checkboxId}`);
+        const checkbox = getCurrentPage().locator(`#${checkboxId}`);
         if (shouldBeChecked) {
             await expect(checkbox).toBeChecked();
         } else {

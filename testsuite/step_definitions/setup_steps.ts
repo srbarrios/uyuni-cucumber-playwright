@@ -18,7 +18,7 @@ import {
     refreshPage,
     repeatUntilTimeout,
     repositoryExist,
-    serverSecret,
+    serverSecret, timeouts,
     TIMEOUTS,
     token
 } from '../helpers/index.js';
@@ -29,7 +29,7 @@ import {waitUntilOnboardingCompleted} from '../helpers/setup_helper.js';
 Then(/^HTTP proxy verification should have succeeded$/, async function (...args: any[]) {
     if (!getCurrentPage()) throw new Error('No page instance');
     const alert = getCurrentPage().locator('div.alert-success').first();
-    await expect(alert).toBeVisible();
+    await expect(alert).toBeVisible({timeout: timeouts.web});
 });
 
 When(/^I enter the address of the HTTP proxy as "([^"]*)"$/, async function (hostnameField: string) {
@@ -47,7 +47,7 @@ When(/^I enter the address of the HTTP proxy as "([^"]*)"$/, async function (hos
 When(/^I ask to add new credentials$/, async function () {
     if (!getCurrentPage()) throw new Error('No page instance');
     const plus = getCurrentPage().locator('i.fa-plus-circle').first();
-    await expect(plus).toBeVisible();
+    await expect(plus).toBeVisible({timeout: timeouts.web});
     await plus.click();
 });
 
@@ -192,7 +192,7 @@ Then(/^I should see that the "(.*?)" product is "(.*?)"$/, async function (produ
     if (!getCurrentPage()) throw new Error('No page instance');
     const productElement = getCurrentPage().locator('.product-details-wrapper', {hasText: globalVars.product});
     const recommendedElement = productElement.getByText(recommended);
-    await expect(recommendedElement).toBeVisible();
+    await expect(recommendedElement).toBeVisible({timeout: timeouts.web});
 });
 
 Then(/^I should see the "(.*?)" selected$/, async function (product) {
@@ -243,21 +243,21 @@ When(/^I click the channel list of product "(.*?)"$/, async function (product) {
 Then(/^I should see a table line with "([^"]*)", "([^"]*)", "([^"]*)"$/, async function (text1, text2, text3) {
     if (!getCurrentPage()) throw new Error('No page instance');
     const rowLocator = getCurrentPage().getByRole('row', {name: text1});
-    await expect(rowLocator.getByRole('link', {name: text2})).toBeVisible();
-    await expect(rowLocator.getByRole('link', {name: text3})).toBeVisible();
+    await expect(rowLocator.getByRole('link', {name: text2})).toBeVisible({timeout: timeouts.web});
+    await expect(rowLocator.getByRole('link', {name: text3})).toBeVisible({timeout: timeouts.web});
 });
 
 Then(/^I should see a table line with "([^"]*)", "([^"]*)"$/, async function (text1, text2) {
     if (!getCurrentPage()) throw new Error('No page instance');
     const rowLocator = getCurrentPage().getByRole('row', {name: text1});
-    await expect(rowLocator.getByRole('link', {name: text2})).toBeVisible();
+    await expect(rowLocator.getByRole('link', {name: text2})).toBeVisible({timeout: timeouts.web});
 });
 
 Then(/^a table line should contain system "([^"]*)", "([^"]*)"$/, async function (host, text) {
     if (!getCurrentPage()) throw new Error('No page instance');
     const systemName = await getSystemName(host);
     const rowLocator = getCurrentPage().getByRole('row', {name: systemName});
-    await expect(rowLocator.getByText(text)).toBeVisible();
+    await expect(rowLocator.getByText(text)).toBeVisible({timeout: timeouts.web});
 });
 
 When(/^I wait at most (\d+) seconds until I see the name of "([^"]*)", refreshing the page$/, async function (seconds, host) {
@@ -296,7 +296,7 @@ Then(/^I should see "([^"]*)" via spacecmd$/, async function (host) {
 Then(/^I should see "([^"]*)" as link$/, async function (host) {
     if (!getCurrentPage()) throw new Error('No page instance');
     const systemName = await getSystemName(host);
-    await expect(getCurrentPage().getByRole('link', {name: systemName})).toBeVisible();
+    await expect(getCurrentPage().getByRole('link', {name: systemName})).toBeVisible({timeout: timeouts.web});
 });
 
 When(/^I remember when I scheduled an action$/, async function () {
@@ -372,7 +372,7 @@ Then(/^I should see the toggler "([^"]*)"$/, async function (targetStatus) {
         default:
             throw new Error('Invalid target status.');
     }
-    await expect(toggler).toBeVisible();
+    await expect(toggler).toBeVisible({timeout: timeouts.web});
 });
 
 When(/^I click on the "([^"]*)" toggler$/, async function (targetStatus) {
@@ -393,7 +393,7 @@ When(/^I click on the "([^"]*)" toggler$/, async function (targetStatus) {
 
 Then(/^I should see the child channel "([^"]*)" "([^"]*)"$/, async function (targetChannel, targetStatus) {
     if (!getCurrentPage()) throw new Error('No page instance');
-    await expect(getCurrentPage().getByText(targetChannel)).toBeVisible();
+    await expect(getCurrentPage().getByText(targetChannel)).toBeVisible({timeout: timeouts.web});
     const label = getCurrentPage().locator(`label:has-text("${targetChannel}")`);
     const channelCheckboxId = await label.getAttribute('for');
     const checkbox = getCurrentPage().locator(`input#${channelCheckboxId}`);
@@ -406,7 +406,7 @@ Then(/^I should see the child channel "([^"]*)" "([^"]*)"$/, async function (tar
 
 Then(/^I should see the child channel "([^"]*)" "([^"]*)" and "([^"]*)"$/, async function (targetChannel, targetStatus, isDisabled) {
     if (!getCurrentPage()) throw new Error('No page instance');
-    await expect(getCurrentPage().getByText(targetChannel)).toBeVisible();
+    await expect(getCurrentPage().getByText(targetChannel)).toBeVisible({timeout: timeouts.web});
     const label = getCurrentPage().locator(`label:has-text("${targetChannel}")`);
     const channelCheckboxId = await label.getAttribute('for');
     const checkbox = getCurrentPage().locator(`input#${channelCheckboxId}`);
@@ -422,7 +422,7 @@ Then(/^I should see the child channel "([^"]*)" "([^"]*)" and "([^"]*)"$/, async
 
 When(/^I select the child channel "([^"]*)"$/, async function (targetChannel) {
     if (!getCurrentPage()) throw new Error('No page instance');
-    await expect(getCurrentPage().getByText(targetChannel)).toBeVisible();
+    await expect(getCurrentPage().getByText(targetChannel)).toBeVisible({timeout: timeouts.web});
     const label = getCurrentPage().locator(`label:has-text("${targetChannel}")`);
     const channelCheckboxId = await label.getAttribute('for');
     const checkbox = getCurrentPage().locator(`input#${channelCheckboxId}`);
@@ -462,10 +462,10 @@ Then(/^the notification badge and the table should count the same amount of mess
 
     if (tableNotificationsCount === '0') {
         console.log('All notification-messages are read, I expect no notification badge');
-        await expect(badge).not.toBeVisible();
+        await expect(badge).not.toBeVisible({timeout: timeouts.web});
     } else {
         console.log(`Unread notification-messages count = ${tableNotificationsCount}`);
-        await expect(badge).toBeVisible();
+        await expect(badge).toBeVisible({timeout: timeouts.web});
     }
 });
 
@@ -540,7 +540,7 @@ Then(/^I should see a list item with text "([^"]*)" and a (success|failing|warni
     };
     const listItem = getCurrentPage().locator('ul li', {hasText: text});
     const bulletIcon = listItem.locator(`i.${bulletStyles[bulletType]}`);
-    await expect(bulletIcon).toBeVisible();
+    await expect(bulletIcon).toBeVisible({timeout: timeouts.web});
 });
 
 When(/^I create the MU repositories for "([^"]*)"$/, async function (client) {

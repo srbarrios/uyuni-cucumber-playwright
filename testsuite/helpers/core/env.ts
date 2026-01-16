@@ -43,6 +43,7 @@ export interface EnvironmentConfig {
 export interface TestTimeout {
     ssh: number;
     web: number;
+    scenario: number;
     long: number;
 }
 
@@ -90,7 +91,8 @@ export const ENV_CONFIG: EnvironmentConfig = {
 
 export const TIMEOUTS: TestTimeout = {
     ssh: parseInt(process.env.SSH_TIMEOUT || '30', 10),
-    web: parseInt(process.env.WEB_TIMEOUT || '20', 10),
+    web: parseInt(process.env.WEB_TIMEOUT || '5', 10),
+    scenario: parseInt(process.env.SCENARIO_TIMEOUT || '60', 10),
     long: parseInt(process.env.DEFAULT_TIMEOUT || '250', 10)
 };
 

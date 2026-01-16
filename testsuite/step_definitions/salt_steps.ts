@@ -14,7 +14,7 @@ import {
     globalVars,
     pillarGet,
     repeatUntilTimeout,
-    saltMasterPillarGet
+    saltMasterPillarGet, timeouts
 } from '../helpers/index.js';
 import {
     manageRepositories,
@@ -564,7 +564,7 @@ Then(/^the salt event log on server should contain no failures$/, async function
 
 When(/^I should see a "([^"]*)" or "([^"]*)" text in element "([^"]*)"$/, async function (text1: string, text2: string, element: string) {
     const elementLocator = getCurrentPage().locator(`div#${element}, div.${element}, span#${element}, span.${element}`);
-    await expect(elementLocator.getByText(text1).or(elementLocator.getByText(text2))).toBeVisible();
+    await expect(elementLocator.getByText(text1).or(elementLocator.getByText(text2))).toBeVisible({timeout: timeouts.web});
 });
 
 When(/^I install Salt packages from "(.*?)"$/, async function (host) {

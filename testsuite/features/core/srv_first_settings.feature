@@ -72,8 +72,8 @@ Feature: Very first settings
   @server_http_proxy
   Scenario: Setup HTTP proxy
     When I follow the left menu "Admin > Setup Wizard > HTTP Proxy"
-    Then I should see a "HTTP Proxy Hostname" text
-    And I should see a "HTTP Proxy Username" text
+    And I wait until I see "HTTP Proxy Hostname" text
+    Then I should see a "HTTP Proxy Username" text
     And I should see a "HTTP Proxy Password" text
     When I enter the address of the HTTP proxy as "HTTP Proxy Hostname"
     And I enter "suma3" as "HTTP Proxy Username"

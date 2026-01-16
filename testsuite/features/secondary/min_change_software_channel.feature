@@ -40,9 +40,9 @@ Feature: Assign child channel to a system
     And I check radio button "openSUSE Leap 15.6 (x86_64)"
     Then radio button "openSUSE Leap 15.6 (x86_64)" should be checked
     When I wait until I do not see "Loading..." text
-    And I uncheck "Uyuni Client Tools for openSUSE Leap 15.6 (x86_64)" by label
+    And I uncheck "Uyuni Client Tools for openSUSE Leap 15.6 (x86_64)"
     Then I should see "Uyuni Client Tools for openSUSE Leap 15.6 (x86_64)" as unchecked
-    When I uncheck "Uyuni Client Tools for openSUSE Leap 15.6 (x86_64) (Development)" by label
+    When I uncheck "Uyuni Client Tools for openSUSE Leap 15.6 (x86_64) (Development)"
     Then I should see "Uyuni Client Tools for openSUSE Leap 15.6 (x86_64) (Development)" as unchecked
     When I click on "Next"
     Then I should see a "Confirm Software Channel Change" text
@@ -84,7 +84,7 @@ Feature: Assign child channel to a system
     And I wait until I do not see "Loading..." text
     Then radio button "openSUSE Leap 15.6 (x86_64)" should be checked
     When I wait until I do not see "Loading..." text
-    And I check "Uyuni Client Tools for openSUSE Leap 15.6 (x86_64)" by label
+    And I check "Uyuni Client Tools for openSUSE Leap 15.6 (x86_64)"
     Then I should see "Uyuni Client Tools for openSUSE Leap 15.6 (x86_64)" as checked
     When I click on "Next"
     Then I should see a "Confirm Software Channel Change" text
@@ -157,9 +157,9 @@ Feature: Assign child channel to a system
     Then radio button "openSUSE Leap 15.6 (x86_64)" should be checked
     And I wait until I do not see "Loading..." text
     And I wait until I see "Uyuni Client Tools for openSUSE Leap 15.6 (x86_64)" text
-    And I uncheck "Uyuni Client Tools for openSUSE Leap 15.6 (x86_64)" by label
+    And I uncheck "Uyuni Client Tools for openSUSE Leap 15.6 (x86_64)"
     Then I should see "Uyuni Client Tools for openSUSE Leap 15.6 (x86_64)" as unchecked
-    When I check "Uyuni Client Tools for openSUSE Leap 15.6 (x86_64) (Development)" by label
+    When I check "Uyuni Client Tools for openSUSE Leap 15.6 (x86_64) (Development)"
     Then I should see "Uyuni Client Tools for openSUSE Leap 15.6 (x86_64) (Development)" as checked
     When I check "Fake-RPM-SUSE-Channel"
     And I click on "Next"
