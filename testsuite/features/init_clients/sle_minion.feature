@@ -25,7 +25,7 @@ Feature: Bootstrap a Salt minion via the GUI
 
   Scenario: Check the new bootstrapped minion in System List page
     When I follow the left menu "Salt > Keys"
-    And I wait until I do not see "Loading..." text
+    And I wait for child channels to appear
     Then I should see a "accepted" text
     When I follow the left menu "Systems > System List > All"
     And I wait until I see the name of "sle_minion", refreshing the page

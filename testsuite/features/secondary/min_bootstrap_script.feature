@@ -49,9 +49,9 @@ Feature: Register a Salt minion with a bootstrap script
     Given I am on the Systems overview page of this "sle_minion"
     When I follow "Software" in the content area
     And I follow "Software Channels" in the content area
-    And I wait until I do not see "Loading..." text
+    And I wait for child channels to appear
     And I check radio button "SLE-Product-SLES15-SP4-Pool for x86_64"
-    And I wait until I do not see "Loading..." text
+    And I wait for child channels to appear
     And I include the recommended child channels
     And I check "SLE-Module-DevTools15-SP4-Pool for x86_64"
     And I check "Fake-RPM-SUSE-Channel"
@@ -66,9 +66,9 @@ Feature: Register a Salt minion with a bootstrap script
     Given I am on the Systems overview page of this "sle_minion"
     When I follow "Software" in the content area
     And I follow "Software Channels" in the content area
-    And I wait until I do not see "Loading..." text
+    And I wait for child channels to appear
     And I check radio button "openSUSE Leap 15.6 (x86_64)"
-    And I wait until I do not see "Loading..." text
+    And I wait for child channels to appear
     And I check "Uyuni Client Tools for openSUSE Leap 15.6 (x86_64) (Development)"
     And I check "Fake-RPM-SUSE-Channel"
     And I click on "Next"

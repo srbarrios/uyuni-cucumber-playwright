@@ -43,9 +43,9 @@ Feature: Bootstrap a Red Hat-like minion and do some basic operations on it
     Given I am on the Systems overview page of this "rhlike_minion"
     When I follow "Software" in the content area
     And I follow "Software Channels" in the content area
-    And I wait until I do not see "Loading..." text
+    And I wait for child channels to appear
     And I check radio button "Fake-Base-Channel-RH-like"
-    And I wait until I do not see "Loading..." text
+    And I wait for child channels to appear
     And I click on "Next"
     Then I should see a "Confirm Software Channel Change" text
     When I click on "Confirm"

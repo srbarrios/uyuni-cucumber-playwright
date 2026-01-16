@@ -66,9 +66,9 @@ Feature: Channel subscription via SSM
     Given I am on the Systems overview page of this "sle_minion"
     When I follow "Software" in the content area
     And I follow "Software Channels" in the content area
-    And I wait until I do not see "Loading..." text
+    And I wait for child channels to appear
     Then radio button "SLE-Product-SLES15-SP4-Pool for x86_64" should be checked
-    And I wait until I do not see "Loading..." text
+    And I wait for child channels to appear
     And I should see "SLE15-SP4-Installer-Updates for x86_64" as unchecked
 
   @sle_minion
@@ -77,9 +77,9 @@ Feature: Channel subscription via SSM
     Given I am on the Systems overview page of this "sle_minion"
     When I follow "Software" in the content area
     And I follow "Software Channels" in the content area
-    And I wait until I do not see "Loading..." text
+    And I wait for child channels to appear
     Then radio button "openSUSE Leap 15.6 (x86_64)" should be checked
-    And I wait until I do not see "Loading..." text
+    And I wait for child channels to appear
     And I should see "Uyuni Client Tools for openSUSE Leap 15.6 (x86_64)" as unchecked
 
   @sle_minion
@@ -110,9 +110,9 @@ Feature: Channel subscription via SSM
     Given I am on the Systems overview page of this "sle_minion"
     When I follow "Software" in the content area
     And I follow "Software Channels" in the content area
-    And I wait until I do not see "Loading..." text
+    And I wait for child channels to appear
     Then radio button "Fake-Base-Channel-SUSE-like" should be checked
-    And I wait until I do not see "Loading..." text
+    And I wait for child channels to appear
     And I should see "Fake-Child-Channel-SUSE-like" as checked
 
   @sle_minion
@@ -196,16 +196,16 @@ Feature: Channel subscription via SSM
     Given I am on the Systems overview page of this "sle_minion"
     When I follow "Software" in the content area
     And I follow "Software Channels" in the content area
-    And I wait until I do not see "Loading..." text
+    And I wait for child channels to appear
     And I check radio button "SLE-Product-SLES15-SP4-Pool for x86_64"
-    And I wait until I do not see "Loading..." text
+    And I wait for child channels to appear
     And I include the recommended child channels
     And I check "SLE-Module-DevTools15-SP4-Pool for x86_64"
     And I check "SLE-Module-Containers15-SP4-Pool for x86_64"
     And I check "Fake-RPM-SUSE-Channel"
-    And I wait until I do not see "Loading..." text
+    And I wait for child channels to appear
     And I wait until I see "SLE15-SP4-Installer-Updates for x86_64" text
-    And I wait until I do not see "Loading..." text
+    And I wait for child channels to appear
     And I include the recommended child channels
     And I check "SLE-Module-DevTools15-SP4-Pool for x86_64"
     And I check "Fake-RPM-SUSE-Channel"
@@ -223,9 +223,9 @@ Feature: Channel subscription via SSM
     Given I am on the Systems overview page of this "sle_minion"
     When I follow "Software" in the content area
     And I follow "Software Channels" in the content area
-    And I wait until I do not see "Loading..." text
+    And I wait for child channels to appear
     And I check radio button "openSUSE Leap 15.6 (x86_64)"
-    And I wait until I do not see "Loading..." text
+    And I wait for child channels to appear
     And I check "Uyuni Client Tools for openSUSE Leap 15.6 (x86_64) (Development)"
     And I check "Fake-RPM-SUSE-Channel"
     And I click on "Next"

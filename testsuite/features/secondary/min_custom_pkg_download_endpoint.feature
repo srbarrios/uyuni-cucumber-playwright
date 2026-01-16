@@ -16,7 +16,7 @@ Feature: Repos file generation based on custom pillar data
     Given I am on the Systems overview page of this "sle_minion"
     When I follow "Software" in the content area
     And I follow "Software Channels" in the content area
-    And I wait until I do not see "Loading..." text
+    And I wait for child channels to appear
     And I check radio button "SLE-Product-SLES15-SP4-Pool for x86_64"
     And I wait until I see "SLE-Module-Basesystem15-SP4-Pool for x86_64" text
     And I uncheck "SLE-Module-Basesystem15-SP4-Pool for x86_64"
@@ -33,7 +33,7 @@ Feature: Repos file generation based on custom pillar data
     Given I am on the Systems overview page of this "sle_minion"
     When I follow "Software" in the content area
     And I follow "Software Channels" in the content area
-    And I wait until I do not see "Loading..." text
+    And I wait for child channels to appear
     And I check radio button "openSUSE Leap 15.6 (x86_64)"
     And I click on "Next"
     Then I should see a "Confirm Software Channel Change" text
@@ -58,7 +58,7 @@ Feature: Repos file generation based on custom pillar data
   Scenario: Select the channels of the SLES minion again so new RPM end point will be taken into account
     When I follow "Software" in the content area
     And I follow "Software Channels" in the content area
-    And I wait until I do not see "Loading..." text
+    And I wait for child channels to appear
     And I wait until I see "SLE-Module-Basesystem15-SP4-Pool for x86_64" text
     And I click on "Next"
     Then I should see a "Confirm Software Channel Change" text
@@ -71,7 +71,7 @@ Feature: Repos file generation based on custom pillar data
   Scenario: Select the channels of the openSUSE minion again so new RPM end point will be taken into account
     When I follow "Software" in the content area
     And I follow "Software Channels" in the content area
-    And I wait until I do not see "Loading..." text
+    And I wait for child channels to appear
     And I check radio button "openSUSE Leap 15.6 (x86_64)"
     And I click on "Next"
     Then I should see a "Confirm Software Channel Change" text
@@ -94,7 +94,7 @@ Feature: Repos file generation based on custom pillar data
   Scenario: Cleanup: select the channels of the SLES minion as before
     When I follow "Software" in the content area
     And I follow "Software Channels" in the content area
-    And I wait until I do not see "Loading..." text
+    And I wait for child channels to appear
     And I check radio button "SLE-Product-SLES15-SP4-Pool for x86_64"
     And I wait until I see "SLE15-SP4-Installer-Updates for x86_64" text
     And I include the recommended child channels
@@ -113,7 +113,7 @@ Feature: Repos file generation based on custom pillar data
   Scenario: Cleanup: select the channels of the openSUSE minion as before
     When I follow "Software" in the content area
     And I follow "Software Channels" in the content area
-    And I wait until I do not see "Loading..." text
+    And I wait for child channels to appear
     And I check radio button "openSUSE Leap 15.6 (x86_64)"
     And I check "Uyuni Client Tools for openSUSE Leap 15.6 (x86_64) (Development)"
     And I check "Fake-RPM-SUSE-Channel"

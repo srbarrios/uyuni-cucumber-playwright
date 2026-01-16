@@ -11,9 +11,9 @@ Feature: Native AppStreams support for Red Hat-like Salt minion
     Given I am on the Systems overview page of this "rhlike_minion"
     When I follow "Software" in the content area
     And I follow "Software Channels" in the content area
-    And I wait until I do not see "Loading..." text
+    And I wait for child channels to appear
     And I check radio button "Fake-Base-Channel-AppStream"
-    And I wait until I do not see "Loading..." text
+    And I wait for child channels to appear
     And I click on "Next"
     Then I should see a "Confirm Software Channel Change" text
     When I click on "Confirm"
@@ -151,7 +151,7 @@ Feature: Native AppStreams support for Red Hat-like Salt minion
     Given I am on the Systems overview page of this "rhlike_minion"
     When I follow "Software" in the content area
     And I follow "Software Channels" in the content area
-    And I wait until I do not see "Loading..." text
+    And I wait for child channels to appear
     And I check default base channel radio button of this "rhlike_minion"
     And I click on "Next"
     Then I should see a "Confirm Software Channel Change" text

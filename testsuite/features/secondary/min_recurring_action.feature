@@ -143,9 +143,9 @@ Feature: Recurring Actions
     Given I am on the Systems overview page of this "sle_minion"
     When I follow "Software" in the content area
     And I follow "Software Channels" in the content area
-    And I wait until I do not see "Loading..." text
+    And I wait for child channels to appear
     And I check radio button "Fake-Base-Channel-SUSE-like"
-    And I wait until I do not see "Loading..." text
+    And I wait for child channels to appear
     And I check "Fake-Child-Channel-SUSE-like"
     And I click on "Next"
     Then I should see a "Confirm Software Channel Change" text
@@ -201,7 +201,7 @@ Feature: Recurring Actions
     When I follow "Software" in the content area
     And I disable repository "test_repo_rpm_pool" on this "sle_minion" without error control
     And I follow "Software Channels" in the content area
-    And I wait until I do not see "Loading..." text
+    And I wait for child channels to appear
     And I check default base channel radio button of this "sle_minion"
     And I wait for child channels to appear
     And I include the recommended child channels
@@ -228,7 +228,7 @@ Feature: Recurring Actions
     When I follow "Software" in the content area
     And I disable repository "test_repo_rpm_pool" on this "sle_minion" without error control
     And I follow "Software Channels" in the content area
-    And I wait until I do not see "Loading..." text
+    And I wait for child channels to appear
     And I check default base channel radio button of this "sle_minion"
     And I wait for child channels to appear
     And I check "Uyuni Client Tools for openSUSE Leap 15.6 (x86_64) (Development)"

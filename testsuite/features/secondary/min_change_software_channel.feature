@@ -20,10 +20,10 @@ Feature: Assign child channel to a system
     Given I am on the Systems overview page of this "sle_minion"
     When I follow "Software" in the content area
     And I follow "Software Channels" in the content area
-    And I wait until I do not see "Loading..." text
+    And I wait for child channels to appear
     And I check radio button "SLE-Product-SLES15-SP4-Pool for x86_64"
     Then radio button "SLE-Product-SLES15-SP4-Pool for x86_64" should be checked
-    And I wait until I do not see "Loading..." text
+    And I wait for child channels to appear
     When I uncheck "SLE15-SP4-Installer-Updates for x86_64"
     And I should see "SLE15-SP4-Installer-Updates for x86_64" as unchecked
     And I click on "Next"
@@ -36,10 +36,10 @@ Feature: Assign child channel to a system
     Given I am on the Systems overview page of this "sle_minion"
     When I follow "Software" in the content area
     And I follow "Software Channels" in the content area
-    And I wait until I do not see "Loading..." text
+    And I wait for child channels to appear
     And I check radio button "openSUSE Leap 15.6 (x86_64)"
     Then radio button "openSUSE Leap 15.6 (x86_64)" should be checked
-    When I wait until I do not see "Loading..." text
+    When I wait for child channels to appear
     And I uncheck "Uyuni Client Tools for openSUSE Leap 15.6 (x86_64)"
     Then I should see "Uyuni Client Tools for openSUSE Leap 15.6 (x86_64)" as unchecked
     When I uncheck "Uyuni Client Tools for openSUSE Leap 15.6 (x86_64) (Development)"
@@ -65,9 +65,9 @@ Feature: Assign child channel to a system
   Scenario: Assign a child channel to the system
     When I follow "Software" in the content area
     And I follow "Software Channels" in the content area
-    And I wait until I do not see "Loading..." text
+    And I wait for child channels to appear
     Then radio button "SLE-Product-SLES15-SP4-Pool for x86_64" should be checked
-    And I wait until I do not see "Loading..." text
+    And I wait for child channels to appear
     And I check "SLE15-SP4-Installer-Updates for x86_64"
     And I click on "Next"
     Then I should see a "Confirm Software Channel Change" text
@@ -81,9 +81,9 @@ Feature: Assign child channel to a system
   Scenario: Assign a child channel to the system
     When I follow "Software" in the content area
     And I follow "Software Channels" in the content area
-    And I wait until I do not see "Loading..." text
+    And I wait for child channels to appear
     Then radio button "openSUSE Leap 15.6 (x86_64)" should be checked
-    When I wait until I do not see "Loading..." text
+    When I wait for child channels to appear
     And I check "Uyuni Client Tools for openSUSE Leap 15.6 (x86_64)"
     Then I should see "Uyuni Client Tools for openSUSE Leap 15.6 (x86_64)" as checked
     When I click on "Next"
@@ -103,18 +103,18 @@ Feature: Assign child channel to a system
   Scenario: Check the system is subscribed to the new channels
     When I follow "Software" in the content area
     And I follow "Software Channels" in the content area
-    And I wait until I do not see "Loading..." text
+    And I wait for child channels to appear
     Then radio button "SLE-Product-SLES15-SP4-Pool for x86_64" should be checked
-    And I wait until I do not see "Loading..." text
+    And I wait for child channels to appear
     And I should see "SLE15-SP4-Installer-Updates for x86_64" as checked
 
   @uyuni
   Scenario: Check the system is subscribed to the new channels
     When I follow "Software" in the content area
     And I follow "Software Channels" in the content area
-    And I wait until I do not see "Loading..." text
+    And I wait for child channels to appear
     Then radio button "openSUSE Leap 15.6 (x86_64)" should be checked
-    And I wait until I do not see "Loading..." text
+    And I wait for child channels to appear
     And I should see "Uyuni Client Tools for openSUSE Leap 15.6 (x86_64)" as checked
 
   @susemanager
@@ -133,9 +133,9 @@ Feature: Assign child channel to a system
   Scenario: Cleanup: subscribe the system back to previous channels
     When I follow "Software" in the content area
     And I follow "Software Channels" in the content area
-    And I wait until I do not see "Loading..." text
+    And I wait for child channels to appear
     Then radio button "SLE-Product-SLES15-SP4-Pool for x86_64" should be checked
-    And I wait until I do not see "Loading..." text
+    And I wait for child channels to appear
     And I wait until I see "SLE15-SP4-Installer-Updates for x86_64" text
     And I include the recommended child channels
     And I check "SLE-Module-DevTools15-SP4-Pool for x86_64"
@@ -153,9 +153,9 @@ Feature: Assign child channel to a system
   Scenario: Cleanup: subscribe the system back to previous channels
     When I follow "Software" in the content area
     And I follow "Software Channels" in the content area
-    And I wait until I do not see "Loading..." text
+    And I wait for child channels to appear
     Then radio button "openSUSE Leap 15.6 (x86_64)" should be checked
-    And I wait until I do not see "Loading..." text
+    And I wait for child channels to appear
     And I wait until I see "Uyuni Client Tools for openSUSE Leap 15.6 (x86_64)" text
     And I uncheck "Uyuni Client Tools for openSUSE Leap 15.6 (x86_64)"
     Then I should see "Uyuni Client Tools for openSUSE Leap 15.6 (x86_64)" as unchecked

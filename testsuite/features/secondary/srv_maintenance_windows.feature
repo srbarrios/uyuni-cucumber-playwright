@@ -98,9 +98,9 @@ Feature: Maintenance windows
     Given I am on the Systems overview page of this "sle_minion"
     When I follow "Software" in the content area
     And I follow "Software Channels" in the content area
-    And I wait until I do not see "Loading..." text
+    And I wait for child channels to appear
     Then radio button "SLE-Product-SLES15-SP4-Pool for x86_64" should be checked
-    When I wait until I do not see "Loading..." text
+    When I wait for child channels to appear
     Then I should see "SLE15-SP4-Installer-Updates for x86_64" as unchecked
     When I check "SLE15-SP4-Installer-Updates for x86_64"
     And I click on "Next"

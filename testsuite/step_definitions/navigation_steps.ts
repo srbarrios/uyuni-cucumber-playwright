@@ -175,7 +175,7 @@ When(/^I close the last opened window$/, async function () {
 When(/^I check "([^"]*)"$/, async function (identifier) {
     const page = getCurrentPage();
     const checkbox = page.getByLabel(identifier, { exact: true })
-        .or(page.locator(`#${identifier}`))
+        .or(page.locator(`[id="${identifier}"]`))
         .or(page.locator(`[name="${identifier}"]`));
     await checkbox.check();
     await expect(checkbox).toBeChecked();
@@ -184,7 +184,7 @@ When(/^I check "([^"]*)"$/, async function (identifier) {
 When(/^I uncheck "([^"]*)"$/, async function (identifier) {
     const page = getCurrentPage();
     const checkbox = page.getByLabel(identifier, { exact: true })
-        .or(page.locator(`#${identifier}`))
+        .or(page.locator(`[id="${identifier}"]`))
         .or(page.locator(`[name="${identifier}"]`));
     await checkbox.uncheck();
     await expect(checkbox).not.toBeChecked();
