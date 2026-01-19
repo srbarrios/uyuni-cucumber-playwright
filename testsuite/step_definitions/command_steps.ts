@@ -516,6 +516,7 @@ When(
                                 time_spent / 60
                             } minutes waiting for '${os_product_version}' remaining channels to start their repo-sync processes:\n${channels_to_kill}`
                         );
+                        await getCurrentPage().waitForTimeout(checking_rate * 1000);
                     }
                     return false;
                 }
@@ -577,6 +578,7 @@ When(
                                 time_spent / 60
                             } minutes waiting for '${channel}' channel to start its repo-sync processes.`
                         );
+                        await getCurrentPage().waitForTimeout(checking_rate * 1000);
                     }
                     return false;
                 }
@@ -688,6 +690,7 @@ When(
                                 time_spent / 60
                             } minutes out of ${timeout / 60} waiting for '${channel}' channel to be synchronized`
                         );
+                        await getCurrentPage().waitForTimeout(checking_rate * 1000);
                     }
                     return false;
                 },
@@ -748,6 +751,7 @@ When(
                                 time_spent / 60
                             } minutes out of ${timeout / 60} waiting for '${os_product_version}' channels to be synchronized`
                         );
+                        await getCurrentPage().waitForTimeout(checking_rate * 1000);
                     }
                     return false;
                 },
