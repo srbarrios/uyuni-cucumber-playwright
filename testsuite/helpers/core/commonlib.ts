@@ -157,7 +157,7 @@ export async function repeatUntilTimeout<T>(
     }): Promise<T | boolean> {
 
     const {
-        timeout = 250000,
+        timeout = 250,
         retries,
         message,
         reportResult = false,
@@ -167,9 +167,10 @@ export async function repeatUntilTimeout<T>(
     let lastResult: T | boolean | undefined;
     const startTime = Date.now();
     let attempts = 0;
+    let timeoutInSeconds = timeout * 1000;
 
     try {
-        while ((Date.now() - startTime <= timeout) && (retries === undefined || attempts < retries)) {
+        while ((Date.now() - startTime <= timeoutInSeconds) && (retries === undefined || attempts < retries)) {
             lastResult = await fn();
             attempts++;
 
@@ -187,7 +188,7 @@ export async function repeatUntilTimeout<T>(
         if (retries && attempts >= retries) {
             error = new Error(`Giving up after ${attempts} attempts${detail}`);
         } else {
-            error = new Error(`Timeout after ${timeout}ms (repeatUntilTimeout)${detail}`);
+            error = new Error(`Timeout after ${timeoutInSeconds}s (repeatUntilTimeout)${detail}`);
         }
 
         if (dontRaise) {

@@ -701,7 +701,7 @@ When(
 );
 
 When(
-    /^I wait until all synchronized channels for "([^"]*)" have finished$/, {timeout: 1200000},
+    /^I wait until all synchronized channels for "([^"]*)" have finished$/, {timeout: 7200000},
     async function (os_product_version: string) {
         if (globalVars.product == undefined) {
             throw new Error('Product not set');

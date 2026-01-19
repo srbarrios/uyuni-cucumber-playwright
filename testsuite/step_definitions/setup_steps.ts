@@ -190,7 +190,7 @@ When(/^I select the addon "(.*?)"$/, async function (addon) {
 
 Then(/^I should see that the "(.*?)" product is "(.*?)"$/, async function (product, recommended) {
     if (!getCurrentPage()) throw new Error('No page instance');
-    const productElement = getCurrentPage().locator('.product-details-wrapper', {hasText: globalVars.product});
+    const productElement = getCurrentPage().locator('.product-details-wrapper', {hasText: product});
     const recommendedElement = productElement.getByText(recommended);
     await expect(recommendedElement).toBeVisible({timeout: timeouts.web});
 });
