@@ -3,6 +3,7 @@ module.exports = {
         format: [
             "pretty",
             "json:cucumber_report/cucumber-report.json",
+            "junit:results_junit/cucumber-report.xml",
             "html:cucumber_report/cucumber-report.html"
         ],
         formatOptions: {
@@ -25,6 +26,7 @@ module.exports = {
         format: [
             "pretty",
             "json:cucumber_report/cucumber-sanity-check-report.json",
+            "junit:results_junit/cucumber-sanity-check-report.xml",
             "html:cucumber_report/cucumber-sanity-check-report.html"
         ],
         formatOptions: {
@@ -50,6 +52,7 @@ module.exports = {
         format: [
             "pretty",
             "json:cucumber_report/cucumber-core-report.json",
+            "junit:results_junit/cucumber-core-report.xml",
             "html:cucumber_report/cucumber-core-report.html"
         ],
         formatOptions: {
@@ -80,6 +83,7 @@ module.exports = {
         format: [
             "pretty",
             "json:cucumber_report/cucumber-reposync-report.json",
+            "junit:results_junit/cucumber-reposync-report.xml",
             "html:cucumber_report/cucumber-reposync-report.html"
         ],
         formatOptions: {
@@ -98,6 +102,7 @@ module.exports = {
         format: [
             "pretty",
             "json:cucumber_report/cucumber-init-clients-report.json",
+            "junit:results_junit/cucumber-init-clients-report.xml",
             "html:cucumber_report/cucumber-init-clients-report.html"
         ],
         formatOptions: {
@@ -119,6 +124,7 @@ module.exports = {
         format: [
             "pretty",
             "json:cucumber_report/cucumber-proxy-report.json",
+            "junit:results_junit/cucumber-proxy-report.xml",
             "html:cucumber_report/cucumber-proxy-report.html"
         ],
         formatOptions: {
@@ -143,6 +149,7 @@ module.exports = {
         format: [
             "pretty",
             "json:cucumber_report/cucumber-finishing-report.json",
+            "junit:results_junit/cucumber-finishing-report.xml",
             "html:cucumber_report/cucumber-finishing-report.html"
         ],
         formatOptions: {
