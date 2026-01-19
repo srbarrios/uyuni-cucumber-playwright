@@ -31,7 +31,7 @@ export async function waitUntilDoNotSeeTextRefreshingPage(text: string) {
 
 export async function selectOptionFromField(option: string, field: string) {
     const locators = [
-        getCurrentPage().locator(`select#${field}, select[name="${field}"]`),
+        getCurrentPage().locator(`select#${field}, select[name="${field}"], input#${field}`),
         getCurrentPage().getByRole('combobox', {name: field}),
         getCurrentPage().getByLabel(field),
     ];

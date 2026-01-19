@@ -737,7 +737,7 @@ Then(/^I should see a "([^"]*)" link in the (left menu|tab bar|tabs|content area
 
 Then(/^option "([^"]*)" is selected as "([^"]*)"$/, async function (option, field) {
     // For standard select elements
-    const selectLocator = getCurrentPage().locator(`select#${field}, select[name="${field}"]`);
+    const selectLocator = getCurrentPage().locator(`select#${field}, select[name="${field}"], input#${field}`);
     if (await selectLocator.isVisible()) {
         await expect(selectLocator).toHaveValue(option);
         return;
@@ -819,7 +819,7 @@ When(/^I click on the clear SSM button$/, async function () {
 });
 
 When(/^I wait until option "([^"]*)" appears in list "([^"]*)"$/, async function (option, field) {
-    const selectLocator = getCurrentPage().locator(`select#${field}, select[name="${field}"]`);
+    const selectLocator = getCurrentPage().locator(`select#${field}, select[name="${field}"], input#${field}`);
     if (await selectLocator.isVisible()) {
         await expect(selectLocator.locator(`option:has-text("${option}")`)).toBeVisible();
     } else {
