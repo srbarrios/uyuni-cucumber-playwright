@@ -44,12 +44,12 @@ import {waitUntilDoNotSeeLoadingText} from '../helpers/embedded_steps/common_hel
 
 Then(/^I should see a "(.*)" text in the content area$/, async function (text) {
     const contentArea = getCurrentPage().locator('section');
-    await expect(contentArea.getByText(text)).toBeVisible();
+    await expect(contentArea.getByText(text).first()).toBeVisible();
 });
 
 Then(/^I should not see a "(.*)" text in the content area$/, async function (text) {
     const contentArea = getCurrentPage().locator('section');
-    await expect(contentArea.getByText(text)).not.toBeVisible();
+    await expect(contentArea.getByText(text).first()).not.toBeVisible();
 });
 
 When(/^I click on "([^"]+)" in row "([^"]+)"$/, async function (link, item) {
@@ -69,50 +69,50 @@ Then(/^the current path is "([^"]*)"$/, async function (path) {
 });
 
 When(/^I wait until I see "([^"]*)" text$/, async function (text) {
-    await expect(getCurrentPage().getByText(text)).toBeVisible();
+    await expect(getCurrentPage().getByText(text).first()).toBeVisible();
 });
 
 When(/^I wait until I do not see "([^"]*)" text$/, async function (text) {
-    await expect(getCurrentPage().getByText(text)).not.toBeVisible();
+    await expect(getCurrentPage().getByText(text).first()).not.toBeVisible();
 });
 
 When(/^I wait at most (\d+) seconds until I see "([^"]*)" text$/, async function (seconds, text) {
-    await expect(getCurrentPage().getByText(text)).toBeVisible({timeout: Number(seconds) * 1000});
+    await expect(getCurrentPage().getByText(text).first()).toBeVisible({timeout: Number(seconds) * 1000});
 });
 
 When(/^I wait until I see "([^"]*)" text or "([^"]*)" text$/, async function (text1, text2) {
-    const locator1 = getCurrentPage().getByText(text1);
-    const locator2 = getCurrentPage().getByText(text2);
+    const locator1 = getCurrentPage().getByText(text1).first();
+    const locator2 = getCurrentPage().getByText(text2).first();
     await expect(locator1.or(locator2)).toBeVisible();
 });
 
 When(/^I wait until I see "([^"]*)" (text|regex), refreshing the page$/, async function (text, type) {
     const pattern = type === 'regex' ? new RegExp(text) : text;
-    if (await getCurrentPage().getByText(pattern).isVisible({timeout: 3000})) return;
+    if (await getCurrentPage().getByText(pattern).first().isVisible({timeout: 3000})) return;
     await repeatUntilTimeout(async () => {
-        if (await getCurrentPage().getByText(pattern).isVisible({timeout: 3000})) return true;
+        if (await getCurrentPage().getByText(pattern).first().isVisible({timeout: 3000})) return true;
         await refreshPage(getCurrentPage());
         return false;
     }, {message: `Couldn't find text '${text}'`});
 });
 
 When(/^I wait at most (\d+) seconds until I do not see "([^"]*)" text, refreshing the page$/, async function (seconds, text) {
-    if (!await getCurrentPage().getByText(text).isVisible({timeout: 3000})) return;
+    if (!await getCurrentPage().getByText(text).first().isVisible({timeout: 3000})) return;
     await repeatUntilTimeout(async () => {
-        if (!await getCurrentPage().getByText(text).isVisible({timeout: 3000})) return true;
+        if (!await getCurrentPage().getByText(text).first().isVisible({timeout: 3000})) return true;
         await refreshPage(getCurrentPage());
         return false;
     }, {message: `I still see text '${text}'`, timeout: Number(seconds)});
 });
 
 When(/^I wait at most "([^"]*)" seconds until I do not see "([^"]*)" text$/, async function (seconds, text) {
-    await expect(getCurrentPage().getByText(text)).not.toBeVisible({timeout: Number(seconds) * 1000});
+    await expect(getCurrentPage().getByText(text).first()).not.toBeVisible({timeout: Number(seconds) * 1000});
 });
 
 When(/^I wait at most (\d+) seconds until the event is completed, refreshing the page$/, async function (timeout) {
     await repeatUntilTimeout(async () => {
-        if (await getCurrentPage().getByText("This action's status is: Completed.", {exact: false}).isVisible({timeout: 3000})) return true;
-        if (await getCurrentPage().getByText("This action's status is: Failed.", {exact: false}).isVisible({timeout: 3000})) {
+        if (await getCurrentPage().getByText("This action's status is: Completed.", {exact: false}).first().isVisible({timeout: 3000})) return true;
+        if (await getCurrentPage().getByText("This action's status is: Failed.", {exact: false}).first().isVisible({timeout: 3000})) {
             throw new Error('Event failed');
         }
         await refreshPage(getCurrentPage());
@@ -123,7 +123,7 @@ When(/^I wait at most (\d+) seconds until the event is completed, refreshing the
 When(/^I wait until I see the name of "([^"]*)", refreshing the page$/, async function (host) {
     const systemName = await getSystemName(host);
     await repeatUntilTimeout(async () => {
-        if (await getCurrentPage().getByText(systemName).isVisible({timeout: 3000})) return true;
+        if (await getCurrentPage().getByText(systemName).first().isVisible({timeout: 3000})) return true;
         await refreshPage(getCurrentPage());
         return false;
     }, {message: `Couldn't find the system name of "${host}"`});
@@ -136,7 +136,7 @@ When(/^I wait until I see the "([^"]*)" system, refreshing the page$/, async fun
 
 When(/^I wait until I do not see "([^"]*)" text, refreshing the page$/, async function (text) {
     await repeatUntilTimeout(async () => {
-        if (!await getCurrentPage().getByText(text).isVisible({timeout: 3000})) return true;
+        if (!await getCurrentPage().getByText(text).first().isVisible({timeout: 3000})) return true;
         await refreshPage(getCurrentPage());
         return false;
     }, {message: `Text '${text}' is still visible`});
