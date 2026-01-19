@@ -563,40 +563,48 @@ When(
     async function (channel: string) {
         let time_spent = 0;
         const checking_rate = 5;
+
         await repeatUntilTimeout(
             async () => {
                 const server = await getTarget('server');
-                const {stdout} = await server.run(
-                    'ps axo pid,cmd | grep spacewalk-repo-sync | grep -v grep',
-                    {verbose: true, checkErrors: false}
+                // Use -ww to ensure the command line isn't truncated in the output
+                const { stdout } = await server.run(
+                    'ps axo pid,cmd | grep [s]pacewalk-repo-sync',
+                    { verbose: true, checkErrors: false }
                 );
-                const process = stdout.split('\n')[0];
-                if (!process) {
-                    if ((time_spent += checking_rate) % 60 === 0) {
-                        console.log(
-                            `${
-                                time_spent / 60
-                            } minutes waiting for '${channel}' channel to start its repo-sync processes.`
-                        );
-                        await getCurrentPage().waitForTimeout(checking_rate * 1000);
-                    }
-                    return false;
-                }
-                const channel_synchronizing = process.split(' ')[5].trim();
-                if (channel_synchronizing === channel) {
-                    const pid = process.split(' ')[0];
-                    await server.run(`kill ${pid}`, {verbose: true, checkErrors: false});
-                    console.log(`Reposync of channel ${channel} killed`);
-                    return true;
-                } else {
-                    console.log(
-                        `Warning: Repo-sync process for channel '${channel_synchronizing}' running.`
-                    );
-                    return false;
-                }
-            },
 
-            {message: 'Some reposync processes were not killed properly', timeout: 60, dontRaise: true}
+                const lines = stdout.trim().split('\n').filter(line => line.length > 0);
+
+                if (lines.length === 0) {
+                    time_spent += checking_rate;
+                    if (time_spent % 60 === 0) {
+                        console.log(`${time_spent / 60} minute(s) waiting for '${channel}' to start.`);
+                    }
+                    await getCurrentPage().waitForTimeout(checking_rate * 1000);
+                    return false;
+                }
+
+                for (const line of lines) {
+                    // Regex breakdown:
+                    // ^\s*(\d+) -> Captures PID at start
+                    // .*--channel\s+(\S+) -> Finds --channel and captures the next word
+                    const match = line.match(/^\s*(\d+).*--channel\s+([\w\-\.]+)/);
+
+                    if (match) {
+                        const [_, pid, foundChannel] = match;
+
+                        if (foundChannel === channel) {
+                            await server.run(`kill -9 ${pid}`, { verbose: true, checkErrors: false });
+                            console.log(`Successfully killed reposync for channel: ${channel} (PID: ${pid})`);
+                            return true;
+                        } else {
+                            console.log(`Found sync for DIFFERENT channel: '${foundChannel}'. Still looking for '${channel}'...`);
+                        }
+                    }
+                }
+                return false;
+            },
+            { message: `Timed out trying to kill reposync for ${channel}`, timeout: 60, dontRaise: true }
         );
     }
 );

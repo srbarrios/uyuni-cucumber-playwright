@@ -31,14 +31,14 @@ export async function waitUntilDoNotSeeTextRefreshingPage(text: string) {
 
 export async function selectOptionFromField(option: string, field: string) {
     const locators = [
-        getCurrentPage().locator(`select#${field}, select[name="${field}"], input#${field}`),
+        getCurrentPage().locator(`:is(select, input)[id="${field}"], [name="${field}"]`).filter({ visible: true }),
         getCurrentPage().getByRole('combobox', {name: field}),
         getCurrentPage().getByLabel(field),
     ];
 
     for (const locator of locators) {
         try {
-            await locator.selectOption(option);
+            await locator.first().selectOption(option);
             console.debug(`Input field "${field}" located through: ${locator}`)
             return; // stop at first success
         } catch {
