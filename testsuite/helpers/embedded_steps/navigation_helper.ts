@@ -5,7 +5,7 @@ import {
     getCurrentPage,
     getSystemId,
     getSystemName,
-    getTarget,
+    getTarget, globalVars,
     refreshPage,
     repeatUntilTimeout
 } from '../index.js';
@@ -67,9 +67,6 @@ export async function clickOnTextAndConfirm(text: string) {
 }
 
 export async function authorizeUser(user: string, password_str: string) {
-    addContext('user', user);
-    addContext('password', password_str);
-
     try {
         await getCurrentPage().goto(getAppHost(), {waitUntil: "domcontentloaded"});
     } catch (e: Error | any) {
@@ -88,6 +85,9 @@ export async function authorizeUser(user: string, password_str: string) {
     await getCurrentPage().locator('#password-field').fill(password_str);
     await getCurrentPage().getByRole('button', {name: 'Sign In'}).click();
     await shouldBeLoggedIn();
+
+    globalVars.currentUser = user;
+    globalVars.currentPassword = password_str;
 }
 
 export async function createUser(user: string, password: string) {

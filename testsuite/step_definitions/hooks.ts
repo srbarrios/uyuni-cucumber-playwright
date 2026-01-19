@@ -72,8 +72,8 @@ Before(async function (scenario) {
 After(async function (scenario) {
     logScenarioTiming(Number(getContext('scenarioStartTime')));
     if (scenario.result?.status === Status.FAILED) {
-        if (!getContext('browserDisconnected')) await handleFailure(this, scenario);
         await printServerLogs();
+        if (!getContext('browserDisconnected')) await handleFailure(this, scenario);
     }
 });
 
@@ -93,10 +93,10 @@ async function handleFailure(world: any, scenario: any) {
     } catch (e: any) {
         console.warn(`Failure handling failed: ${e.message}`);
     } finally {
-        const user = getContext('currentUser');
+        const user = globalVars.currentUser;
         if (user) {
-            await authorizeUser(user, <string>getContext('currentPassword'));
-            await getCurrentPage().goto(getCurrentPage().url(), {timeout: TIMEOUTS.long * 1000});
+            await authorizeUser(user, globalVars.currentPassword);
+            await getCurrentPage().goto(getCurrentPage().url());
         }
     }
 }
