@@ -1,6 +1,3 @@
-// Copyright (c) 2025 SUSE LLC.
-// Licensed under the terms of the MIT license.
-
 import axios, {AxiosInstance, AxiosResponse} from 'axios';
 import https from 'https';
 import {TIMEOUTS} from '../core/env.js';

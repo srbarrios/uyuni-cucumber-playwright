@@ -479,10 +479,7 @@ Given(/^I try to download "([^"]*)" from channel "([^"]*)"$/, async function (rp
             cleanupCallback();
         }
     }
-});
-
-
-Then(/^the download should get a (\d+) response$/, function (code: string) {
+});Then(/^the download should get a (\d+) response$/, function (code: string) {
     const expectedCode = parseInt(code, 10);
     const error = getContext('downloadError');
 

@@ -110,10 +110,7 @@ When(/^I backup the SSH authorized_keys file of host "([^"]*)"$/, async function
     if (returnCode !== 0) {
         throw new Error('error backing up authorized_keys on host');
     }
-});
-
-
-When(/^I add pre-generated SSH public key to authorized_keys of host "([^"]*)"$/, async function (host) {
+});When(/^I add pre-generated SSH public key to authorized_keys of host "([^"]*)"$/, async function (host) {
     const keyFilename = 'id_rsa_bootstrap-passphrase_linux.pub';
     const target = await getTarget(host);
     const source = path.join(__dirname, `../upload_files/ssh_keypair/${keyFilename}`);
@@ -129,10 +126,7 @@ When(/^I restore the SSH authorized_keys file of host "([^"]*)"$/, async functio
     const authKeysSavPath = '/root/.ssh/authorized_keys.sav';
     await target.run(`cp ${authKeysSavPath} ${authKeysPath}`);
     await target.run(`rm ${authKeysSavPath}`);
-});
-
-
-When(/^I add "([^"]*)" calendar file as url$/, async function (file) {
+});When(/^I add "([^"]*)" calendar file as url$/, async function (file) {
     const server = await getTarget('server');
     const source = path.join(__dirname, `../upload_files/${file}`);
     const dest = `/srv/www/htdocs/pub/${file}`;
@@ -143,10 +137,7 @@ When(/^I add "([^"]*)" calendar file as url$/, async function (file) {
     const url = `https://${(await getTarget('server')).fullHostname}/pub/${file}`;
     console.log(`URL: ${url}`);
     await enterTextAsField(url, 'calendar-data-text');
-});
-
-
-When(/^I deploy testing playbooks and inventory files to "([^"]*)"$/, async function (host) {
+});When(/^I deploy testing playbooks and inventory files to "([^"]*)"$/, async function (host) {
     const target = await getTarget(host);
     const dest = '/srv/playbooks/orion_dummy/';
     await target.run(`mkdir -p ${dest}`);

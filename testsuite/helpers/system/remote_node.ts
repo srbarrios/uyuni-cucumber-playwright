@@ -1,6 +1,3 @@
-// Copyright (c) 2025 SUSE LLC.
-// Licensed under the terms of the MIT license.
-
 import {
     createSshOptions,
     scpDownloadCommand,
@@ -158,10 +155,7 @@ export class RemoteNode {
         // Register this node instance in the static registries
         RemoteNode.nodeByHost[this.host] = this;
         RemoteNode.hostByNode.set(this, this.host);
-    }
-
-
-    /**
+    }    /**
      * Runs a command on the remote node using SSH.
      * @param command The command to run
      * @param host The hostname of the remote node
@@ -243,10 +237,7 @@ export class RemoteNode {
 
         // Remove ANSI color codes
         const outNoColor = result.stdout.replace(/\x1b\[[0-9;]*m/g, '');
-        const errNoColor = result.stderr.replace(/\x1b\[[0-9;]*m/g, '');
-
-
-        if (checkErrors && !successCodes.includes(result.returnCode)) {
+        const errNoColor = result.stderr.replace(/\x1b\[[0-9;]*m/g, '');        if (checkErrors && !successCodes.includes(result.returnCode)) {
             throw new Error(`FAIL: ${cmd} returned status code = ${result.returnCode}.\nOutput:\n${outNoColor}\nStderr:\n${errNoColor}`);
         }
 

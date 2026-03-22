@@ -1,6 +1,3 @@
-// Copyright (c) 2025 SUSE LLC.
-// Licensed under the terms of the MIT license.
-
 import {Client, ConnectConfig} from 'ssh2';
 import {TIMEOUTS} from '../core/env.js';
 import sshConfig from 'ssh-config';

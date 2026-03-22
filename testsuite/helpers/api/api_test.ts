@@ -1,6 +1,3 @@
-// Copyright (c) 2025 SUSE LLC.
-// Licensed under the terms of the MIT license.
-
 import {HttpClient} from "./http_client.js";
 import {XmlrpcClient} from "./xmlrpc_client.js";
 import {repeatUntilTimeout} from '../core/commonlib.js';
@@ -15,10 +12,7 @@ import {NamespaceImage} from '../namespaces/image.js';
 import {NamespaceKickstart} from '../namespaces/kickstart.js';
 import {NamespaceSchedule} from '../namespaces/schedule.js';
 import {NamespaceSystem} from '../namespaces/system.js';
-import {NamespaceUser} from '../namespaces/user.js';
-
-
-// We'll need to create these namespace classes
+import {NamespaceUser} from '../namespaces/user.js';// We'll need to create these namespace classes
 // For now, we'll define placeholder interfaces
 export interface INamespaceActionchain {
     listChains(): Promise<string[]>;

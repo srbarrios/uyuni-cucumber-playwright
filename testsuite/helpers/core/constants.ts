@@ -1,6 +1,3 @@
-// Copyright (c) 2025 SUSE LLC
-// Licensed under the terms of the MIT license.
-
 export interface HostMapping {
     [key: string]: string;
 }
@@ -427,10 +424,7 @@ export const BASE_CHANNEL_BY_CLIENT: BaseChannelByClient = {
         'proxy': 'Fake-Base-Channel-SUSE-like',
         'build_host': 'Fake-Base-Channel-SUSE-like'
     }
-} as const;
-
-
-// Used for creating activation keys
+} as const;// Used for creating activation keys
 // The keys are the values of BASE_CHANNEL_BY_CLIENT
 // SUMA: The values can be found under Admin -> Setup Wizard -> Products
 // Select the desired product and have a look at its product channels

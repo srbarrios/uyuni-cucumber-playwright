@@ -1,6 +1,3 @@
-// Copyright (c) 2025 SUSE LLC.
-// Licensed under the terms of the MIT license.
-
 // Export core utilities
 export * from './core/constants.js';
 export * from './core/commonlib.js';

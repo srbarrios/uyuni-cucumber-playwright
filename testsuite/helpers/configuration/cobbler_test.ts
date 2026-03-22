@@ -1,6 +1,3 @@
-// Copyright (c) 2025 SUSE LLC.
-// Licensed under the terms of the MIT license.
-
 import * as xmlrpc from 'xmlrpc';
 import {getTarget} from '../system/remote_nodes_env.js';
 

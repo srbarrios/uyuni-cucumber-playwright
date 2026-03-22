@@ -1,6 +1,3 @@
-// Copyright (c) 2025 SUSE LLC
-// Licensed under the terms of the MIT license.
-
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import {RemoteNode} from '../system/remote_node.js';

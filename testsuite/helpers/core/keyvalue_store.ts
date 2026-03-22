@@ -1,6 +1,3 @@
-// Copyright (c) 2025 SUSE LLC.
-// Licensed under the terms of the MIT license.
-
 import {createClient, RedisClientType} from 'redis';
 
 export interface KeyValueStoreConfig {

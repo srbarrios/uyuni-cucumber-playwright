@@ -258,10 +258,7 @@ When(/^I enter "([^"]*)" as "([^"]*)"$/, async function (text: string, field: st
     }
 
     throw new Error(`Could not find a visible input field for "${field}"`);
-});
-
-
-When(/^I fill the field with ID "([^"]*)" with "([^"]*)"$/, async function (fieldId: string, text: string) {
+});When(/^I fill the field with ID "([^"]*)" with "([^"]*)"$/, async function (fieldId: string, text: string) {
     const locator = getCurrentPage().locator(`#${fieldId}`);
     await locator.fill(text);
 });
@@ -919,10 +916,7 @@ When(/^I enter the package for "([^"]*)" as the filtered package name$/, async f
         throw new Error(`Package for client '${host}' not found in PACKAGE_BY_CLIENT helper.`);
     }
     await enterFilteredPackageName(packageName);
-});
-
-
-When(/^I check the package( last version)? for "([^"]*)" in the list$/, async function (versionFlag, host) {
+});When(/^I check the package( last version)? for "([^"]*)" in the list$/, async function (versionFlag, host) {
     const packageName = PACKAGE_BY_CLIENT[host];
     if (!packageName) {
         throw new Error(`Package for client '${host}' not found in PACKAGE_BY_CLIENT helper.`);
@@ -1042,10 +1036,7 @@ Given(/^I have a combobox property "([^"]*)" with value "([^"]*)" on "([^"]*)"$/
     // Call the step to clean the search index on the server
     // This step is defined in command_steps.ts, so we need to ensure it's loaded
     await this.When(/^I clean the search index on the server$/);
-});
-
-
-When(/^I visit "([^"]*)" endpoint of this "([^"]*)"$/, async function (service, host) {
+});When(/^I visit "([^"]*)" endpoint of this "([^"]*)"$/, async function (service, host) {
     const node = await getTarget(host);
     const systemName = await getSystemName(host);
     const osFamily = node.osFamily;

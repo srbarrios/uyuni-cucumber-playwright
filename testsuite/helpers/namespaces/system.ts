@@ -1,6 +1,3 @@
-// Copyright (c) 2025 SUSE LLC.
-// Licensed under the terms of the MIT license.
-
 import {ApiTest} from '../api/api_test.js';
 import {getTarget} from "../system/remote_nodes_env.js";
 
@@ -25,10 +22,7 @@ export class NamespaceSystem {
         const match = systems.find((s: any) => s.name === server);
         if (!match) throw new Error(`Cannot find ${server}`);
         return match.id ?? null;
-    }
-
-
-    async bootstrapSystem(host: string, activationKey: string, saltSsh: boolean): Promise<any> {
+    }    async bootstrapSystem(host: string, activationKey: string, saltSsh: boolean): Promise<any> {
         if (!await getTarget('proxy')) {
             return this.test.call('system.bootstrap', {
                 sessionKey: this.test.currentToken || '',

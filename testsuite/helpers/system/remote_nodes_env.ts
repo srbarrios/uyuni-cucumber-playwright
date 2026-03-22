@@ -1,6 +1,3 @@
-// Copyright (c) 2025 SUSE LLC.
-// Licensed under the terms of the MIT license.
-
 import * as fs from 'fs';
 import {fileURLToPath} from 'url';
 import * as path from 'path';
@@ -192,10 +189,7 @@ export async function cleanupNodes(): Promise<void> {
     // This part depends on how you want to handle state between runs.
     // For a full reset, you might need a static `reset()` method on RemoteNode.
     console.log('Remote node cleanup completed. Registries would be cleared here if needed.');
-}
-
-
-/**
+}/**
  * Get the environment variable value for a host.
  * @param host The host identifier.
  * @returns The environment variable value if set.

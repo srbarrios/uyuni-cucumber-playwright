@@ -1,6 +1,3 @@
-// Copyright (c) 2025 SUSE LLC.
-// Licensed under the terms of the MIT license.
-
 import * as fs from 'fs';
 import {parseISO} from 'date-fns';
 import {getTarget} from './remote_nodes_env.js';

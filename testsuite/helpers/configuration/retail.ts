@@ -1,6 +1,3 @@
-// Copyright (c) 2025 SUSE LLC
-// Licensed under the terms of the MIT license.
-
 import {fileURLToPath} from 'url';
 import * as path from 'path';
 import {dirname} from 'path';

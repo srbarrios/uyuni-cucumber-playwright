@@ -1,6 +1,3 @@
-// Copyright (c) 2025 SUSE LLC.
-// Licensed under the terms of the MIT license.
-
 import {expect, Locator, Page} from '@playwright/test';
 import {RemoteNode} from '../system/remote_node.js';
 import {ENV_VAR_BY_HOST} from './constants.js';
@@ -9,10 +6,7 @@ import {ENV_CONFIG, getAppHost, getCurrentPage, getFeatureScope, globalVars} fro
 import * as yaml from 'js-yaml';
 import crypto from 'crypto';
 import {ApiTest, createApiTest} from "../api/api_test.js";
-import CobblerTest, {createCobblerTest} from "../configuration/cobbler_test.js";
-
-
-// Type definitions
+import CobblerTest, {createCobblerTest} from "../configuration/cobbler_test.js";// Type definitions
 export interface UptimeInfo {
     seconds: number;
     minutes: number;
